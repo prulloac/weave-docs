@@ -29,7 +29,7 @@ scripts/check-links.py  local link checker
 ## Commands
 
 - Markdown lint: `npx --yes markdownlint-cli2 "**/*.md"`
-- Link check: `python3 scripts/check-links.py`
+- Link and reachability check: `python3 scripts/check-links.py`
 - Both: `python3 scripts/check-links.py && npx --yes markdownlint-cli2 "**/*.md"`
 
 This repository has no Go build or test target; the product and its tests live in `weave`.
@@ -44,7 +44,7 @@ This repository has no Go build or test target; the product and its tests live i
   `ADR NNNN` title and heading.
 - Status belongs in frontmatter; delivery status belongs in `ROADMAP.md` and `backlog.md`.
 - Every spec appears in `specs/README.md`; every ADR in `architecture/adr/README.md`; every document
-  is reachable from `README.md`.
+  is reachable from `README.md` (checked by `scripts/check-links.py`).
 - Use relative links inside this repository. Use `https://github.com/prulloac/weave/blob/main/...`
   for `weave` documents and code, and `https://github.com/prulloac/weave-docs/blob/main/...` only
   when linking from `weave` back here.

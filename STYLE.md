@@ -66,5 +66,5 @@ in the sibling [`weave`](https://github.com/prulloac/weave) repository.
   `https://github.com/prulloac/weave/blob/main/...`.
 - Link to headings only when the heading is stable; prefer linking the document.
 - Keep examples copy-pasteable and free of placeholder secrets.
-- Run `python3 scripts/check-links.py` and `npx --yes markdownlint-cli2 "**/*.md"` before opening a
-  documentation pull request.
+- Run the link/reachability check (`python3 scripts/check-links.py`) and
+  `npx --yes markdownlint-cli2 "**/*.md"` before opening a documentation pull request.

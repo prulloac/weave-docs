@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Check local Markdown links and cross-repo GitHub links in weave-docs."""
+"""Check local Markdown links, cross-repo links and reachability in weave-docs."""
 
 from __future__ import annotations
 
 import re
 import sys
+from collections import deque
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -29,6 +30,8 @@ def split_target(raw: str) -> str:
 
 def main() -> int:
     files = sorted(ROOT.rglob("*.md"))
+    documents = {path.relative_to(ROOT).as_posix() for path in files}
+    edges: dict[str, set[str]] = {doc: set() for doc in documents}
     failures = 0
     checked = 0
 
@@ -53,7 +56,7 @@ def main() -> int:
                     continue
                 resolved = (path.parent / target).resolve()
                 try:
-                    resolved.relative_to(ROOT)
+                    rel_target = resolved.relative_to(ROOT).as_posix()
                 except ValueError:
                     print(f"{rel}:{line_no}: link escapes the repository: {raw}")
                     failures += 1
@@ -61,6 +64,9 @@ def main() -> int:
                 if not resolved.exists():
                     print(f"{rel}:{line_no}: missing local target: {raw}")
                     failures += 1
+                    continue
+                if rel_target in documents:
+                    edges[rel].add(rel_target)
 
             for match in GITHUB_LINK_RE.finditer(cleaned):
                 repo, target = match.groups()
@@ -70,7 +76,25 @@ def main() -> int:
                     print(f"{rel}:{line_no}: missing {repo} target: {target}")
                     failures += 1
 
-    print(f"check-links: checked {checked} links in {len(files)} files, {failures} failures")
+    reachable = {"README.md"} if "README.md" in documents else set()
+    if not reachable:
+        print("check-links: README.md is missing")
+        failures += 1
+    queue = deque(reachable)
+    while queue:
+        current = queue.popleft()
+        for target in edges.get(current, set()):
+            if target not in reachable:
+                reachable.add(target)
+                queue.append(target)
+    for orphan in sorted(documents - reachable):
+        print(f"{orphan}: not reachable from README.md")
+        failures += 1
+
+    print(
+        f"check-links: checked {checked} links in {len(files)} files, "
+        f"reachable {len(reachable)}/{len(documents)} docs, {failures} failures"
+    )
     return 1 if failures else 0
 
 

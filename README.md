@@ -30,4 +30,5 @@ end-user documentation, BDD scenarios and repository instructions.
 
 - Read [AGENTS.md](AGENTS.md) before changing docs.
 - Run `python3 scripts/check-links.py` and `npx --yes markdownlint-cli2 "**/*.md"`.
+- The link check also enforces that every document is reachable from this README.
 - Keep links relative inside this repository; use absolute GitHub URLs for `weave`.
