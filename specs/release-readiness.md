@@ -59,8 +59,8 @@ Baseline at approval (the R1–R4 slices close these gaps):
   environment, that proves the product starts, ingests, searches, navigates, syncs, exports and
   serves MCP.
 - **Documentation integrity:** the mechanical and editorial rules in section 6. It is enforced by
-  `cmd/docs-lint` in `weave` for the remaining docs and by the link and Markdown checks in
-  `weave-docs`; review handles judgment calls.
+  `cmd/docs-lint` in `weave` for the remaining docs and by the link, reachability and Markdown
+  checks in `weave-docs`; review handles judgment calls.
 - **Release gate:** the single command sequence that must pass locally, in CI and in the release
   workflow before a tag may publish.
 
@@ -254,7 +254,7 @@ A document that no index reaches is an orphan and fails the docs gate.
 - Every Feature Register row links one authoritative spec and one backlog row.
 - Every backlog row maps to one register row, or is explicitly listed as cross-cutting.
 - Every spec is owned by at least one register feature and appears in `specs/README.md`.
-- Every BDD scenario set names its spec and the Go test file that implements it.
+- Every BDD scenario set names its spec and the executable test or check that implements it.
 - Every ADR appears in `architecture/adr/README.md` and is linked from the architecture page it affects.
 - Every architecture page describes the current design; deferred work is linked, not restated.
 - Every CLI example in `weave/README.md` is checked by the smoke suite or a help test.
@@ -275,9 +275,11 @@ A document that no index reaches is an orphan and fails the docs gate.
 
 ### 6.5 Automated documentation rules
 
-`cmd/docs-lint` lives in `weave` and enforces these rules for the docs that remain there. The
-`weave-docs` repository runs `scripts/check-links.py` and markdownlint for its own link and Markdown
-checks; extend those checks when adding repo-local rules.
+`cmd/docs-lint` lives in `weave` and enforces these rules for the docs that remain there. `DL003`,
+`DL004`, `DL006`–`DL009` and `DL011` remain the linter's contract for spec, ADR and register trees
+and are covered by its fixtures; the split docs tree is reviewed against them. The `weave-docs`
+repository runs `scripts/check-links.py` (link, cross-repo and reachability checks) and markdownlint
+for its own gate. Extend those checks when adding repo-local rules.
 
 Extend `cmd/docs-lint` with stable rule IDs and failing fixtures:
 
@@ -301,7 +303,7 @@ violation. Each rule has at least one fixture that must fail and one that must p
 
 ## 7. R4 — Release Gate
 
-`scripts/verify.sh` becomes the single gate. It runs, in order:
+`scripts/verify.sh` is the single gate for the `weave` repository. It runs, in order:
 
 1. `go mod tidy` and a clean `go.mod`/`go.sum` diff.
 2. `go run ./cmd/contract-export` and a clean golden diff.
@@ -315,11 +317,13 @@ violation. Each rule has at least one fixture that must fail and one that must p
 10. `gofmt -l .` and `actionlint`.
 11. Markdown lint, run by CI or by the documented Node-based command.
 
+The `weave-docs` repository runs its own `Docs` workflow:
+`python3 scripts/check-links.py` (link, cross-repo and reachability checks) and markdownlint. A
+release requires both repositories green.
+
 CI calls `scripts/verify.sh` instead of duplicating steps. The release workflow calls the same
 script, then runs the artifact smoke and publishes a draft release. A local `make verify` or
-`./scripts/verify.sh` must match CI. The `weave-docs` repository runs
-`python3 scripts/check-links.py` and markdownlint in its own CI; the release gate expects both
-repositories green.
+`./scripts/verify.sh` must match CI.
 
 The release checklist records:
 
@@ -365,6 +369,7 @@ ROADMAP (status) --links--> specs (contract) --links--> BDD (behavior) --links--
 ## 10. Testing the Gate
 
 - `cmd/docs-lint` has table-driven tests for every rule, including a fixture that must fail.
+- `weave-docs/scripts/check-links.py` runs in the `Docs` workflow on every push and pull request.
 - The smoke suite has a self-test that points at a deliberately broken fixture binary and asserts a
   non-zero, diagnostic failure.
 - `scripts/verify.sh` is exercised by CI on every pull request.
@@ -380,14 +385,16 @@ ROADMAP (status) --links--> specs (contract) --links--> BDD (behavior) --links--
 3. The smoke suite covers every shipped command, every search mode, every error-code class and the
    MCP stdio handshake against the built binary.
 4. The artifact smoke passes on Linux, macOS and Windows release archives.
-5. `cmd/docs-lint` enforces `DL001`–`DL012` with fixtures and reports zero violations.
-6. There are no dead links or anchors; every document is reachable from an index.
-7. ADR numbers, feature IDs, phases, waves and milestones have no gaps or dangling references.
+5. `cmd/docs-lint` enforces `DL001`–`DL012` with fixtures and reports zero violations on `weave`;
+   `weave-docs` link/reachability and markdownlint checks pass.
+6. There are no dead links or anchors; every document is reachable from an index in its repository.
+7. The docs review confirms ADR numbers, feature IDs, phases, waves and milestones have no gaps or
+   dangling references; `cmd/docs-lint` fixtures cover the corresponding rules.
 8. No spec, ADR or architecture page contains a body status line or contradicts the roadmap.
 9. Every shipped feature is described in present tense; deferred work appears only in the roadmap
    and backlog.
-10. Every register row maps to one spec and one backlog row; every spec maps to a BDD set and a Go
-    test file.
+10. Every register row maps to one spec and one backlog row; every spec maps to a BDD set and an
+    executable test or check.
 11. Fuzz targets exist for frontmatter, links and concept IDs and run in CI.
 12. Coverage is reported and does not fall below the recorded baseline without an explanation.
 13. A `workflow_dispatch` release dry run produces the full matrix, archives, checksums and build

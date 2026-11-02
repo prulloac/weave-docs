@@ -44,7 +44,7 @@ in the sibling [`weave`](https://github.com/prulloac/weave) repository.
 - Every spec appears in [`specs/README.md`](specs/README.md).
 - Every behavior set appears in
   [`weave/docs/bdd/README.md`](https://github.com/prulloac/weave/blob/main/docs/bdd/README.md) and
-  names its Go tests.
+  names its executable tests or checks.
 - Every ADR appears in [`architecture/adr/README.md`](architecture/adr/README.md).
 - Every document is reachable from [`README.md`](README.md).
 
