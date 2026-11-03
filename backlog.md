@@ -89,7 +89,10 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Release automation | [release-automation.md](specs/release-automation.md) | - | x | x | x | green |
-| User-level installers | [release-automation.md](specs/release-automation.md) | - | x | - | - | in-progress |
+| User-level installers | [release-automation.md](specs/release-automation.md) | - | x | - | x | green |
+
+User-level installers: `v1.0.0` published for `weave` and `weave-ai`; Unix and PowerShell installers
+verified against the release assets.
 | Bundle export (raw/encrypted) | [bundle-export.md](specs/bundle-export.md) | - | x | x | x | green |
 | Multiple bundle sources | [multi-bundle.md](specs/multi-bundle.md) | - | x | x | x | green |
 | Performance and maintainability | [optimization.md](specs/optimization.md) | - | x | x | x | stretch |

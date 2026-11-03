@@ -78,7 +78,7 @@ are internal delivery waves, not product versions.
 | Graph relate | v1.0 | Shipped: bounded depth/direction subgraphs |
 | MCP server | v1.0 | Tools, transport, auth, resources, watch reload and sensitive access shipped |
 | Release automation | v1.0 | Shipped: tag-driven verified builds and draft GitHub Releases |
-| User-level installers | v1.0 | Checksum-verifying `install.sh`/`install.ps1` for `weave` and `weave-ai`; no admin rights |
+| User-level installers | v1.0 | Shipped: checksum-verifying `install.sh`/`install.ps1` for `weave` and `weave-ai`; no admin rights |
 | Bundle export | v1.0 | Shipped: raw plaintext (confirmed) and encrypted OKF export |
 | Multiple bundle sources | v1.0 | Shipped: repeatable `--source` aliases across CLI and MCP |
 | Optimization program | Stretch | Post-GA: benchmarks, budgets, maintainability and UX targets |
@@ -225,7 +225,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 30 | Global configuration | [configuration.md](specs/configuration.md) | Tier 7 | CLI, contract, optimization | 8 / P2 | shipped |
 | 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | deferred |
 | 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA | deferred |
-| 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | in-progress |
+| 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | shipped |
 
 Rules:
 
