@@ -45,7 +45,13 @@ weave ingest <path> --with-enricher ai --db ~/.weave/index.db
 weave search <path> "<query>" --rerank ai
 ```
 
-- Install with `go install github.com/prulloac/weave-ai@latest` or a release archive.
+- Install without compiling with the user-level installer:
+  `curl -fsSL https://raw.githubusercontent.com/prulloac/weave-ai/main/scripts/install.sh | sh`
+  (Linux/macOS) or
+  `irm https://raw.githubusercontent.com/prulloac/weave-ai/main/scripts/install.ps1 | iex`
+  (Windows). It verifies the release checksum and defaults to `~/.local/bin` or
+  `%LOCALAPPDATA%\Programs\weave\bin`.
+- `go install github.com/prulloac/weave-ai@latest` and release archives remain available.
 - The binary is named `weave-ai`, installed in `$PATH` or `<bundle>/.weave/bin/`.
 - One request per process, JSON on stdin and stdout, `v: weave.cli/v1`.
 - The plugin honors the runner timeout; it also applies its own provider timeout.

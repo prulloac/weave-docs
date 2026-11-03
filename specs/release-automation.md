@@ -88,6 +88,19 @@ weave_<version>_buildinfo.txt
 - `checksums.txt` lists every archive with lowercase SHA-256, sorted by filename.
 - `buildinfo.txt` records version, commit SHA, Go version and build timestamp.
 - `weave version` prints the tag version, never `dev`.
+- `scripts/install.sh` and `scripts/install.ps1` are version-independent: they resolve the latest
+  published release, verify the archive against `checksums.txt` and install to a user directory.
+
+### 4.1 User-Level Installation
+
+- Default directories are `$XDG_BIN_HOME` or `~/.local/bin` on Linux/macOS and
+  `%LOCALAPPDATA%\Programs\weave\bin` on Windows.
+- The installers never request `sudo` or administrator rights.
+- `--bin-dir`/`-BinDir` selects another user-writable directory; `--no-modify-path`/`-NoPath`
+  leaves the shell profile or user PATH untouched.
+- On Unix, a guarded `export PATH=...` block is appended to the detected shell profile; the edit is
+  skipped when the directory is already on PATH. On Windows, only the user `Path` variable changes.
+- Environment equivalents are `WEAVE_VERSION`, `WEAVE_BIN_DIR` and `WEAVE_NO_MODIFY_PATH=1`.
 
 ## 5. Release Notes and Publishing
 
@@ -122,6 +135,8 @@ weave_<version>_buildinfo.txt
 ## 8. Testing
 
 - Workflow syntax validated with `actionlint` in CI.
+- Installer scripts pass `bash -n` and PowerShell parser checks; a published release is installed
+  into a temporary HOME with `--bin-dir ... --no-modify-path`.
 - A `workflow_dispatch` dry run builds the full matrix and uploads workflow artifacts.
 - Unit coverage for the version-injection path: `weave version --json` reports the injected value.
 - Archive layout and checksum sorting verified by a packaging script test.
@@ -134,6 +149,8 @@ weave_<version>_buildinfo.txt
   and build info after the full verification gate passes.
 - `weave version --json` reports the tag version in every artifact.
 - A dry run with `workflow_dispatch` publishes artifacts without creating a release.
+- A user without administrator rights can install with one command to a user-writable directory and
+  receives PATH guidance.
 - No repository secrets are needed; permissions are minimal and explicit.
 - Failed verification or builds never publish a partial release.
 

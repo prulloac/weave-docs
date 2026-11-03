@@ -25,6 +25,8 @@ This checklist records the release state. The tag and publish steps are owner ac
       **draft** release.
 - [ ] Review the draft: notes, six archives, checksums and build info.
 - [ ] Publish manually with `gh release edit v1.0.0 --draft=false`.
+- [ ] Verify the user-level installers against the published release into a temporary HOME with
+      `--bin-dir ... --no-modify-path` and the PowerShell equivalent.
 
 ## Notes
 
