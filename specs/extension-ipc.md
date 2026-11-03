@@ -10,7 +10,7 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-10-28T00:00:00Z"
-status: stable
+status: draft
 ---
 
 # Specification: Extension Subprocess IPC
@@ -59,6 +59,27 @@ Non-goals:
 - Sorted by name, then source (`bundle` before `path`).
 - `path` is optional; without it only `$PATH` is scanned.
 
+An extension may expose a machine-readable capability manifest with
+`weave-<name> --describe --json`:
+
+```json
+{
+  "v": "weave.extension/v1",
+  "name": "image",
+  "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
+  "requires": [
+    {"name": "weave", "min_version": "1.1.0"},
+    {"name": "weave-ai", "min_version": "1.1.0"}
+  ]
+}
+```
+
+- `asset_types` and `requires` are optional.
+- Core uses `asset_types` to filter blob discovery when `--asset-types` is absent.
+- `requires` is informational for core and authoritative for installers and runtime checks.
+- A missing or malformed manifest degrades to explicit `--asset-types`; it never blocks text
+  enrichment.
+
 ### 2.2 Transport
 
 - One request object per process invocation, newline-terminated on stdin.
@@ -85,6 +106,7 @@ Request:
   "type": "enrichment_request",
   "doc_id": "docs/adr-004.md",
   "doc_path": "docs/adr-004.md",
+  "media_type": "text/markdown",
   "bundle_root": "/home/user/notes",
   "workspace": "/tmp/weave-extension-12345",
   "title": "Database Storage Selection",
@@ -99,12 +121,24 @@ Request:
   them. `doc_path` is bundle-relative, `bundle_root` is an absolute path to the bundle root, and
   `workspace` is an absolute per-invocation temporary directory containing a `files/` directory.
   Core removes the workspace after the invocation.
+- `media_type` is optional and defaults to `text/markdown`. Blob documents use their stored MIME
+  type; extensions may use it to skip unrelated documents.
 
 Response:
 
 ```json
 {
   "v": "weave.cli/v1",
+  "inferred_title": "Database Storage Selection",
+  "inferred_description": "Why Weave uses pure-Go SQLite.",
+  "inferred_text": "We decided to adopt pure-Go SQLite.",
+  "inferred_text_source": "ocr",
+  "inferred_content_metadata": {
+    "v": 1,
+    "text": "We decided to adopt pure-Go SQLite.",
+    "text_source": "ocr",
+    "attributes": {"width": 1280, "height": 960}
+  },
   "inferred_keywords": ["sqlite", "cgo-free", "wal"],
   "custom_metadata": {"summary": "Selection of pure-Go SQLite."}
 }
@@ -114,9 +148,18 @@ Response:
 - Invalid entries are dropped; a response with no valid keywords and no metadata is still valid.
 - Inferred keywords are appended to the document's stored keywords, after declared keywords,
   de-duplicated case-insensitively. Declared keywords always win.
+- `inferred_title` and `inferred_description` fill empty document fields only. Declared values win.
+- `inferred_text` and `inferred_text_source` populate `content_metadata.text` only when no text is
+  already present. Local OCR/extraction text wins over AI transcription.
+- `inferred_content_metadata` merges into `content_metadata`; `v` is core-owned, existing attribute
+  keys are preserved, and new keys are additive.
+- Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_compressed`,
+  `body_codec` or `file_path`.
 - `custom_metadata` is stored in the `enrichments` table keyed by bundle, document and enricher.
 - Re-running the same enricher replaces its stored enrichment and inferred keywords.
 - A failed, timed-out or malformed response keeps the previous enrichment and adds one warning.
+
+The blob-specific envelope and limits are defined in [Generic Blob Assets](blob-assets.md).
 
 ### 2.4 Reranking
 
@@ -155,20 +198,58 @@ Response:
 - The response reuses the existing hit shapes and adds optional `rerank_score` per hit.
 - A failed, timed-out or malformed response returns the unchanged core results plus a stderr warning.
 
-### 2.5 CLI
+### 2.5 Embeddings
+
+An embedder is a `weave-<name>` extension selected with `--with-embedder <name>`.
+
+Request:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "type": "embedding_request",
+  "text": "Searchable text or query",
+  "media_type": "text/plain",
+  "model": "configured model"
+}
+```
+
+Response:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "model": "nomic-embed-text",
+  "dim": 768,
+  "vector": "<base64 float32 little-endian>"
+}
+```
+
+- Core validates `model`, `dim`, vector length and finite values; it normalizes the vector.
+- The response model selects the embedding space; it must match the embedder's configured model.
+- A malformed, oversized or timed-out response fails that embedding with one warning; the document
+  write still succeeds.
+- Embedding spaces, `vec0` tables and semantic search are defined in
+  [Embeddings](embeddings.md).
+
+### 2.6 CLI
 
 ```sh
 weave extensions list [<path>] --json
-weave ingest  <path> --with-enricher <name> [--timeout 5s] --json
+weave ingest  <path> --with-enricher <name> [--with-embedder <name>] [--timeout 5s] --json
 weave rebuild <path> --with-enricher <name> [--timeout 5s] --json
 weave sync    <path> --with-enricher <name> [--timeout 5s] --json
 weave search  <path> <query> --rerank <name> [--timeout 5s] --json
+weave search  <path> <query> --mode semantic [--embedder <name>] --json
+weave ingest  <path> --assets [--asset-types <mime,...>] [--with-enricher <name>] --json
 ```
 
-- `--with-enricher` and `--rerank` accept one extension name.
+- `--with-enricher`, `--with-embedder`, `--embedder` and `--rerank` accept one extension name.
 - A missing or invalid name fails before any write with `EXTENSION_NOT_FOUND`, exit `2`.
 - `--timeout` requires a positive duration; invalid values exit `2`.
-- `--timeout` without `--with-enricher` or `--rerank` is a usage error.
+- `--timeout` without an extension role is a usage error.
+- `--assets` enables blob scanning; `--asset-types` filters by MIME type or suffix wildcard.
+  Extension capability discovery is defined in [Generic Blob Assets](blob-assets.md).
 - Enrichment warnings are counted in `IngestReport.warnings` or `SyncReport.warnings`; search
   warnings only go to stderr and do not change the exit code.
 - JSON stdout stays a single valid envelope; diagnostics go to stderr.

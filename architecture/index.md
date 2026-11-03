@@ -144,6 +144,8 @@ remains the compatibility promise.
 | [ADR 0001](adr/0001-keyword-fuzzy-search-and-ui-retirement.md) | New purpose, keywords, fuzzy search and UI retirement |
 | [ADR 0002](adr/0002-config-paths-and-db-location.md) | Config/cache/DB paths and additive machine output |
 | [ADR 0003](adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) | `weave-ai` extraction and extension protocol ownership |
+| [ADR 0004](adr/0004-generic-blob-assets-and-content-metadata.md) | Generic blob documents, media types and content metadata |
+| [ADR 0005](adr/0005-embeddings-and-cgo-free-vec0-index.md) | Durable embeddings, per-space `vec0` indexes and semantic search |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |
@@ -156,13 +158,16 @@ remains the compatibility promise.
 | [Weave Relate spec](../specs/weave-relate.md) | Graph neighborhood command |
 | [Weave Explain spec](../specs/weave-explain.md) | Ranking breakdown command |
 | [Permissive Ingestion spec](../specs/permissive-ingestion.md) | Markdown-tree ingestion with warnings |
-| [Storage & Sync spec](../specs/storage-and-sync.md) | Persistent SQLite and incremental sync |
+| [Storage & Sync spec](../specs/storage-and-sync.md) | Persistent SQLite, blob metadata and incremental sync |
 | [Watch Mode spec](../specs/watch-mode.md) | Live filesystem sync |
 | [BM25 Ranking spec](../specs/bm25-ranking.md) | FTS5 lexical ranking |
 | [Compression spec](../specs/compression.md) | Body codec contract (zstd default, LZ4 opt-in) |
 | [Privacy Directives spec](../specs/privacy-directives.md) | Directive parser, keys, storage and search contract |
 | [Privacy & Extension Architecture](privacy-and-extensions.md) | Extension IPC and architecture summary |
-| [Extension Subprocess IPC spec](../specs/extension-ipc.md) | `weave-<name>` discovery, transport, enrichment and rerank |
+| [Extension Subprocess IPC spec](../specs/extension-ipc.md) | `weave-<name>` discovery, transport, enrichment, rerank and embeddings |
+| [Generic Blob Assets spec](../specs/blob-assets.md) | Opaque blob documents, content metadata and generic retrieval |
+| [Weave Image Extension spec](../specs/weave-image.md) | OCR, EXIF and vision enrichment for image blobs |
+| [Embeddings spec](../specs/embeddings.md) | Durable embeddings, per-space `vec0` indexes and semantic search |
 | [Release Automation spec](../specs/release-automation.md) | Tag-driven verified GitHub Releases |
 | [Bundle Export spec](../specs/bundle-export.md) | Raw and encrypted bundle reconstruction |
 | [Multiple Bundle Sources spec](../specs/multi-bundle.md) | Aliased multi-root reads and writes |
@@ -170,7 +175,7 @@ remains the compatibility promise.
 | [Performance baseline](performance.md) | Corpus, baselines, budgets and O4/O5 findings |
 | [Configuration spec](../specs/configuration.md) | Global YAML config and `WEAVE_*` variables |
 | [External Crypto Providers spec](../specs/external-crypto-providers.md) | Age, Vault and KMS provider contract |
-| [Weave AI Extension spec](../specs/weave-ai-plugin.md) | Optional enrichment and reranking plugin |
+| [Weave AI Extension spec](../specs/weave-ai-plugin.md) | Optional enrichment, vision, embeddings and reranking plugin |
 | [MCP Server spec](../specs/mcp-server.md) | TCP MCP roadmap and contract |
 | [MCP Sensitive Access spec](../specs/mcp-sensitive.md) | Redacted defaults and opt-in decryption |
 | [Roadmap](../ROADMAP.md) | Current capabilities and roadmap |

@@ -13,14 +13,14 @@ maturity only.
 | [Weave Relate](weave-relate.md) | stable | — | 1, 2 |
 | [Weave Explain](weave-explain.md) | stable | [Explain](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-explain.md), [BM25 explain](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-explain.md) | 1, 4, 21 |
 | [Permissive Ingestion](permissive-ingestion.md) | stable | [Permissive ingestion](https://github.com/prulloac/weave/blob/main/docs/bdd/permissive-ingestion.md) | 5 |
-| [Storage & Sync](storage-and-sync.md) | stable | [Storage](https://github.com/prulloac/weave/blob/main/docs/bdd/storage-and-sync.md), [Incremental sync](https://github.com/prulloac/weave/blob/main/docs/bdd/incremental-sync.md) | 6, 7 |
+| [Storage & Sync](storage-and-sync.md) | draft | [Storage](https://github.com/prulloac/weave/blob/main/docs/bdd/storage-and-sync.md), [Incremental sync](https://github.com/prulloac/weave/blob/main/docs/bdd/incremental-sync.md) | 6, 7 |
 | [Watch Mode](watch-mode.md) | stable | [Watch mode](https://github.com/prulloac/weave/blob/main/docs/bdd/watch-mode.md), [Sync watch](https://github.com/prulloac/weave/blob/main/docs/bdd/sync-watch.md) | 8, 24 |
 | [BM25 Ranking](bm25-ranking.md) | stable | [BM25](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-ranking.md), [Calibration](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-calibration.md) | 9, 10, 21 |
 | [Compression](compression.md) | stable | [Compression](https://github.com/prulloac/weave/blob/main/docs/bdd/compression.md) | 11 |
 | [Privacy Directives](privacy-directives.md) | stable | [Privacy](https://github.com/prulloac/weave/blob/main/docs/bdd/privacy-directives.md) | 12 |
-| [Extension Subprocess IPC](extension-ipc.md) | stable | [Extension IPC](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-ipc.md) | 13, 14, 15 |
+| [Extension Subprocess IPC](extension-ipc.md) | draft | [Extension IPC](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-ipc.md) | 13, 14, 15 |
 | [External Crypto Providers](external-crypto-providers.md) | stable | [External crypto](https://github.com/prulloac/weave/blob/main/docs/bdd/external-crypto.md) | 17 |
-| [Weave AI Extension](weave-ai-plugin.md) | stable | [core behavior](https://github.com/prulloac/weave/blob/main/docs/bdd/ai-plugin.md), [plugin protocol](https://github.com/prulloac/weave-ai/blob/main/docs/bdd/ai-plugin.md) | 16 |
+| [Weave AI Extension](weave-ai-plugin.md) | draft | [core behavior](https://github.com/prulloac/weave/blob/main/docs/bdd/ai-plugin.md), [plugin protocol](https://github.com/prulloac/weave-ai/blob/main/docs/bdd/ai-plugin.md) | 16, 34 |
 | [MCP Server](mcp-server.md) | stable | [MCP server](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-server.md), [Transport](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-transport.md), [Resources](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-resources.md) | 19, 20, 22, 23, 24 |
 | [MCP Sensitive Access](mcp-sensitive.md) | stable | [MCP sensitive](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-sensitive.md) | 18 |
 | [Multiple Bundle Sources](multi-bundle.md) | stable | [Multi-bundle](https://github.com/prulloac/weave/blob/main/docs/bdd/multi-bundle.md), [MCP multi-source](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-multi-source.md) | 27, 28 |
@@ -31,6 +31,9 @@ maturity only.
 | [Release Readiness](release-readiness.md) | stable | [Release readiness](https://github.com/prulloac/weave/blob/main/docs/bdd/release-readiness.md) | release gate |
 | [Pluggable Scoring](extension-scoring.md) | draft | [Scoring](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-scoring.md) | 31 (post-GA) |
 | [Extension Data API](extension-data.md) | stable | [Extension data](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-data.md) | 32 (post-GA) |
+| [Generic Blob Assets](blob-assets.md) | draft | — | 35 |
+| [Weave Image Extension](weave-image.md) | draft | — | 36 |
+| [Embeddings](embeddings.md) | draft | — | 37 |
 
 ## Ownership rules
 

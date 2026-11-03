@@ -81,6 +81,10 @@ are internal delivery waves, not product versions.
 | User-level installers | v1.0 | Shipped: checksum-verifying `install.sh`/`install.ps1` for `weave` and `weave-ai`; no admin rights |
 | Bundle export | v1.0 | Shipped: raw plaintext (confirmed) and encrypted OKF export |
 | Multiple bundle sources | v1.0 | Shipped: repeatable `--source` aliases across CLI and MCP |
+| Generic blob assets | v1.1 | Planned: native blob documents, `content_metadata`, generic retrieval |
+| Image knowledge extension | v1.1 | Planned: `weave-image` OCR/EXIF/vision enrichment |
+| AI vision and embeddings | v1.1 | Planned: `weave-ai` vision and embedding requests |
+| Semantic search | v1.1 | Planned: durable embeddings and per-space `vec0` KNN |
 | Optimization program | Stretch | Post-GA: benchmarks, budgets, maintainability and UX targets |
 | Global configuration | v1.0 | Shipped: YAML config, `WEAVE_*` variables and `weave config` |
 
@@ -226,6 +230,10 @@ is the completeness check: no feature is considered planned until it appears her
 | 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | deferred |
 | 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA | deferred |
 | 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | shipped |
+| 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | backlog |
+| 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | backlog |
+| 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | backlog |
+| 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | backlog |
 
 Rules:
 
@@ -341,6 +349,14 @@ privacy directives ──┬── show --decrypt
 - benchmarks and budgets (corpus, harness, baseline and advisory CI shipped),
 - time/space hotspots,
 - continuous performance gate.
+
+**Wave 9 — media and embeddings:**
+
+1. `weave-ai` vision and embedding requests,
+2. generic blob assets and content metadata,
+3. durable embeddings and `vec0` spaces,
+4. `weave-image` as the first blob consumer,
+5. semantic search, retrieval and release integration.
 
 **Critical path:**
 
@@ -459,13 +475,14 @@ needed.
 
 - The shipped core is in-memory; v1.0 adds optional SQLite persistence. It is not an enterprise
   search cluster.
-- No semantic/vector search in core. Fuzzy handles typos, not meaning.
+- Core semantic search is planned for v1.1 through local embeddings and `vec0` KNN; no external
+  vector database or ANN cluster.
 - No custom retrieval or index extensions. Post-GA pluggable scoring reorders a bounded core
   candidate set.
-- No native asset ingestion. The post-GA extension data API stores opaque extension-owned bytes
-  without parsing or indexing them.
+- Core does not interpret media. It stores opaque blobs and generic metadata; extensions provide
+  image, video, audio and PDF semantics.
 - No synonyms/stemming yet.
-- No PDF/HTML/web ingestion.
+- No native PDF/HTML/web parsing; extensions may ingest them as opaque blobs.
 - No writes to source bundles.
 - No HTTP REST API.
 - No browser UI, mount server, renderer or lens.
@@ -504,7 +521,12 @@ needed.
 - [Privacy & Extensions](architecture/privacy-and-extensions.md)
 - [External Crypto Providers](specs/external-crypto-providers.md)
 - [Weave AI Extension](specs/weave-ai-plugin.md)
+- [Generic Blob Assets](specs/blob-assets.md)
+- [Weave Image Extension](specs/weave-image.md)
+- [Embeddings](specs/embeddings.md)
 - [ADR 0003: Extension Protocol Ownership and weave-ai Extraction](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md)
+- [ADR 0004: Generic Blob Assets and Content Metadata](architecture/adr/0004-generic-blob-assets-and-content-metadata.md)
+- [ADR 0005: Embeddings and CGo-Free vec0 Index](architecture/adr/0005-embeddings-and-cgo-free-vec0-index.md)
 - [MCP Server](specs/mcp-server.md)
 - [MCP Sensitive Access](specs/mcp-sensitive.md)
 - [Architecture](architecture/index.md)

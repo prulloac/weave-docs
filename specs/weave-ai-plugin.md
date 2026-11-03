@@ -11,7 +11,7 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-10-30T00:00:00Z"
-status: stable
+status: draft
 ---
 
 # Specification: Weave AI Extension
@@ -23,7 +23,9 @@ status: stable
 protocol from [Extension Subprocess IPC](extension-ipc.md) and provides:
 
 - keyword and summary enrichment during `ingest`, `rebuild` and `sync`;
-- optional reranking during `search`.
+- optional reranking during `search`;
+- vision-based title, description, keywords and text extraction for `weave-image`;
+- embedding requests for core semantic search.
 
 Core never depends on the plugin: missing binaries, provider outages, timeouts, malformed output and
 non-zero exits fall back to deterministic core behavior.
@@ -121,6 +123,8 @@ Response:
 # <bundle>/.weave/ai.yaml or $WEAVE_AI_CONFIG
 provider: ollama          # ollama | openai | gemini
 model: qwen2.5:7b
+vision_model: qwen2.5vl
+embedding_model: nomic-embed-text
 base_url: http://127.0.0.1:11434
 api_key_env: WEAVE_AI_API_KEY
 allow_sensitive: false
@@ -131,6 +135,8 @@ timeout: 30s
 | --- | --- | --- |
 | `provider` | `ollama` | `WEAVE_AI_PROVIDER` |
 | `model` | `qwen2.5:7b` | `WEAVE_AI_MODEL` |
+| `vision_model` | `model` | `WEAVE_AI_VISION_MODEL` |
+| `embedding_model` | provider default | `WEAVE_AI_EMBEDDING_MODEL` |
 | `base_url` | provider default | `WEAVE_AI_BASE_URL` |
 | `api_key_env` | `WEAVE_AI_API_KEY` | — |
 | `allow_sensitive` | `false` | `WEAVE_AI_ALLOW_SENSITIVE` |
@@ -144,6 +150,10 @@ timeout: 30s
   text. It controls whether the plugin logs that redaction occurred.
 - API keys come from the environment named by `api_key_env`; keys never appear in config, errors or
   logs.
+- `vision_model` must be vision-capable; `embedding_model` must be an embedding model. Provider
+  errors surface as normal failures.
+- `--describe` reports the provider, models, `vision: true/false`, `embedding: true/false` and the
+  protocol; it never prints key values.
 
 ### 2.5 Provider shapes
 
@@ -167,6 +177,79 @@ timeout: 30s
 - The plugin never receives key material, ciphertext or `.weave/index.db`.
 - Plugin logs and errors never include document bodies or keys.
 - Cloud providers are expected to be chosen deliberately by the operator; no heuristic detection.
+
+### 2.7 Vision
+
+`weave-image` invokes `weave-ai` with:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "type": "vision_request",
+  "media_type": "image/jpeg",
+  "image": "<base64>",
+  "text": "OCR text, if any",
+  "exif": {"Make": "Apple", "Model": "iPhone 15"},
+  "prompt": "Return JSON with title, description, keywords and optional text."
+}
+```
+
+Response:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "title": "Cat on a windowsill",
+  "description": "A tabby cat resting in afternoon sun.",
+  "text": "Adopt me",
+  "keywords": ["cat", "windowsill", "sunlight"]
+}
+```
+
+- The image is base64-encoded in the request; core does not carry blob bytes.
+- `vision_model` is used; if it is empty, `model` is used.
+- `text` and `exif` are optional context; `text` takes precedence over any transcription returned.
+- The plugin asks for a strict JSON object; malformed output is an error.
+- Image size is capped at 20 MiB after base64 decoding; larger requests exit `1`.
+- Provider payloads:
+  - Ollama: user message with `images: [base64]`.
+  - OpenAI-compatible: content array with `image_url` data URL.
+  - Gemini: `inlineData` part with `mimeType` and `data`.
+
+### 2.8 Embeddings
+
+Request:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "type": "embedding_request",
+  "text": "Searchable text or query",
+  "media_type": "text/plain",
+  "model": "nomic-embed-text"
+}
+```
+
+Response:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "model": "nomic-embed-text",
+  "dim": 768,
+  "vector": "<base64 float32 little-endian>"
+}
+```
+
+- `embedding_model` is used; if it is empty, the provider default applies.
+- The response model and dimension are validated by core; they must match the configured embedder.
+- Providers:
+  - Ollama: `POST /api/embed` with `model`, `input`.
+  - OpenAI-compatible: `POST /embeddings` with `model`, `input`.
+  - Gemini: `POST /v1beta/models/<model>:embedContent`.
+- Vectors are finite float32 values; core normalizes them before storage.
+- The plugin only embeds text in this slice; image/audio/video embeddings are separate spaces and
+  models.
 
 ## 3. Behavior
 
@@ -206,8 +289,10 @@ Core reports these as `EXTENSION_FAILED` or `EXTENSION_TIMEOUT` warnings and con
 - `weave-ai` unit tests with `httptest` for Ollama, OpenAI and Gemini shapes, plus fixture-driven
   conformance tests against `contract/v1/golden/extension-ipc/`.
 - Enrichment and rerank protocol round-trips, including clamping and malformed output.
+- Vision round-trips for Ollama, OpenAI-compatible and Gemini payloads; malformed/oversized images.
+- Embedding round-trips for all three providers; dimension and finite-value validation.
 - Config defaults, env overrides and invalid values.
-- No API key or body content in errors.
+- No API key, body, image or EXIF content in errors.
 - Core redaction: encrypted/tokenized/hashed bodies become `[redacted]`; `privacy.ai.send: true`
   passes plaintext; mixed spans preserve surrounding prose.
 - End-to-end: fake extension proves enrichment keywords are persisted and rerank reorders.
@@ -217,14 +302,18 @@ Core reports these as `EXTENSION_FAILED` or `EXTENSION_TIMEOUT` warnings and con
 
 - `weave-ai` runs as a standalone extension with no core dependency.
 - Ollama works by default; OpenAI-compatible and Gemini providers work with configured endpoints.
-- Inferred keywords and rerank scores are validated by core and degrade safely on failure.
+- Inferred keywords, vision metadata and embeddings are validated by core and degrade safely.
+- `weave-ai` can serve as the vision backend for `weave-image` and the embedder for semantic search.
 - Protected content never reaches the plugin without `privacy.ai.send: true`.
-- Keys and bodies never appear in logs or errors.
+- Keys, bodies, images and EXIF never appear in logs or errors.
 - The full verification gate stays green.
 
 ## Related Documents
 
 - [Extension Subprocess IPC](extension-ipc.md)
+- [Generic Blob Assets](blob-assets.md)
+- [Weave Image Extension](weave-image.md)
+- [Embeddings](embeddings.md)
 - [Weave AI repository](https://github.com/prulloac/weave-ai)
 - [ADR 0003: Extension Protocol Ownership and weave-ai Extraction](../architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md)
 - [Privacy Directives](privacy-directives.md)

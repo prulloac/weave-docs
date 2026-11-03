@@ -90,9 +90,6 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | --- | --- | --- | --- | --- | --- | --- |
 | Release automation | [release-automation.md](specs/release-automation.md) | - | x | x | x | green |
 | User-level installers | [release-automation.md](specs/release-automation.md) | - | x | - | x | green |
-
-User-level installers: `v1.0.0` published for `weave` and `weave-ai`; Unix and PowerShell installers
-verified against the release assets.
 | Bundle export (raw/encrypted) | [bundle-export.md](specs/bundle-export.md) | - | x | x | x | green |
 | Multiple bundle sources | [multi-bundle.md](specs/multi-bundle.md) | - | x | x | x | green |
 | Performance and maintainability | [optimization.md](specs/optimization.md) | - | x | x | x | stretch |
@@ -101,10 +98,19 @@ verified against the release assets.
 | Pluggable scoring (post-GA) | [extension-scoring.md](specs/extension-scoring.md) | - | x | x | - | backlog |
 | Extension data API (post-GA) | [extension-data.md](specs/extension-data.md) | - | x | x | x | review |
 | weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
+| AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | - | - | - | backlog |
+| Generic blob assets | [blob-assets.md](specs/blob-assets.md) | - | - | - | - | backlog |
+| Image knowledge extension | [weave-image.md](specs/weave-image.md) | - | - | - | - | backlog |
+| Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | - | - | - | - | backlog |
+
+User-level installers: `v1.0.0` published for `weave` and `weave-ai`; Unix and PowerShell installers
+verified against the release assets.
 
 ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weave-ai` is removed
-from `weave`, and conformance tests cover both sides. The `v1.0.0` draft release is ready for
-publication.
+from `weave`, and conformance tests cover both sides. The `v1.0.0` release is published.
+
+Media and embeddings: ADR 0004/0005 and specs drafted 2026-11-03; approval, BDD and TDD pending.
+Implementation order: AI capabilities → generic blobs → embeddings → `weave-image`.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and

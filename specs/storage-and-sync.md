@@ -11,7 +11,7 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-10-27T00:00:00Z"
-status: stable
+status: draft
 ---
 
 # Weave: Storage, Persistence & Incremental Sync Specification
@@ -39,11 +39,12 @@ The database records its own schema version with `PRAGMA user_version` (starting
 migrations bump this number independently of the product version and `weave.contract/v1`; a binary
 refuses to open a database with a newer `user_version`.
 
-Current schema is **5**. Version 4 adds `search_tokens` (`bundle_root`, `field`, `token`,
+Current schema is **7**. Version 4 adds `search_tokens` (`bundle_root`, `field`, `token`,
 `postings` BLOB) for the persistent fuzzy/hybrid path. Version 5 adds `search_vocabulary`
-(`bundle_root`, `field`, `token`) so fuzzy queries only load postings for candidate tokens. Older
-databases migrate automatically; the tables start empty, and fuzzy/hybrid search falls back to the
-in-memory engine until the next ingest, rebuild or sync populates them.
+(`bundle_root`, `field`, `token`) so fuzzy queries only load postings for candidate tokens. Version
+6 adds `extension_data`; version 7 adds generic blob metadata, durable embeddings and the embedding
+space registry. Older databases migrate automatically; new tables start empty, and fuzzy/hybrid
+search falls back to the in-memory engine until the next ingest, rebuild or sync populates them.
 
 ```sql
 -- 0. Bundle Registry
@@ -70,7 +71,10 @@ CREATE TABLE IF NOT EXISTS documents (
     tags_json TEXT NOT NULL,             -- Serialized []string
     status TEXT,                         -- draft | stable | deprecated
     links_json TEXT NOT NULL,            -- Serialized []OkfLink
-    body_compressed BLOB NOT NULL,       -- LZ4 or Zstandard compressed body text
+    content_kind TEXT NOT NULL DEFAULT 'document', -- document | blob
+    media_type TEXT NOT NULL DEFAULT 'text/markdown',
+    content_metadata TEXT NOT NULL DEFAULT '{}',   -- Versioned JSON envelope
+    body_compressed BLOB NOT NULL,       -- Markdown text or primary blob bytes
     body_codec TEXT NOT NULL DEFAULT 'none',
     privacy_policy TEXT DEFAULT 'none',  -- none | encrypt | redact
     updated_at INTEGER NOT NULL,         -- Unix timestamp of sync
@@ -124,7 +128,37 @@ CREATE TABLE IF NOT EXISTS enrichments (
     FOREIGN KEY (bundle_root, doc_id)
         REFERENCES documents(bundle_root, id) ON DELETE CASCADE
 );
+
+-- 6. Durable Embeddings (v7)
+CREATE TABLE IF NOT EXISTS document_embeddings (
+    bundle_root TEXT NOT NULL,
+    doc_id TEXT NOT NULL,
+    model TEXT NOT NULL,
+    dim INTEGER NOT NULL,
+    vector BLOB NOT NULL,                -- float32 little-endian, normalized
+    content_hash TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (bundle_root, doc_id, model),
+    FOREIGN KEY (bundle_root, doc_id)
+        REFERENCES documents(bundle_root, id) ON DELETE CASCADE
+);
+
+-- 7. Embedding Space Registry (v7)
+CREATE TABLE IF NOT EXISTS embedding_indexes (
+    model TEXT NOT NULL,
+    dim INTEGER NOT NULL,
+    metric TEXT NOT NULL,                -- cosine
+    element_type TEXT NOT NULL,          -- float32
+    table_name TEXT NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (model, dim, metric, element_type)
+);
 ```
+
+Each embedding space also has a dynamically created `vec0` virtual table. Its schema, lifecycle and
+search contract live in [Embeddings](embeddings.md); it is derived from `document_embeddings` and
+can be rebuilt.
 
 ---
 
@@ -289,10 +323,11 @@ func (s *Store) Close() error
 
 ### 5.4 Schema Version
 
-- The foundation starts at `PRAGMA user_version = 1`.
-- A binary accepts only version `1`. Any other version is `INVALID_REQUEST` with exit `2`.
-- Automatic migrations are added when the schema changes; until then, a mismatched database must be
-  removed or rebuilt explicitly.
+- The current schema is `PRAGMA user_version = 7`.
+- Older databases migrate automatically through each migration step.
+- A binary refuses to open a database with a newer `user_version` and exits `2` with
+  `INVALID_REQUEST`.
+- Schema migrations are additive and core-owned; extensions never run DDL.
 
 ### 5.5 Query Parity
 
