@@ -99,7 +99,8 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 
 ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weave-ai` is removed
-from `weave`, and conformance tests cover both sides. Release tag pending.
+from `weave`, and conformance tests cover both sides. The `v1.0.0` draft release is ready for
+publication.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
