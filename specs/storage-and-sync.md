@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS documents (
     media_type TEXT NOT NULL DEFAULT 'text/markdown',
     content_metadata TEXT NOT NULL DEFAULT '{}',   -- Versioned JSON envelope
     body_compressed BLOB NOT NULL,       -- Markdown text or primary blob bytes
-    body_codec TEXT NOT NULL DEFAULT 'none', -- Per-row: none | zstd | lz4
+    body_codec TEXT NOT NULL DEFAULT 'none', -- Per-row: none | zstd | <codec extension>
     privacy_policy TEXT DEFAULT 'none',  -- none | encrypt | redact
     updated_at INTEGER NOT NULL,         -- Unix timestamp of sync
     PRIMARY KEY (bundle_root, id),
@@ -197,11 +197,13 @@ Compression is a storage implementation detail with its own contract. Summary:
 
 - **Index Memory (Postings):** document IDs in transient postings are delta-encoded with
   variable-byte (`varint`) encoding.
-- **Body Blobs:** Markdown bodies in `documents.body_compressed` use LZ4 by default, with an optional
-  Zstandard codec recorded in `body_codec`.
+- **Body Blobs:** text-readable bodies (Markdown, `.txt`, JSON, XML, CSV, source code) are stored raw
+  with `body_codec = none`. Binary blobs use zstd by default. The codec is per row; LZ4 and other
+  algorithms are `weave-codec-<name>` extensions.
 
-Authoritative rules — codec selection, thresholds, ciphertext handling, corruption recovery and
-rebuild behavior — are in [Compression](compression.md).
+Authoritative rules — text classification, binary zstd, codec extensions, ciphertext handling,
+corruption recovery and rebuild behavior — are in [Compression](compression.md) and
+[Codec Extensions](codec-extensions.md).
 
 ## 5. Storage Foundation Contract
 

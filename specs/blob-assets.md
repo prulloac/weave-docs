@@ -51,7 +51,7 @@ content_metadata TEXT NOT NULL DEFAULT '{}'
 - Blob rows use `content_kind='blob'`.
 - `media_type` is a lowercase MIME type without parameters.
 - `body_compressed` stores the primary blob bytes.
-- `body_codec` is the per-row compression algorithm: `none`, `zstd` or `lz4`.
+- `body_codec` is the per-row codec: `none`, `zstd` or an extension codec name such as `lz4`.
 - `content_hash` is SHA-256 over the original blob bytes, not the compressed bytes.
 - `doc_type` may carry an extension-provided label (`Image`, `Video`, `PDF`); core never branches on
   it.
@@ -92,16 +92,20 @@ content_metadata TEXT NOT NULL DEFAULT '{}'
 
 ### 3.4 Per-row compression
 
-- Compression is recorded per document row in `body_codec`; there is no bundle-wide or media-wide
-  assumption.
-- Different rows in the same bundle may use different codecs.
-- `none` is the default for already-compressed media such as JPEG and PNG.
-- `zstd` or `lz4` may be used for text-like blobs or formats where compression reduces size.
-- `--codec` is a preference for new writes, not a global guarantee; the stored `body_codec` is
-  authoritative.
-- If the requested codec does not reduce size, core stores `none` and records `none`.
+- Text-readable content is stored raw with `body_codec = none`: Markdown, `.txt`, JSON, XML, CSV
+  and source code. Core classifies text through `content_kind`, text MIME types and a generic
+  UTF-8/printable heuristic; there is no language-extension allowlist.
+- Binary blobs use `body_codec = zstd` by default, always, even when zstd output is larger than the
+  input.
+- `--codec` applies to binary blobs only. It accepts `zstd`, `none`, or an extension codec name such
+  as `lz4`. Text-readable content ignores `--codec` with a warning and stays `none`.
+- `none` and `zstd` are the only built-in codecs. LZ4 and other algorithms are `weave-codec-<name>`
+  extensions; see [Codec Extensions](codec-extensions.md).
+- The codec is recorded per document row in `body_codec`; there is no bundle-wide or media-wide
+  assumption. Different rows in the same bundle may use different codecs.
 - `body_codec` is core-owned; extensions cannot set or override it.
-- `show --out`, MCP blob reads and export decode using the stored codec.
+- `show --out`, MCP blob reads and export decode using the stored codec. A missing codec fails with
+  `CODEC_UNAVAILABLE`, not an empty body.
 - `show --json` reports `body_codec` and the original and stored sizes.
 - `content_metadata` is plain JSON and is not compressed by the body codec; it is separately
   size-limited.
@@ -325,7 +329,8 @@ All schema changes are additive inside v1. Goldens and schema baselines update i
 - FTS body from `content_metadata.text`; empty text remains searchable by metadata.
 - Enrichment precedence: declared wins, inferred fills empty, keywords append, OCR text wins.
 - `show --out`, `--force`, JSON metadata and MCP blob bytes.
-- Mixed per-row codecs: `none` and `zstd` blobs round-trip in one bundle; codec metadata is exposed.
+- Mixed per-row codecs: text stores `none`, binary stores `zstd`, and an extension-codec blob
+  round-trips; codec metadata is exposed and missing codecs fail with `CODEC_UNAVAILABLE`.
 - Search/list fields, raw export, encrypted-export warning.
 - Delete/sync cascade and size quotas.
 - Full gate, race suite and calibration unchanged.
@@ -350,6 +355,9 @@ Behavior scenarios: [blob-assets.md](https://github.com/prulloac/weave/blob/main
 - [ADR 0004: Generic Blob Assets and Content Metadata](../architecture/adr/0004-generic-blob-assets-and-content-metadata.md)
 - [Weave Image Extension](weave-image.md)
 - [Embeddings](embeddings.md)
+- [Compression](compression.md)
+- [Codec Extensions](codec-extensions.md)
+- [ADR 0006: Codec Extensions and zstd-only Core](../architecture/adr/0006-codec-extensions-and-zstd-only-core.md)
 - [Extension Subprocess IPC](extension-ipc.md)
 - [Storage & Sync](storage-and-sync.md)
 - [Bundle Export](bundle-export.md)

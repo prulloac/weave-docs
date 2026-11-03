@@ -79,6 +79,8 @@ An extension may expose a machine-readable capability manifest with
 - `requires` is informational for core and authoritative for installers and runtime checks.
 - A missing or malformed manifest degrades to explicit `--asset-types`; it never blocks text
   enrichment.
+- Codec extensions use the same manifest shape but are named `weave-codec-<name>` and use raw byte
+  pipes rather than `weave.cli/v1` JSON. See [Codec Extensions](codec-extensions.md).
 
 ### 2.2 Transport
 
@@ -242,6 +244,7 @@ weave sync    <path> --with-enricher <name> [--timeout 5s] --json
 weave search  <path> <query> --rerank <name> [--timeout 5s] --json
 weave search  <path> <query> --mode semantic [--embedder <name>] --json
 weave ingest  <path> --assets [--asset-types <mime,...>] [--with-enricher <name>] --json
+weave codecs list [<path>] --json
 ```
 
 - `--with-enricher`, `--with-embedder`, `--embedder` and `--rerank` accept one extension name.
@@ -250,6 +253,8 @@ weave ingest  <path> --assets [--asset-types <mime,...>] [--with-enricher <name>
 - `--timeout` without an extension role is a usage error.
 - `--assets` enables blob scanning; `--asset-types` filters by MIME type or suffix wildcard.
   Extension capability discovery is defined in [Generic Blob Assets](blob-assets.md).
+- `weave codecs list --json` reports built-in and extension codecs; `--codec` resolution is defined
+  in [Codec Extensions](codec-extensions.md).
 - Enrichment warnings are counted in `IngestReport.warnings` or `SyncReport.warnings`; search
   warnings only go to stderr and do not change the exit code.
 - JSON stdout stays a single valid envelope; diagnostics go to stderr.
@@ -349,12 +354,15 @@ checked-in scripts with explicit shebangs.
 - Reranking blends core and extension scores deterministically and annotates hits.
 - Missing extensions fail fast; runtime extension failures degrade to core behavior with warnings.
 - Extensions never receive index paths or write access through the protocol.
+- Codec extensions resolve `--codec` names and decode stored rows; missing codecs fail reads with
+  `CODEC_UNAVAILABLE`.
 - The full verification gate stays green and ranking calibration is unchanged.
 
 ## Related Documents
 
 - [Privacy & Extensions](../architecture/privacy-and-extensions.md)
 - [External Crypto Providers](external-crypto-providers.md)
+- [Codec Extensions](codec-extensions.md)
 - [Weave AI Extension](weave-ai-plugin.md)
 - [Storage & Sync](storage-and-sync.md)
 - [Keyword + Fuzzy Search](keyword-fuzzy-search.md)

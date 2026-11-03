@@ -103,7 +103,9 @@ The extension does not receive or send the blob through core IPC; it reads the s
 - EXIF may contain GPS, camera and timestamp data. The provider is selected by `weave-ai` config; no
   separate image consent flag is added.
 - `weave-image --describe` must state that EXIF is sent to the configured AI provider.
-- Store the original image bytes; do not re-encode for storage.
+- Store the original image bytes; do not re-encode for storage. Images are binary blobs, so
+  `body_codec = zstd` by default; `--codec` can select `none` or an extension codec. `show --out`
+  decodes using that row's codec.
 - AI payload preparation may strip nothing; EXIF is intentionally included.
 
 ## 7. AI Vision

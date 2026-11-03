@@ -115,32 +115,43 @@ image, video or PDF attribute while keeping the searchable text in a known locat
 
 ### Decision
 
-- `body_compressed` stores the primary blob bytes.
-- `body_codec` records the compression algorithm for that row: `none`, `zstd` or `lz4`.
+- `body_compressed` stores the primary body bytes.
+- `body_codec` records the codec for that row: `none`, `zstd`, or an extension codec name such as
+  `lz4`.
 - The codec is recorded **per document row** and must not be inferred from the bundle, media type or
-  a global CLI default. Different blobs in the same bundle may use different codecs.
-- `content_hash` and `size` are computed over the original bytes, not the compressed bytes. A stored
-  size may be recorded for diagnostics.
-- `body_codec` is core-owned. Extensions cannot choose or override it.
-- Images default to `none`; text-like blobs may use `zstd` or `lz4` when compression actually reduces
-  size. If the requested codec does not help, core stores `none` and records that.
-- `show --out`, MCP blob reads and export decode the body using the recorded codec.
+  a global CLI default. Different rows in the same bundle may use different codecs.
+- Text-readable content is stored raw with `none`: Markdown, `.txt`, JSON, XML, CSV and source code.
+  Classification uses `content_kind`, text MIME types and a generic UTF-8/printable heuristic; there
+  is no language-extension allowlist.
+- Binary blobs use `zstd` by default, always, even when zstd output is larger than the input.
+- `--codec` overrides the codec for binary blobs only. It can select `zstd`, `none`, or an extension
+  codec. Text-readable content ignores `--codec` with a warning and stays `none`.
+- `none` and `zstd` are the only built-in codecs. LZ4 and other algorithms are
+  `weave-codec-<name>` extensions; see [ADR 0006](0006-codec-extensions-and-zstd-only-core.md).
+- `content_hash` and `size` are computed over the original bytes, not the stored bytes. A stored size
+  may be recorded for diagnostics.
+- `body_codec` is core-owned. Extensions cannot choose or override it directly.
+- `show --out`, MCP blob reads and export decode the body using the recorded codec. A missing codec
+  extension fails with `CODEC_UNAVAILABLE`, not an empty body.
 - FTS `body` is populated from `content_metadata.text`, not from the blob.
 - Blob documents with no extracted text remain searchable by title, keywords and description.
-- `content_metadata` is plain JSON and separately size-limited; it is not part of the body codec.
+- `content_metadata` is plain JSON and separately size-limited; it is not compressed by the body
+  codec.
 
 ### Rationale
 
 The body is opaque; interpreting it as text would corrupt search. Extracted text is the only
 searchable representation, and it may come from OCR, transcription, PDF extraction or another
-extension. A per-row codec is required because a JPEG, a PDF and a Markdown body have different
-compression characteristics, and future video/audio blobs may use different trade-offs.
+extension. Text-readable content gains nothing from zstd for the stated goal, while binary blobs need
+a deterministic default. A per-row codec is required because a JPEG, a PDF and a Markdown body have
+different characteristics, and extension codecs may produce different frames.
 
 ### Consequences
 
 Retrieval and export must always read `body_codec` from the same row. A global `--codec` flag is only
 a preference; the stored actual codec is authoritative. `weave show --json` exposes the codec so
-operators can inspect a mixed bundle.
+operators can inspect a mixed bundle. A database containing an extension-codec row depends on that
+codec extension being installed; `weave codecs list` and `weave audit` surface missing codecs.
 
 ## D5 — Generic discovery
 
@@ -252,8 +263,11 @@ that are not required to prove the model.
 
 - [Generic Blob Assets specification](../../specs/blob-assets.md)
 - [Weave Image Extension specification](../../specs/weave-image.md)
+- [Compression specification](../../specs/compression.md)
+- [Codec Extensions specification](../../specs/codec-extensions.md)
 - [Embeddings specification](../../specs/embeddings.md)
 - [ADR 0005: Embeddings and CGo-Free vec0 Index](0005-embeddings-and-cgo-free-vec0-index.md)
+- [ADR 0006: Codec Extensions and zstd-only Core](0006-codec-extensions-and-zstd-only-core.md)
 - [Extension Subprocess IPC specification](../../specs/extension-ipc.md)
 - [Storage & Sync specification](../../specs/storage-and-sync.md)
 - [ROADMAP](../../ROADMAP.md)

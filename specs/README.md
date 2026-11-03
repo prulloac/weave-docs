@@ -16,7 +16,8 @@ maturity only.
 | [Storage & Sync](storage-and-sync.md) | draft | [Storage](https://github.com/prulloac/weave/blob/main/docs/bdd/storage-and-sync.md), [Incremental sync](https://github.com/prulloac/weave/blob/main/docs/bdd/incremental-sync.md) | 6, 7 |
 | [Watch Mode](watch-mode.md) | stable | [Watch mode](https://github.com/prulloac/weave/blob/main/docs/bdd/watch-mode.md), [Sync watch](https://github.com/prulloac/weave/blob/main/docs/bdd/sync-watch.md) | 8, 24 |
 | [BM25 Ranking](bm25-ranking.md) | stable | [BM25](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-ranking.md), [Calibration](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-calibration.md) | 9, 10, 21 |
-| [Compression](compression.md) | stable | [Compression](https://github.com/prulloac/weave/blob/main/docs/bdd/compression.md) | 11 |
+| [Compression](compression.md) | draft | [Compression](https://github.com/prulloac/weave/blob/main/docs/bdd/compression.md), [Codec extensions](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md) | 11, 38 |
+| [Codec Extensions](codec-extensions.md) | draft | [Codec extensions](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md) | 38 |
 | [Privacy Directives](privacy-directives.md) | stable | [Privacy](https://github.com/prulloac/weave/blob/main/docs/bdd/privacy-directives.md) | 12 |
 | [Extension Subprocess IPC](extension-ipc.md) | draft | [Extension IPC](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-ipc.md) | 13, 14, 15 |
 | [External Crypto Providers](external-crypto-providers.md) | stable | [External crypto](https://github.com/prulloac/weave/blob/main/docs/bdd/external-crypto.md) | 17 |

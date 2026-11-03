@@ -102,6 +102,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | - | - | - | - | backlog |
 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | - | - | - | - | backlog |
 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | - | - | - | - | backlog |
+| Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | backlog |
 
 User-level installers: `v1.0.0` published for `weave` and `weave-ai`; Unix and PowerShell installers
 verified against the release assets.
@@ -109,8 +110,9 @@ verified against the release assets.
 ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weave-ai` is removed
 from `weave`, and conformance tests cover both sides. The `v1.0.0` release is published.
 
-Media and embeddings: ADR 0004/0005 and specs drafted; BDD scenarios drafted 2026-11-03; approval
-and TDD pending. Implementation order: AI capabilities → generic blobs → embeddings → `weave-image`.
+Media and embeddings: ADR 0004/0005/0006 and specs drafted; BDD scenarios drafted 2026-11-03;
+approval and TDD pending. Implementation order: AI capabilities → generic blobs + codec extensions →
+embeddings → `weave-image`.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
@@ -171,7 +173,8 @@ draft PR #15; not merged.
 - [x] Bundle export: raw plaintext with confirmation and re-ingestable encrypted export
 - [x] External crypto providers: `weave-crypto-<name>` selection, IPC, key versions and audit
 - [x] Global configuration: YAML file, `WEAVE_*` variables, `config show|path|init`
-- [x] Body compression: zstd default, LZ4 opt-in, per-row codec and decode recovery
+- [x] Body compression (v1.0): per-row codec and decode recovery; v1.1 moves to text raw, binary
+  zstd and extension-provided LZ4/other codecs
 
 ## Dependency Order
 

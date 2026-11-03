@@ -1,177 +1,194 @@
 ---
 type: specification
-title: "Compression Specification"
-description: "v1.0 body compression contract: LZ4/Zstandard codecs, thresholds, storage schema, codec migration and failure behavior."
+title: "Body Compression Specification"
+description: "Text-readable bodies stay raw; binary blobs use zstd by default; other codecs are weave-codec-<name> extensions."
 tags:
   - "specification"
   - "compression"
   - "storage"
-  - "v1"
+  - "codecs"
+  - "v1.1"
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-10-28T00:00:00Z"
-status: stable
+status: draft
 ---
 
-# Specification: Compression
+# Specification: Body Compression
 
 ## 1. Overview
 
-Weave stores document bodies compactly in SQLite. Compression is an internal storage contract with a
-per-row codec; it adds no read-time flag and does not change search results, snippets or privacy
-semantics.
+Body compression is a per-row storage contract. Text-readable content is stored raw; binary blobs
+use zstd by default. Other compression algorithms are provided by `weave-codec-<name>` extensions.
+The stored `body_codec` is authoritative and is read with every body.
 
-This slice delivers **body compression**. In-memory posting compression is explicitly deferred (see
-§4) because the v1 search index is a map-based posting set and SQLite FTS5 already owns its own
-compressed storage format.
+This spec owns the body compression policy. The codec extension protocol is owned by
+[Codec Extensions](codec-extensions.md).
 
 ## 2. Goals and Non-Goals
 
 ### Goals
 
-- Reduce the on-disk size of `documents.body_compressed`.
-- Keep decompression fast enough for parse-independent reads, snippets and explain.
-- Make the codec explicit, persisted per row and deterministic.
+- Store text-readable content without compression, so stored bodies remain directly readable.
+- Compress binary blobs with zstd by default.
+- Record the exact codec per row.
+- Make alternative codecs extension-provided and independently installable.
 - Never corrupt, truncate or silently drop content.
 
 ### Non-Goals
 
-- Compressing ciphertext twice.
+- Compressing Markdown, source code or other text-readable content.
+- Built-in LZ4 or other codecs beyond `none` and `zstd`.
 - Query-time codec selection.
-- Lossy compression.
-- Custom or user-supplied codecs.
-- Delta/varint posting compression in this slice.
-- Compressing FTS5 tables; FTS5 owns its storage format.
+- Lossy compression or transcoding.
+- Codec extensions writing the database.
+- Posting compression; SQLite FTS5 owns its storage format.
+- Encrypted binary blob export in the first slice.
 
-## 3. Body Compression
+## 3. Classification
 
-### 3.1 Schema
+### 3.1 Text-readable
 
-The `documents` table already has `body_codec`; this slice adds no columns:
+The following are stored raw with `body_codec = 'none'`:
+
+- every `content_kind = 'document'` (Markdown);
+- blobs whose media type is text-like: `text/*`, `application/json`, `application/xml`,
+  `application/javascript`, `application/x-yaml`, `application/toml`, and similar application types;
+- blobs that pass the generic text heuristic: valid UTF-8, no NUL, high printable-character ratio.
+
+The heuristic covers source code, configuration and future languages without an extension allowlist.
+A PDF, archive, image, audio or video file remains binary because of its header/control bytes.
+
+### 3.2 Binary
+
+Everything else is a binary blob. Binary blobs use `body_codec = 'zstd'` by default, always, even
+when zstd output is larger than the input.
+
+## 4. Schema
+
+The `documents` table already has `body_compressed` and `body_codec`; no new column is added:
 
 ```sql
 body_compressed BLOB NOT NULL,
 body_codec TEXT NOT NULL DEFAULT 'none'
 ```
 
-- `body_compressed` holds the encoded bytes.
-- `body_codec` is `none`, `lz4` or `zstd`.
-- The codec is persisted per row so reads never need the write-time configuration.
+- `body_compressed` holds the encoded bytes; for text rows it holds raw UTF-8 bytes and the name is
+  historical.
+- `body_codec` is `none`, `zstd`, `lz4`, or another codec extension name.
+- The codec is per row; no bundle-wide or media-wide assumption is valid.
+- `content_hash` and `size` are over the original bytes.
 
-### 3.2 Codecs
+## 5. Selection Rules
 
-| Codec | Library | Default | Notes |
-| --- | --- | --- | --- |
-| `zstd` | `github.com/klauspost/compress/zstd` | yes | best ratio for the usual sub-1 MB document |
-| `lz4` | `github.com/pierrec/lz4/v4` | no | faster encode/decode, lower ratio |
-| `none` | standard library | no | short, empty or encrypted bodies |
+| Content | Default | `--codec` |
+| --- | --- | --- |
+| Markdown / document | `none` | Ignored with a warning |
+| Text-readable blob | `none` | Ignored with a warning |
+| Binary blob | `zstd` | `zstd`, `none`, or `lz4`/extension name |
+| Encrypted text body | `none` | Ignored; ciphertext is never double-compressed |
 
-- `zstd` is the default for new writes: document bodies are usually well under 1 MB, where the extra
-  ratio outweighs LZ4's speed advantage.
-- `lz4` stays available for write-heavy workflows that prefer faster encoding.
-- Both encoders are pure Go and deterministic for the same input, options and library version.
-- Codec version is pinned by `go.mod`; no separate manifest is required.
+- `--codec none` explicitly stores binary bytes raw.
+- `--codec zstd` is the built-in default.
+- `--codec lz4` requires `weave-codec-lz4`.
+- Any other codec requires a matching `weave-codec-<name>` extension.
+- An explicit missing codec fails before writing with `CODEC_NOT_FOUND`, exit `2`; there is no silent
+  fallback.
+- Text-readable content always uses `none`; a `--codec` request adds one warning.
 
-### 3.3 Selection Rules
-
-- Bodies smaller than **1024 bytes** after privacy transformation use `body_codec = 'none'`.
-- Encrypted whole-body documents (`privacy_policy = 'encrypt'`) always use `none`; ciphertext is
-  stored as produced and never double-compressed.
-- Tokenized and hashed bodies compress normally.
-- Mixed documents compress normally; inline `enc:v1:` envelopes remain inside the compressed body.
-- Empty bodies use `none`.
-
-### 3.4 Write Path
-
-CLI:
+## 6. Write Path
 
 ```sh
-weave ingest <path> [--codec lz4|zstd|none] [--strict|--permissive] --json
-weave rebuild <path> [--codec lz4|zstd|none] [--strict|--permissive] --json
-weave sync <path> [--codec lz4|zstd|none] [--strict|--permissive] --json
+weave ingest <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --json
+weave rebuild <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --json
+weave sync <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --json
 ```
 
-- `ingest` and `rebuild` default to `zstd`; `--codec` applies to every stored document.
-- `sync` writes new documents with `zstd`. Updated documents keep their stored codec unless
-  `--codec` is provided.
-- `--codec none` stores bodies verbatim and is the migration path to disable compression.
-- Compression runs inside the existing write transaction; a failure aborts the transaction.
-- No other CLI or contract field changes: `body_codec` is internal to storage.
+- `ingest` and `rebuild` apply the codec to binary blobs; text rows are always `none`.
+- `sync` writes new binary blobs with zstd. Updated binary rows keep their stored codec unless
+  `--codec` is provided. Text rows always remain `none`.
+- `rebuild --codec` re-encodes binary rows and leaves text rows raw.
+- Compression runs inside the write transaction; a codec failure aborts it.
+- Text rows are never compressed, including when `--codec` is supplied.
 
-### 3.5 Read Path
+## 7. Read Path
 
-- `LoadBundle` decompresses each body from its stored codec.
-- A decompression failure yields an empty body for that document and appends the bundle-level
-  warning `BODY_DECODE_FAILED`; metadata, links and edges stay intact.
-- An unknown `body_codec` is treated as a decode failure with the same warning.
-- Queries never crash on corrupt bodies and never return partial plaintext.
-- The engine materializes decompressed bodies for search; compression reduces disk footprint, not
-  steady-state RAM in this slice.
+- `LoadBundle`, `show`, search, snippets, `explain`, list and MCP decode using `body_codec`.
+- `show --out` and MCP blob reads return the exact original bytes.
+- A missing codec extension fails with `CODEC_UNAVAILABLE`; it is not treated as an empty body.
+- A corrupt or truncated body fails with `BODY_DECODE_FAILED`; no partial plaintext is returned.
+- Text rows with `none` are read directly.
+- Queries never crash on corrupt bodies; the error is surfaced as a warning or command error according
+  to the command.
 
-## 4. Posting Compression (deferred)
+## 8. Migration
 
-The v1 in-memory index stores postings as token maps, and SQLite FTS5 owns lexical storage. Delta and
-variable-byte posting compression is deferred until the index gains a compact posting representation.
-The following are post-GA requirements:
+Schema v7 migration:
 
-- Document ids delta-encoded and sorted.
-- Integers variable-byte encoded.
-- No additional compression layered on FTS5.
+1. Decompress existing text-readable Markdown rows to `none`.
+2. Keep existing zstd binary rows as `zstd`.
+3. Existing LZ4 rows require `weave-codec-lz4`; without it they remain unreadable until the extension
+   is installed or the bundle is rebuilt.
+4. New binary rows use zstd unless `--codec` selects another codec.
 
-## 5. Data Flow
+The migration is core-owned. Extensions never run migrations.
 
-```text
-source or stored body
-  -> privacy transform        (may produce ciphertext or aliases)
-  -> compression selection    (encrypt/empty/short -> none; else lz4 or zstd)
-  -> documents.body_compressed + body_codec
-  -> LoadBundle               (decode by body_codec; warn on failure)
-  -> engine/search/nav        (unchanged)
-```
+## 9. Privacy
 
-## 6. Validation and Errors
+- Encrypted whole-body text documents always use `none`; ciphertext is not double-compressed.
+- Tokenized, hashed and mixed text bodies are text-readable and therefore stored raw.
+- Binary blob encryption is out of scope for the first slice.
+- Codec extensions never receive key material or the database path.
+
+## 10. Validation and Errors
 
 | Condition | Behavior |
 | --- | --- |
-| `--codec` unknown | Usage error, exit `2` |
-| Compression failure | Transaction aborts, `INTERNAL`, exit `1` |
-| Unknown stored codec | Warning `BODY_DECODE_FAILED`, empty body, query continues |
-| Truncated or corrupt blob | Warning `BODY_DECODE_FAILED`, empty body, query continues |
-| Body below threshold | `body_codec = 'none'`, bytes verbatim |
-| Encrypted whole-body document | `body_codec = 'none'` |
+| `--codec` unknown/missing | `CODEC_NOT_FOUND`, exit `2`, before write |
+| Codec extension failure | `CODEC_FAILED`, transaction aborts, exit `1` |
+| Codec timeout | `CODEC_TIMEOUT`, transaction aborts |
+| Stored codec missing on read | `CODEC_UNAVAILABLE`, read fails |
+| Corrupt/truncated body | `BODY_DECODE_FAILED`, no partial plaintext |
+| Text row with `--codec` | Stored `none`, one warning |
+| Binary blob with zstd | Stored `zstd`, even if larger |
+| Encrypted text | Stored `none` |
 
-Exit codes are unchanged: `0` success, `1` runtime failure, `2` usage, `3` privacy failure.
+## 11. Testing
 
-## 7. Testing and Calibration
+- Markdown, `.txt`, JSON, XML, CSV and source-code fixtures store `none` and round-trip unchanged.
+- Binary PDF/archive fixtures store `zstd`; `show --out` round-trips.
+- Text with `--codec zstd` stays `none` and emits a warning.
+- Binary `--codec none` stores raw; `--codec zstd` stores zstd.
+- `--codec lz4` fails with `CODEC_NOT_FOUND` without `weave-codec-lz4`; succeeds with it.
+- Custom codec extension round-trip, failure, timeout, missing codec.
+- Mixed codecs in one bundle; per-row codec is reported by `show --json`.
+- Missing stored codec fails with `CODEC_UNAVAILABLE`.
+- Corrupt/truncated body fails with `BODY_DECODE_FAILED`.
+- Migration decompresses text rows; LZ4 rows behave as specified.
+- `rebuild --codec` and `sync` preserve/change codecs as specified.
+- Search, explain and calibration are unchanged.
 
-- LZ4 and zstd round-trip every fixture body byte-for-byte.
-- Determinism: encoding the same body twice yields identical bytes.
-- Threshold boundary: 1023 bytes → `none`, 1024 bytes and above → configured codec.
-- Encrypted bodies store ciphertext with `body_codec = 'none'`.
-- Tokenized, hashed and mixed bodies round-trip through the codec.
-- Corrupt and unknown codecs produce `BODY_DECODE_FAILED` and an empty body without failing the query.
-- Read paths (`show`, `search`, `explain`, `list`, `backlinks`) work on compressed bundles.
-- `rebuild --codec` migrates all rows; `sync` preserves per-row codecs unless `--codec` is set.
-- Compression reduces size for a repetitive fixture above the threshold.
-- Full gate: `go test ./...`, `go test -race ./...`, `go vet ./...`, `./scripts/verify.sh`,
-  docs-lint and markdownlint.
-- Ranking behavior is unchanged; `TestCalibration` must remain green.
+Behavior scenarios: [compression.md](https://github.com/prulloac/weave/blob/main/docs/bdd/compression.md)
+and [codec-extensions.md](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md).
 
-## 8. Acceptance Criteria
+## 12. Acceptance Criteria
 
-- All stored bodies round-trip without loss through `zstd`, `lz4` and `none`.
-- `zstd` is the default codec for new writes.
-- Encrypted content is never double-compressed.
-- Corrupt bodies never crash queries and never emit partial plaintext.
-- Compression is deterministic for a given codec and library version.
-- `weave rebuild --codec` migrates codecs safely; sync preserves per-row codecs.
-- On-disk body size drops for compressible fixtures above the threshold.
-- The full verification gate stays green and calibration is unchanged.
+1. Text-readable content is stored raw with `none`.
+2. Binary blobs are stored with `zstd` by default.
+3. `body_codec` is per row and is used by every read.
+4. LZ4 and other codecs are extension-provided; core has only `none` and `zstd`.
+5. Explicit missing codecs fail before write; stored missing codecs fail reads with
+   `CODEC_UNAVAILABLE`.
+6. Corrupt bodies never crash queries and never emit partial plaintext.
+7. Compression is deterministic for a given codec and version.
+8. `rebuild --codec` and `sync` handle codecs as specified; text stays raw.
+9. Full verification gate and calibration remain green.
 
 ## Related Documents
 
+- [Codec Extensions](codec-extensions.md)
+- [ADR 0006: Codec Extensions and zstd-only Core](../architecture/adr/0006-codec-extensions-and-zstd-only-core.md)
 - [Storage & Sync](storage-and-sync.md)
+- [Generic Blob Assets](blob-assets.md)
 - [Privacy Directives](privacy-directives.md)
-- [Privacy & Extensions](../architecture/privacy-and-extensions.md)
-- [BM25 Ranking](bm25-ranking.md)
 - [ROADMAP](../ROADMAP.md)

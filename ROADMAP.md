@@ -66,7 +66,8 @@ are internal delivery waves, not product versions.
 | BM25 lexical ranking | v1.0 | Shipped: SQLite FTS5 `--mode bm25` |
 | BM25 calibration | v1.0 | Shipped: BM25 + fuzzy hybrid corpus and baseline |
 | BM25 explain | v1.0 | Shipped: lexical raw/normalized scores, fields and term evidence |
-| Memory/body compression | v1.0 | Shipped: zstd default, LZ4 opt-in; posting compression is a post-GA stretch |
+| Memory/body compression | v1.1 | Text-readable bodies raw; binary blobs zstd; LZ4/others via codec extensions |
+| Codec extensions | v1.1 | Planned: raw-byte `weave-codec-<name>`; LZ4 is the first-party extension |
 | Privacy directives | v1.0 | Shipped: `encrypt`, `tokenize`, `hash`, key resolution, `show --decrypt` |
 | Extension runner | v1.0 | Shipped: subprocess IPC (`weave-<name>`) over `weave.cli/v1` stdio |
 | Enrichment extension | v1.0 | Shipped: `--with-enricher`, inferred keywords and metadata |
@@ -104,9 +105,9 @@ weave path <path> <id|file> <id|file> --json
 weave audit <path> [--fail-on error|warning|none] [--verify-keys] --json
 weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] --json
 weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k <n>] --json
-weave ingest <path> [--db <file>] [--strict|--permissive] [--codec zstd|lz4|none] [--with-enricher <name>] [--timeout <d>] --json
-weave rebuild <path> [--db <file>] [--strict|--permissive] [--codec zstd|lz4|none] [--with-enricher <name>] [--timeout <d>] --json
-weave sync <path> [--db <file>] [--strict|--permissive] [--codec zstd|lz4|none] [--with-enricher <name>] [--timeout <d>] [--watch [--events]] --json
+weave ingest <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--with-enricher <name>] [--timeout <d>] --json
+weave rebuild <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--with-enricher <name>] [--timeout <d>] --json
+weave sync <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--with-enricher <name>] [--timeout <d>] [--watch [--events]] --json
 weave export <path> --out <dir> --format raw|encrypted [--key-id <id>] [--yes] [--force] --json
 weave config show|path|init [--json]
 weave extensions list [<path>] --json
@@ -234,6 +235,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | backlog |
 | 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | backlog |
 | 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | backlog |
+| 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | backlog |
 
 Rules:
 
@@ -354,9 +356,10 @@ privacy directives ──┬── show --decrypt
 
 1. `weave-ai` vision and embedding requests,
 2. generic blob assets and content metadata,
-3. durable embeddings and `vec0` spaces,
-4. `weave-image` as the first blob consumer,
-5. semantic search, retrieval and release integration.
+3. codec extensions and the zstd-only compression policy,
+4. durable embeddings and `vec0` spaces,
+5. `weave-image` as the first blob consumer,
+6. semantic search, retrieval and release integration.
 
 **Critical path:**
 
@@ -392,8 +395,9 @@ Specs: [audit](specs/weave-audit.md), [relate](specs/weave-relate.md),
 - `weave ingest`, `weave rebuild`, `weave sync` and `--mode bm25` shipped.
 - `sha256` content hashes, cascading graph updates and a polling watch loop shipped; `fsnotify`
   event delivery is a post-GA stretch goal.
-- Body compression shipped with zstd by default and LZ4 opt-in; `weave sync --watch` and
-  `weave mcp --watch` are wired; posting compression is a post-GA stretch goal.
+- Body compression: text-readable content is raw, binary blobs use zstd by default, and LZ4/other
+  codecs are extension-provided in v1.1; `weave sync --watch` and `weave mcp --watch` are wired;
+  posting compression is a post-GA stretch goal.
 
 Specs: [Storage & Sync](specs/storage-and-sync.md),
 [Watch Mode](specs/watch-mode.md), [BM25 Ranking](specs/bm25-ranking.md),
@@ -524,9 +528,11 @@ needed.
 - [Generic Blob Assets](specs/blob-assets.md)
 - [Weave Image Extension](specs/weave-image.md)
 - [Embeddings](specs/embeddings.md)
+- [Codec Extensions](specs/codec-extensions.md)
 - [ADR 0003: Extension Protocol Ownership and weave-ai Extraction](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md)
 - [ADR 0004: Generic Blob Assets and Content Metadata](architecture/adr/0004-generic-blob-assets-and-content-metadata.md)
 - [ADR 0005: Embeddings and CGo-Free vec0 Index](architecture/adr/0005-embeddings-and-cgo-free-vec0-index.md)
+- [ADR 0006: Codec Extensions and zstd-only Core](architecture/adr/0006-codec-extensions-and-zstd-only-core.md)
 - [MCP Server](specs/mcp-server.md)
 - [MCP Sensitive Access](specs/mcp-sensitive.md)
 - [Architecture](architecture/index.md)

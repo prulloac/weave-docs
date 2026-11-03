@@ -50,8 +50,8 @@ engine/
 ├── nav/
 │   └── nav.go           # normalize, list, show, backlinks, path
 ├── privacy/             # directives, key resolution and crypto providers
-├── compression/         # zstd and LZ4 body codecs
-├── extensions/          # weave-<name> discovery and transport
+├── compression/         # zstd body codec and per-row policy
+├── extensions/          # weave-<name> discovery and transport, including codec extensions
 └── operations/          # transport-neutral envelopes
 ```
 

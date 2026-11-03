@@ -10,6 +10,7 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0003](0003-extension-protocol-ownership-and-weave-ai-extraction.md) | accepted | Extract `weave-ai`, keep `weave.cli/v1` as the contract and defer a shared Go protocol module |
 | [0004](0004-generic-blob-assets-and-content-metadata.md) | proposed | Generic blob documents with `content_kind`, `media_type` and versioned `content_metadata` |
 | [0005](0005-embeddings-and-cgo-free-vec0-index.md) | proposed | Durable embeddings, per-space `vec0` indexes and CGo-free semantic search |
+| [0006](0006-codec-extensions-and-zstd-only-core.md) | proposed | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.

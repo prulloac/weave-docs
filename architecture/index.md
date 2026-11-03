@@ -146,6 +146,7 @@ remains the compatibility promise.
 | [ADR 0003](adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) | `weave-ai` extraction and extension protocol ownership |
 | [ADR 0004](adr/0004-generic-blob-assets-and-content-metadata.md) | Generic blob documents, media types and content metadata |
 | [ADR 0005](adr/0005-embeddings-and-cgo-free-vec0-index.md) | Durable embeddings, per-space `vec0` indexes and semantic search |
+| [ADR 0006](adr/0006-codec-extensions-and-zstd-only-core.md) | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |
@@ -161,7 +162,8 @@ remains the compatibility promise.
 | [Storage & Sync spec](../specs/storage-and-sync.md) | Persistent SQLite, blob metadata and incremental sync |
 | [Watch Mode spec](../specs/watch-mode.md) | Live filesystem sync |
 | [BM25 Ranking spec](../specs/bm25-ranking.md) | FTS5 lexical ranking |
-| [Compression spec](../specs/compression.md) | Body codec contract (zstd default, LZ4 opt-in) |
+| [Compression spec](../specs/compression.md) | Text-raw storage, binary zstd and per-row codecs |
+| [Codec Extensions spec](../specs/codec-extensions.md) | `weave-codec-<name>` raw-byte codec extensions |
 | [Privacy Directives spec](../specs/privacy-directives.md) | Directive parser, keys, storage and search contract |
 | [Privacy & Extension Architecture](privacy-and-extensions.md) | Extension IPC and architecture summary |
 | [Extension Subprocess IPC spec](../specs/extension-ipc.md) | `weave-<name>` discovery, transport, enrichment, rerank and embeddings |

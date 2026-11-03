@@ -85,7 +85,7 @@ Go benchmarks use `b.Loop`, `b.ReportAllocs` and `b.SetBytes`, named
 go run ./cmd/bench -corpus benchmarks/corpus/10k -scenario all -json
 ```
 
-Scenarios: parse, ingest (zstd/lz4/none), sync (0/1/10%), search (four modes), explain, audit,
+Scenarios: parse, ingest (text raw; binary zstd/none/extension codec), sync (0/1/10%), search (four modes), explain, audit,
 export. Flags: `-scenario`, `-samples`, `-weave`, `-baseline`, `-profile`, `-json`. Each scenario
 gets a fresh DB; sync rewrites the pinned subset and calls `store.Sync`. CLI scenarios spawn the
 binary with `--json`, so p95 includes startup and DB open; missing corpus exits 2, stale manifest 1.
