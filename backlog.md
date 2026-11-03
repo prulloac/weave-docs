@@ -110,8 +110,8 @@ verified against the release assets.
 ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weave-ai` is removed
 from `weave`, and conformance tests cover both sides. The `v1.0.0` release is published.
 
-Media and embeddings: ADR 0004/0005/0006 and specs drafted; BDD scenarios drafted 2026-11-03;
-approval and TDD pending. Implementation order: AI capabilities → generic blobs + codec extensions →
+Media and embeddings: ADR 0004/0005/0006 are accepted; specs and BDD scenarios are drafted and await
+approval. TDD is pending. Implementation order: AI capabilities → generic blobs + codec extensions →
 embeddings → `weave-image`.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.

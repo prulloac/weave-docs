@@ -12,14 +12,14 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
-status: proposed
+status: accepted
 ---
 
 # ADR 0004: Generic Blob Assets and Content Metadata
 
 ## Status
 
-Proposed on 2026-11-03. It supersedes the “No native asset ingestion” limitation in the
+Accepted on 2026-11-03. It supersedes the “No native asset ingestion” limitation in the
 [ROADMAP](../../ROADMAP.md) and complements [ADR 0005](0005-embeddings-and-cgo-free-vec0-index.md).
 
 ## Context

@@ -11,14 +11,14 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
-status: proposed
+status: accepted
 ---
 
 # ADR 0006: Codec Extensions and zstd-only Core
 
 ## Status
 
-Proposed on 2026-11-03. It complements [ADR 0004](0004-generic-blob-assets-and-content-metadata.md)
+Accepted on 2026-11-03. It complements [ADR 0004](0004-generic-blob-assets-and-content-metadata.md)
 and the [Compression specification](../../specs/compression.md).
 
 ## Context
