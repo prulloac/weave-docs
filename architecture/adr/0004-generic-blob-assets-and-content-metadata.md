@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
 title: "ADR 0004: Generic Blob Assets and Content Metadata"
-description: "Adds generic opaque blob documents to core, with content_kind, media_type and versioned content_metadata, leaving media semantics to extensions."
+description: "Adds generic opaque blob documents to core, with content_kind, media_type, versioned content_metadata and a per-row body codec, leaving media semantics to extensions."
 tags:
   - "architecture"
   - "adr"
@@ -41,7 +41,7 @@ but it must not learn image, video, audio or PDF semantics.
 | D1 | Core supports a first-class generic blob document |
 | D2 | `content_kind` is `document` or `blob`; `media_type` is an arbitrary MIME label |
 | D3 | `content_metadata` is a versioned JSON envelope owned by core |
-| D4 | `body_compressed` stores the primary blob; `content_metadata.text` feeds FTS |
+| D4 | `body_compressed` stores the primary blob; `body_codec` records the per-row compression; `content_metadata.text` feeds FTS |
 | D5 | Blob discovery is opt-in and filtered by media types, not by hardcoded extensions |
 | D6 | Media semantics belong to extensions; core never branches on `media_type` |
 | D7 | Retrieval is generic: `show --out` and an MCP blob resource |
@@ -116,15 +116,31 @@ image, video or PDF attribute while keeping the searchable text in a known locat
 ### Decision
 
 - `body_compressed` stores the primary blob bytes.
-- `body_codec` records `none`, `zstd` or `lz4`; images normally use `none`.
+- `body_codec` records the compression algorithm for that row: `none`, `zstd` or `lz4`.
+- The codec is recorded **per document row** and must not be inferred from the bundle, media type or
+  a global CLI default. Different blobs in the same bundle may use different codecs.
+- `content_hash` and `size` are computed over the original bytes, not the compressed bytes. A stored
+  size may be recorded for diagnostics.
+- `body_codec` is core-owned. Extensions cannot choose or override it.
+- Images default to `none`; text-like blobs may use `zstd` or `lz4` when compression actually reduces
+  size. If the requested codec does not help, core stores `none` and records that.
+- `show --out`, MCP blob reads and export decode the body using the recorded codec.
 - FTS `body` is populated from `content_metadata.text`, not from the blob.
 - Blob documents with no extracted text remain searchable by title, keywords and description.
+- `content_metadata` is plain JSON and separately size-limited; it is not part of the body codec.
 
 ### Rationale
 
 The body is opaque; interpreting it as text would corrupt search. Extracted text is the only
 searchable representation, and it may come from OCR, transcription, PDF extraction or another
-extension.
+extension. A per-row codec is required because a JPEG, a PDF and a Markdown body have different
+compression characteristics, and future video/audio blobs may use different trade-offs.
+
+### Consequences
+
+Retrieval and export must always read `body_codec` from the same row. A global `--codec` flag is only
+a preference; the stored actual codec is authoritative. `weave show --json` exposes the codec so
+operators can inspect a mixed bundle.
 
 ## D5 — Generic discovery
 
@@ -209,7 +225,8 @@ that are not required to prove the model.
 ## Consequences
 
 - Schema version 7 adds `content_kind`, `media_type` and `content_metadata`; existing rows migrate to
-  `document` and `text/markdown`.
+  `document` and `text/markdown`. The existing per-row `body_codec` becomes part of the public blob
+  contract rather than an internal Markdown detail.
 - The parser gains a generic asset scanner, not image parsing.
 - The extension IPC gains `media_type` on enrichment requests and generic metadata fields on
   responses.

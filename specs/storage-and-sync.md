@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS documents (
     media_type TEXT NOT NULL DEFAULT 'text/markdown',
     content_metadata TEXT NOT NULL DEFAULT '{}',   -- Versioned JSON envelope
     body_compressed BLOB NOT NULL,       -- Markdown text or primary blob bytes
-    body_codec TEXT NOT NULL DEFAULT 'none',
+    body_codec TEXT NOT NULL DEFAULT 'none', -- Per-row: none | zstd | lz4
     privacy_policy TEXT DEFAULT 'none',  -- none | encrypt | redact
     updated_at INTEGER NOT NULL,         -- Unix timestamp of sync
     PRIMARY KEY (bundle_root, id),
