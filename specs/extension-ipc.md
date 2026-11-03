@@ -67,6 +67,10 @@ Non-goals:
 - Requests and responses are bounded to 1 MiB; larger output is `EXTENSION_PROTOCOL`.
 - Every envelope carries `"v": "weave.cli/v1"`.
 - Unknown response fields are ignored; unknown `v` is `EXTENSION_PROTOCOL`.
+- Canonical request and response examples live in
+  [`contract/v1/golden/extension-ipc`](https://github.com/prulloac/weave/blob/main/contract/v1/golden/extension-ipc);
+  the matching schema is
+  [`extension-ipc.schema.json`](https://github.com/prulloac/weave/blob/main/contract/v1/schema/extension-ipc.schema.json).
 - Default timeout is 5 seconds, configurable with `--timeout` (Go duration, e.g. `750ms`, `10s`).
 - Invocations are sequential and deterministic; no extension concurrency.
 - The child inherits the process environment and working directory.
