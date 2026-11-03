@@ -37,23 +37,24 @@ database row must record which codec produced its bytes.
 
 | ID | Decision |
 | --- | --- |
-| D1 | Text-readable content is stored raw with `body_codec = none` |
+| D1 | Text-readable content is stored in `body_raw` with NULL `body_codec` |
 | D2 | Binary blobs use zstd by default, always |
 | D3 | `none` and `zstd` are the only built-in codecs |
 | D4 | LZ4 moves to the first-party `weave-codec-lz4` extension |
 | D5 | Codec extensions are `weave-codec-<name>` subprocesses with raw byte pipes |
 | D6 | `weave codecs list` reports built-in and extension codecs |
-| D7 | `body_codec` stores the codec name per row; retrieval requires that codec |
+| D7 | `body_codec` stores the codec name per compressed row; retrieval requires that codec |
 | D8 | Explicit missing codecs fail before write; stored missing codecs fail reads with `CODEC_UNAVAILABLE` |
 | D9 | Codec extensions are trusted, bounded and never access the database |
-| D10 | Schema v7 migration decompresses existing text rows to `none`; LZ4 rows require the LZ4 codec or a rebuild |
+| D10 | Schema v7 migration decompresses existing text rows into `body_raw`; LZ4 rows require the LZ4 codec or a rebuild |
 
 ## D1 — Text-readable content is raw
 
 ### Decision
 
-Markdown documents and text-readable blobs are stored with `body_codec = none`. This includes
-Markdown, `.txt`, JSON, XML, CSV and source code in any language.
+Markdown documents and text-readable blobs are stored in `body_raw` with NULL
+`body_compressed`/`body_codec`. This includes Markdown, `.txt`, JSON, XML, CSV and source code in any
+language.
 
 Classification is generic:
 
@@ -145,8 +146,9 @@ extensions are required.
 
 ### Decision
 
-`body_codec` stores the codec name: `none`, `zstd`, `lz4`, or another extension name. `show --out`,
-MCP blob reads and export must resolve that codec. A missing codec is `CODEC_UNAVAILABLE`, not an
+`body_codec` stores the codec name for `body_compressed` rows: `none`, `zstd`, `lz4`, or another
+extension name. Text rows use `body_raw` and leave `body_codec` NULL. `show --out`, MCP reads and
+export must resolve the codec for compressed rows. A missing codec is `CODEC_UNAVAILABLE`, not an
 empty body or silent failure.
 
 ### Rationale
@@ -162,7 +164,7 @@ contract, not an implementation detail.
 | Codec extension fails/times out | `CODEC_FAILED`/`CODEC_TIMEOUT`, transaction aborts |
 | Stored codec missing on read | `CODEC_UNAVAILABLE`, read fails with a clear error |
 | Stored codec corrupt/truncated | `BODY_DECODE_FAILED`, no partial plaintext |
-| Text row with `--codec` | Warning; stored as `none` |
+| Text row with `--codec` | Warning; stored in `body_raw`, `body_codec` NULL |
 
 ## D9 — Security and limits
 
@@ -177,7 +179,8 @@ contract, not an implementation detail.
 
 Schema v7 migration:
 
-1. Decompress existing text-readable rows to `none`.
+1. Decompress existing text-readable rows into `body_raw`; leave `body_compressed`/`body_codec`
+   NULL.
 2. Keep existing `zstd` binary rows as `zstd`.
 3. Existing LZ4 rows require `weave-codec-lz4`; without it they remain unreadable until the extension
    is installed or the bundle is rebuilt.

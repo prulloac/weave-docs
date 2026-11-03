@@ -42,9 +42,10 @@ refuses to open a database with a newer `user_version`.
 Current schema is **7**. Version 4 adds `search_tokens` (`bundle_root`, `field`, `token`,
 `postings` BLOB) for the persistent fuzzy/hybrid path. Version 5 adds `search_vocabulary`
 (`bundle_root`, `field`, `token`) so fuzzy queries only load postings for candidate tokens. Version
-6 adds `extension_data`; version 7 adds generic blob metadata, durable embeddings and the embedding
-space registry. Older databases migrate automatically; new tables start empty, and fuzzy/hybrid
-search falls back to the in-memory engine until the next ingest, rebuild or sync populates them.
+6 adds `extension_data`; version 7 adds generic blob metadata, the `body_raw`/`body_compressed`
+split, durable embeddings and the embedding space registry. Older databases migrate automatically;
+new tables start empty, and fuzzy/hybrid search falls back to the in-memory engine until the next
+ingest, rebuild or sync populates them.
 
 ```sql
 -- 0. Bundle Registry
@@ -74,10 +75,14 @@ CREATE TABLE IF NOT EXISTS documents (
     content_kind TEXT NOT NULL DEFAULT 'document', -- document | blob
     media_type TEXT NOT NULL DEFAULT 'text/markdown',
     content_metadata TEXT NOT NULL DEFAULT '{}',   -- Versioned JSON envelope
-    body_compressed BLOB NOT NULL,       -- Markdown text or primary blob bytes
-    body_codec TEXT NOT NULL DEFAULT 'none', -- Per-row: none | zstd | <codec extension>
+    body_raw TEXT,                       -- Text-readable body, or NULL
+    body_compressed BLOB,                -- Binary blob body, or NULL
+    body_codec TEXT,                     -- Codec for body_compressed, or NULL
     privacy_policy TEXT DEFAULT 'none',  -- none | encrypt | redact
     updated_at INTEGER NOT NULL,         -- Unix timestamp of sync
+    CHECK ((body_raw IS NULL) != (body_compressed IS NULL)),
+    CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
+        OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL)),
     PRIMARY KEY (bundle_root, id),
     UNIQUE (bundle_root, file_path),
     FOREIGN KEY (bundle_root) REFERENCES bundles(bundle_root) ON DELETE CASCADE
@@ -197,9 +202,10 @@ Compression is a storage implementation detail with its own contract. Summary:
 
 - **Index Memory (Postings):** document IDs in transient postings are delta-encoded with
   variable-byte (`varint`) encoding.
-- **Body Blobs:** text-readable bodies (Markdown, `.txt`, JSON, XML, CSV, source code) are stored raw
-  with `body_codec = none`. Binary blobs use zstd by default. The codec is per row; LZ4 and other
-  algorithms are `weave-codec-<name>` extensions.
+- **Body Blobs:** text-readable bodies (Markdown, `.txt`, JSON, XML, CSV, source code) are stored in
+  `body_raw` with NULL `body_compressed`/`body_codec`. Binary blobs use `body_compressed` with zstd
+  by default; `body_codec` is non-null. Exactly one body column is non-null. LZ4 and other algorithms
+  are `weave-codec-<name>` extensions.
 
 Authoritative rules — text classification, binary zstd, codec extensions, ciphertext handling,
 corruption recovery and rebuild behavior — are in [Compression](compression.md) and

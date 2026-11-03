@@ -20,7 +20,8 @@ status: draft
 
 Body compression is a per-row storage contract. Text-readable content is stored raw; binary blobs
 use zstd by default. Other compression algorithms are provided by `weave-codec-<name>` extensions.
-The stored `body_codec` is authoritative and is read with every body.
+For compressed bodies, the stored `body_codec` is authoritative; text bodies are read directly from
+`body_raw`.
 
 This spec owns the body compression policy. The codec extension protocol is owned by
 [Codec Extensions](codec-extensions.md).
@@ -49,7 +50,7 @@ This spec owns the body compression policy. The codec extension protocol is owne
 
 ### 3.1 Text-readable
 
-The following are stored raw with `body_codec = 'none'`:
+The following are stored in `body_raw` with NULL `body_compressed`/`body_codec`:
 
 - every `content_kind = 'document'` (Markdown);
 - blobs whose media type is text-like: `text/*`, `application/json`, `application/xml`,
@@ -66,35 +67,39 @@ when zstd output is larger than the input.
 
 ## 4. Schema
 
-The `documents` table already has `body_compressed` and `body_codec`; no new column is added:
+Schema v7 splits the body into two nullable columns:
 
 ```sql
-body_compressed BLOB NOT NULL,
-body_codec TEXT NOT NULL DEFAULT 'none'
+body_raw TEXT,                    -- text-readable bodies, or NULL
+body_compressed BLOB,             -- binary blob bodies, or NULL
+body_codec TEXT,                  -- codec for body_compressed, or NULL
+CHECK ((body_raw IS NULL) != (body_compressed IS NULL)),
+CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
+    OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL))
 ```
 
-- `body_compressed` holds the encoded bytes; for text rows it holds raw UTF-8 bytes and the name is
-  historical.
+- `body_raw` holds text-readable content directly; `body_compressed` and `body_codec` are NULL.
+- `body_compressed` holds binary blob bytes; `body_codec` is non-null and records the codec.
 - `body_codec` is `none`, `zstd`, `lz4`, or another codec extension name.
-- The codec is per row; no bundle-wide or media-wide assumption is valid.
+- Exactly one of `body_raw` and `body_compressed` is non-null; both-null and both-set are invalid.
 - `content_hash` and `size` are over the original bytes.
 
 ## 5. Selection Rules
 
-| Content | Default | `--codec` |
-| --- | --- | --- |
-| Markdown / document | `none` | Ignored with a warning |
-| Text-readable blob | `none` | Ignored with a warning |
-| Binary blob | `zstd` | `zstd`, `none`, or `lz4`/extension name |
-| Encrypted text body | `none` | Ignored; ciphertext is never double-compressed |
+| Content | Storage | Default | `--codec` |
+| --- | --- | --- | --- |
+| Markdown / document | `body_raw` | raw | Ignored with a warning |
+| Text-readable blob | `body_raw` | raw | Ignored with a warning |
+| Binary blob | `body_compressed` | `zstd` | `zstd`, `none`, or `lz4`/extension name |
+| Encrypted text body | `body_raw` | raw | Ignored; ciphertext is never double-compressed |
 
-- `--codec none` explicitly stores binary bytes raw.
-- `--codec zstd` is the built-in default.
+- `--codec none` explicitly stores binary bytes in `body_compressed` raw, with `body_codec = none`.
+- `--codec zstd` is the built-in default for binary blobs.
 - `--codec lz4` requires `weave-codec-lz4`.
 - Any other codec requires a matching `weave-codec-<name>` extension.
 - An explicit missing codec fails before writing with `CODEC_NOT_FOUND`, exit `2`; there is no silent
   fallback.
-- Text-readable content always uses `none`; a `--codec` request adds one warning.
+- Text-readable content always uses `body_raw`; a `--codec` request adds one warning.
 
 ## 6. Write Path
 
@@ -104,20 +109,23 @@ weave rebuild <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --js
 weave sync <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --json
 ```
 
-- `ingest` and `rebuild` apply the codec to binary blobs; text rows are always `none`.
+- `ingest` and `rebuild` write text-readable content to `body_raw` and binary blobs to
+  `body_compressed`.
 - `sync` writes new binary blobs with zstd. Updated binary rows keep their stored codec unless
-  `--codec` is provided. Text rows always remain `none`.
+  `--codec` is provided. Text rows always remain `body_raw`.
 - `rebuild --codec` re-encodes binary rows and leaves text rows raw.
 - Compression runs inside the write transaction; a codec failure aborts it.
-- Text rows are never compressed, including when `--codec` is supplied.
+- Text rows are never compressed and never set `body_codec`, including when `--codec` is supplied.
 
 ## 7. Read Path
 
-- `LoadBundle`, `show`, search, snippets, `explain`, list and MCP decode using `body_codec`.
+- `body_raw` is read directly; no codec is involved.
+- `body_compressed` is decoded using `body_codec`.
+- `LoadBundle`, `show`, search, snippets, `explain`, list and MCP use the correct body form.
 - `show --out` and MCP blob reads return the exact original bytes.
 - A missing codec extension fails with `CODEC_UNAVAILABLE`; it is not treated as an empty body.
-- A corrupt or truncated body fails with `BODY_DECODE_FAILED`; no partial plaintext is returned.
-- Text rows with `none` are read directly.
+- A corrupt or truncated compressed body fails with `BODY_DECODE_FAILED`; no partial plaintext is
+  returned.
 - Queries never crash on corrupt bodies; the error is surfaced as a warning or command error according
   to the command.
 
@@ -125,11 +133,12 @@ weave sync <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --json
 
 Schema v7 migration:
 
-1. Decompress existing text-readable Markdown rows to `none`.
-2. Keep existing zstd binary rows as `zstd`.
-3. Existing LZ4 rows require `weave-codec-lz4`; without it they remain unreadable until the extension
-   is installed or the bundle is rebuilt.
-4. New binary rows use zstd unless `--codec` selects another codec.
+1. Decompress existing text-readable rows into `body_raw`; set `body_compressed`/`body_codec` NULL.
+2. Keep existing zstd binary rows in `body_compressed` with `body_codec = zstd`.
+3. Existing LZ4 text or binary rows require `weave-codec-lz4`; without it they remain unreadable until
+   the extension is installed or the bundle is rebuilt.
+4. New text rows use `body_raw`; new binary rows use `body_compressed` with zstd unless `--codec`
+   selects another codec.
 
 The migration is core-owned. Extensions never run migrations.
 
@@ -149,16 +158,17 @@ The migration is core-owned. Extensions never run migrations.
 | Codec timeout | `CODEC_TIMEOUT`, transaction aborts |
 | Stored codec missing on read | `CODEC_UNAVAILABLE`, read fails |
 | Corrupt/truncated body | `BODY_DECODE_FAILED`, no partial plaintext |
-| Text row with `--codec` | Stored `none`, one warning |
-| Binary blob with zstd | Stored `zstd`, even if larger |
-| Encrypted text | Stored `none` |
+| Text row with `--codec` | Stored in `body_raw`, one warning, `body_codec` NULL |
+| Binary blob with zstd | Stored in `body_compressed` with `zstd`, even if larger |
+| Encrypted text | Stored in `body_raw`, `body_codec` NULL |
 
 ## 11. Testing
 
-- Markdown, `.txt`, JSON, XML, CSV and source-code fixtures store `none` and round-trip unchanged.
-- Binary PDF/archive fixtures store `zstd`; `show --out` round-trips.
-- Text with `--codec zstd` stays `none` and emits a warning.
-- Binary `--codec none` stores raw; `--codec zstd` stores zstd.
+- Markdown, `.txt`, JSON, XML, CSV and source-code fixtures use `body_raw` with NULL `body_codec` and
+  round-trip unchanged.
+- Binary PDF/archive fixtures use `body_compressed` with `zstd`; `show --out` round-trips.
+- Text with `--codec zstd` stays `body_raw` and emits a warning.
+- Binary `--codec none` stores raw compressed-column bytes; `--codec zstd` stores zstd.
 - `--codec lz4` fails with `CODEC_NOT_FOUND` without `weave-codec-lz4`; succeeds with it.
 - Custom codec extension round-trip, failure, timeout, missing codec.
 - Mixed codecs in one bundle; per-row codec is reported by `show --json`.
@@ -173,9 +183,9 @@ and [codec-extensions.md](https://github.com/prulloac/weave/blob/main/docs/bdd/c
 
 ## 12. Acceptance Criteria
 
-1. Text-readable content is stored raw with `none`.
-2. Binary blobs are stored with `zstd` by default.
-3. `body_codec` is per row and is used by every read.
+1. Text-readable content is stored in `body_raw` with NULL `body_codec`.
+2. Binary blobs are stored in `body_compressed` with `zstd` by default.
+3. Exactly one body column is non-null; `body_codec` is per compressed row and used by every read.
 4. LZ4 and other codecs are extension-provided; core has only `none` and `zstd`.
 5. Explicit missing codecs fail before write; stored missing codecs fail reads with
    `CODEC_UNAVAILABLE`.

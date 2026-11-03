@@ -41,7 +41,7 @@ but it must not learn image, video, audio or PDF semantics.
 | D1 | Core supports a first-class generic blob document |
 | D2 | `content_kind` is `document` or `blob`; `media_type` is an arbitrary MIME label |
 | D3 | `content_metadata` is a versioned JSON envelope owned by core |
-| D4 | `body_compressed` stores the primary blob; `body_codec` records the per-row compression; `content_metadata.text` feeds FTS |
+| D4 | `body_raw` stores text-readable bodies; `body_compressed` stores binary blobs; exactly one is non-null |
 | D5 | Blob discovery is opt-in and filtered by media types, not by hardcoded extensions |
 | D6 | Media semantics belong to extensions; core never branches on `media_type` |
 | D7 | Retrieval is generic: `show --out` and an MCP blob resource |
@@ -111,47 +111,59 @@ attributes. It does not interpret `text_source` or any attribute key.
 New media kinds need new metadata fields. A generic envelope avoids a schema migration for every
 image, video or PDF attribute while keeping the searchable text in a known location.
 
-## D4 — Blob body and searchable text
+## D4 — Raw and compressed body columns
 
 ### Decision
 
-- `body_compressed` stores the primary body bytes.
-- `body_codec` records the codec for that row: `none`, `zstd`, or an extension codec name such as
-  `lz4`.
-- The codec is recorded **per document row** and must not be inferred from the bundle, media type or
-  a global CLI default. Different rows in the same bundle may use different codecs.
-- Text-readable content is stored raw with `none`: Markdown, `.txt`, JSON, XML, CSV and source code.
-  Classification uses `content_kind`, text MIME types and a generic UTF-8/printable heuristic; there
-  is no language-extension allowlist.
+The `documents` table stores exactly one body form per row:
+
+```sql
+body_raw TEXT,                    -- text-readable bodies, or NULL
+body_compressed BLOB,             -- binary blob bodies, or NULL
+body_codec TEXT,                  -- codec for body_compressed, or NULL
+CHECK ((body_raw IS NULL) != (body_compressed IS NULL))
+CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
+    OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL))
+```
+
+- Text-readable content uses `body_raw` and leaves `body_compressed` and `body_codec` NULL:
+  Markdown, `.txt`, JSON, XML, CSV and source code. Classification uses `content_kind`, text MIME
+  types and a generic UTF-8/printable heuristic; there is no language-extension allowlist.
+- Binary blobs use `body_compressed` and leave `body_raw` NULL. `body_codec` is non-null and records
+  `zstd`, `none` or an extension codec name such as `lz4`.
+- The codec is recorded per compressed row and must not be inferred from the bundle, media type or a
+  global CLI default. Different binary rows in the same bundle may use different codecs.
 - Binary blobs use `zstd` by default, always, even when zstd output is larger than the input.
 - `--codec` overrides the codec for binary blobs only. It can select `zstd`, `none`, or an extension
-  codec. Text-readable content ignores `--codec` with a warning and stays `none`.
+  codec. Text-readable content ignores `--codec` with a warning and stays raw.
 - `none` and `zstd` are the only built-in codecs. LZ4 and other algorithms are
   `weave-codec-<name>` extensions; see [ADR 0006](0006-codec-extensions-and-zstd-only-core.md).
 - `content_hash` and `size` are computed over the original bytes, not the stored bytes. A stored size
   may be recorded for diagnostics.
 - `body_codec` is core-owned. Extensions cannot choose or override it directly.
-- `show --out`, MCP blob reads and export decode the body using the recorded codec. A missing codec
-  extension fails with `CODEC_UNAVAILABLE`, not an empty body.
-- FTS `body` is populated from `content_metadata.text`, not from the blob.
-- Blob documents with no extracted text remain searchable by title, keywords and description.
+- `show --out`, MCP reads and export write `body_raw` directly or decode `body_compressed` using its
+  codec. A missing codec extension fails with `CODEC_UNAVAILABLE`, not an empty body.
+- FTS `body` is `body_raw` when present; otherwise it is `content_metadata.text` for extracted text
+  from a binary blob. Text documents never require JSON parsing to be indexed.
 - `content_metadata` is plain JSON and separately size-limited; it is not compressed by the body
-  codec.
+  codec. `content_metadata.text` is for extracted text from binary blobs (OCR, transcripts, PDF
+  text), not for text-readable bodies.
+- A binary blob with no extracted text remains searchable by title, keywords and description.
 
 ### Rationale
 
-The body is opaque; interpreting it as text would corrupt search. Extracted text is the only
-searchable representation, and it may come from OCR, transcription, PDF extraction or another
-extension. Text-readable content gains nothing from zstd for the stated goal, while binary blobs need
-a deterministic default. A per-row codec is required because a JPEG, a PDF and a Markdown body have
-different characteristics, and extension codecs may produce different frames.
+The two-column model makes the storage policy explicit: text-readable content is directly readable
+and indexable, while binary blobs are the only rows with a codec. FTS no longer depends on a JSON
+field for Markdown, and binary extraction remains possible through `content_metadata.text`. SQLite
+CHECK constraints prevent both forms being present or absent.
 
 ### Consequences
 
-Retrieval and export must always read `body_codec` from the same row. A global `--codec` flag is only
-a preference; the stored actual codec is authoritative. `weave show --json` exposes the codec so
-operators can inspect a mixed bundle. A database containing an extension-codec row depends on that
-codec extension being installed; `weave codecs list` and `weave audit` surface missing codecs.
+Retrieval and export must branch on which body column is non-null. A global `--codec` flag is only a
+preference; the stored actual codec is authoritative for compressed rows. `weave show --json` exposes
+the body form and codec so operators can inspect a mixed bundle. A database containing an
+extension-codec row depends on that codec extension being installed; `weave codecs list` and
+`weave audit` surface missing codecs.
 
 ## D5 — Generic discovery
 
@@ -186,7 +198,7 @@ scanner-wide blob ingestion would change existing behavior and indexes.
 - title, description and keyword generation.
 
 Core only persists the result. Extensions never create tables, write the database or set
-`content_kind`, `media_type`, `content_hash` or `body_compressed`.
+`content_kind`, `media_type`, `content_hash`, `body_raw`, `body_compressed` or `body_codec`.
 
 ### Rationale
 
@@ -197,9 +209,10 @@ security surface Weave does not need.
 
 ### Decision
 
-- `weave show <id> --out <file>` writes the primary blob; `--force` replaces an existing file.
-- `weave show --json` returns metadata, `content_kind`, `media_type`, hash, size and
-  `content_metadata`; never bytes.
+- `weave show <id> --out <file>` writes `body_raw` directly or decodes `body_compressed`; `--force`
+  replaces an existing file.
+- `weave show --json` returns metadata, `content_kind`, `media_type`, body form, `body_codec`, hash,
+  size and `content_metadata`; never bytes.
 - MCP exposes `weave://blob/<doc-id>` and, with sources, `weave://source/<alias>/blob/<doc-id>` as
   blob content with the stored MIME type.
 - Search and list results include `content_kind` and `media_type`; they do not embed bytes.
@@ -235,9 +248,10 @@ that are not required to prove the model.
 
 ## Consequences
 
-- Schema version 7 adds `content_kind`, `media_type` and `content_metadata`; existing rows migrate to
-  `document` and `text/markdown`. The existing per-row `body_codec` becomes part of the public blob
-  contract rather than an internal Markdown detail.
+- Schema version 7 adds `content_kind`, `media_type` and `content_metadata`, and splits
+  `body_compressed` into nullable `body_raw` and `body_compressed` columns with `body_codec` for
+  compressed rows only. Existing text rows migrate to `body_raw`; existing rows default to
+  `content_kind=document` and `media_type=text/markdown`.
 - The parser gains a generic asset scanner, not image parsing.
 - The extension IPC gains `media_type` on enrichment requests and generic metadata fields on
   responses.

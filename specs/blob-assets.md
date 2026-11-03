@@ -44,15 +44,23 @@ Schema version 7 adds:
 ```sql
 content_kind TEXT NOT NULL DEFAULT 'document', -- document | blob
 media_type TEXT NOT NULL DEFAULT 'text/markdown',
-content_metadata TEXT NOT NULL DEFAULT '{}'
+content_metadata TEXT NOT NULL DEFAULT '{}',
+body_raw TEXT,                    -- text-readable bodies, or NULL
+body_compressed BLOB,             -- binary blob bodies, or NULL
+body_codec TEXT,                  -- codec for body_compressed, or NULL
+CHECK ((body_raw IS NULL) != (body_compressed IS NULL)),
+CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
+    OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL))
 ```
 
-- Existing rows migrate to `content_kind='document'` and `media_type='text/markdown'`.
-- Blob rows use `content_kind='blob'`.
+- Existing rows migrate to `content_kind='document'` and `media_type='text/markdown'`; their decoded
+  text body moves to `body_raw`.
+- Text-readable content uses `body_raw` and leaves `body_compressed`/`body_codec` NULL.
+- Binary blobs use `body_compressed` and leave `body_raw` NULL; `body_codec` is non-null.
 - `media_type` is a lowercase MIME type without parameters.
-- `body_compressed` stores the primary blob bytes.
-- `body_codec` is the per-row codec: `none`, `zstd` or an extension codec name such as `lz4`.
-- `content_hash` is SHA-256 over the original blob bytes, not the compressed bytes.
+- `body_codec` is `zstd`, `none` or an extension codec name such as `lz4`, and applies only to
+  `body_compressed`.
+- `content_hash` and `size` are over the original bytes, not the stored bytes.
 - `doc_type` may carry an extension-provided label (`Image`, `Video`, `PDF`); core never branches on
   it.
 
@@ -81,32 +89,35 @@ content_metadata TEXT NOT NULL DEFAULT '{}'
 - Core validates the envelope and size; unknown attributes are preserved.
 - Core does not interpret `text_source` or any attribute key.
 - Invalid metadata fails the enrichment with a warning; the document remains with empty metadata.
-- Core never writes blob bytes into `content_metadata`.
+- Core never writes body bytes into `content_metadata`.
+- `content_metadata.text` is for extracted text from a binary blob (OCR, transcript, PDF text). It is
+  not used for text-readable bodies; those are indexed from `body_raw` directly.
 
 ### 3.3 Searchable text
 
-- FTS `body` is populated from `content_metadata.text`, never from `body_compressed`.
-- A blob with no text remains searchable by title, description and keywords.
-- `weave search` snippets come from the extracted text.
+- FTS `body` is `body_raw` when present.
+- For binary blobs (`body_raw` NULL), FTS `body` is `content_metadata.text`.
+- A blob with no extracted text remains searchable by title, description and keywords.
+- `weave search` snippets come from `body_raw` or the extracted text.
 - `weave explain` reports the FTS field as `body`; the spec does not add a media-specific field.
 
 ### 3.4 Per-row compression
 
-- Text-readable content is stored raw with `body_codec = none`: Markdown, `.txt`, JSON, XML, CSV
-  and source code. Core classifies text through `content_kind`, text MIME types and a generic
-  UTF-8/printable heuristic; there is no language-extension allowlist.
-- Binary blobs use `body_codec = zstd` by default, always, even when zstd output is larger than the
-  input.
+- Text-readable content uses `body_raw` and leaves `body_compressed` and `body_codec` NULL:
+  Markdown, `.txt`, JSON, XML, CSV and source code. Core classifies text through `content_kind`, text
+  MIME types and a generic UTF-8/printable heuristic; there is no language-extension allowlist.
+- Binary blobs use `body_compressed` and a non-null `body_codec`. They use `zstd` by default, always,
+  even when zstd output is larger than the input.
 - `--codec` applies to binary blobs only. It accepts `zstd`, `none`, or an extension codec name such
-  as `lz4`. Text-readable content ignores `--codec` with a warning and stays `none`.
+  as `lz4`. Text-readable content ignores `--codec` with a warning and stays `body_raw`.
 - `none` and `zstd` are the only built-in codecs. LZ4 and other algorithms are `weave-codec-<name>`
   extensions; see [Codec Extensions](codec-extensions.md).
-- The codec is recorded per document row in `body_codec`; there is no bundle-wide or media-wide
-  assumption. Different rows in the same bundle may use different codecs.
+- The codec is recorded per compressed row in `body_codec`; there is no bundle-wide or media-wide
+  assumption. Different binary rows in the same bundle may use different codecs.
 - `body_codec` is core-owned; extensions cannot set or override it.
-- `show --out`, MCP blob reads and export decode using the stored codec. A missing codec fails with
-  `CODEC_UNAVAILABLE`, not an empty body.
-- `show --json` reports `body_codec` and the original and stored sizes.
+- `show --out`, MCP reads and export write `body_raw` directly or decode `body_compressed` using the
+  stored codec. A missing codec fails with `CODEC_UNAVAILABLE`, not an empty body.
+- `show --json` reports the body form, `body_codec` (null for text), and original/stored sizes.
 - `content_metadata` is plain JSON and is not compressed by the body codec; it is separately
   size-limited.
 
@@ -179,7 +190,8 @@ ignored, as in the Markdown parser.
 - `title` starts empty; `weave list`/`show` fall back to the filename when empty.
 - `description` and `keywords` start empty.
 - `content_metadata` starts `{"v":1}`.
-- `body_codec` records the actual codec used for that row.
+- Text-readable blobs use `body_raw` and leave `body_codec` NULL.
+- Binary blobs use `body_compressed` and a non-null `body_codec`.
 - `doc_type` may be set by the extension.
 - The title/description/keywords precedence is defined in §5.
 
@@ -236,8 +248,8 @@ Rules:
   Existing `attributes` keys are preserved; new keys are added.
 - `custom_metadata` is stored in the existing `enrichments.data_json` table, keyed by extension and
   document.
-- Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_compressed`, `body_codec`
-  or `file_path`.
+- Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_raw`, `body_compressed`,
+  `body_codec` or `file_path`.
 - A failed or malformed response keeps the previous metadata and adds one warning.
 
 ### 5.3 Text precedence
@@ -259,9 +271,10 @@ weave show ~/notes photos/cat.png --json --db ~/.weave/index.db
 weave list ~/notes --type Image --json
 ```
 
-- `--out` writes the decoded primary blob; an existing file is rejected unless `--force` is used.
-- `--json` returns metadata, `content_kind`, `media_type`, `content_hash`, `body_codec`, original and
-  stored sizes, `doc_type` and `content_metadata`; it never embeds bytes.
+- `--out` writes `body_raw` directly or decodes `body_compressed`; an existing file is rejected unless
+  `--force` is used.
+- `--json` returns metadata, `content_kind`, `media_type`, `content_hash`, body form, `body_codec`
+  (null for text), original/stored sizes, `doc_type` and `content_metadata`; it never embeds bytes.
 - Without `--out` and with `--json`, the command succeeds with metadata only.
 - Human output prints metadata and the path hint; it never prints binary data.
 
@@ -282,9 +295,9 @@ weave list ~/notes --type Image --json
 
 ## 7. Export
 
-- Raw export writes the decoded primary blob at its original bundle-relative path and includes
-  `content_kind`, `media_type`, `body_codec`, `content_metadata`, hash and original/stored sizes in
-  the manifest.
+- Raw export writes `body_raw` directly or the decoded `body_compressed` at its original
+  bundle-relative path and includes `content_kind`, `media_type`, body form, `body_codec`,
+  `content_metadata`, hash and original/stored sizes in the manifest.
 - Encrypted export excludes blob documents in the first slice and emits one warning per skipped
   blob; opaque blob encryption is deferred.
 - A missing blob is an export error; Weave never silently drops a blob.
@@ -308,7 +321,7 @@ weave list ~/notes --type Image --json
 | `OkfConcept` | `content_kind` | `document` or `blob` |
 | `OkfConcept` | `media_type` | Stored MIME type |
 | `OkfConcept` | `content_metadata` | Versioned JSON envelope |
-| `ShowResult` | `content_kind`, `media_type`, `content_metadata`, `body_codec`, `size`, `stored_size`, `content_hash` | Blob metadata |
+| `ShowResult` | `content_kind`, `media_type`, `content_metadata`, `body_form` (`raw`/`compressed`), `body_codec`, `size`, `stored_size`, `content_hash` | Blob metadata |
 | `ListResult` | `content_kind`, `media_type`, `doc_type` | Blob listing metadata |
 | Search hits | `content_kind`, `media_type` | Optional result fields |
 | `EnrichmentRequest` | `media_type` | Optional media type |
@@ -326,11 +339,14 @@ All schema changes are additive inside v1. Goldens and schema baselines update i
 - Media type detection, mismatch warnings and unknown binaries.
 - Opt-in discovery, `--asset-types`, extension `asset_types`, ignored directories and symlink escape.
 - Blob ingest with image, PDF-like and arbitrary binary fixtures; no image-specific core behavior.
-- FTS body from `content_metadata.text`; empty text remains searchable by metadata.
+- FTS body from `body_raw` for text; from `content_metadata.text` for binary blobs; empty text
+  remains searchable by metadata.
 - Enrichment precedence: declared wins, inferred fills empty, keywords append, OCR text wins.
 - `show --out`, `--force`, JSON metadata and MCP blob bytes.
-- Mixed per-row codecs: text stores `none`, binary stores `zstd`, and an extension-codec blob
-  round-trips; codec metadata is exposed and missing codecs fail with `CODEC_UNAVAILABLE`.
+- Body form: text rows have `body_raw` and NULL codec/compressed; binary rows have
+  `body_compressed` and a non-null codec; no row has both or neither.
+- Mixed codecs: text rows raw, binary rows zstd, an extension-codec blob round-trips; missing codecs
+  fail with `CODEC_UNAVAILABLE`.
 - Search/list fields, raw export, encrypted-export warning.
 - Delete/sync cascade and size quotas.
 - Full gate, race suite and calibration unchanged.
@@ -342,8 +358,10 @@ Behavior scenarios: [blob-assets.md](https://github.com/prulloac/weave/blob/main
 1. A non-Markdown file matching an allowed media type becomes a blob document with a title,
    description, keywords, metadata and one primary blob.
 2. Core contains no image, video, audio or PDF branches.
-3. `content_metadata.text` is indexed and searchable; the blob is never indexed as text.
-4. `show --out` and MCP return the exact original bytes after decoding the stored per-row codec.
+3. `body_raw` is indexed directly; binary extracted text is indexed from `content_metadata.text`; the
+   raw blob is never indexed as text.
+4. `show --out` and MCP return the exact original bytes from `body_raw` or after decoding
+   `body_compressed` with the stored per-row codec.
 5. `--assets` is required; existing bundles without it are unchanged.
 6. AI/extension metadata fills empty fields only; declared metadata always wins.
 7. Raw export includes blobs; encrypted export warns and excludes them in the first slice.

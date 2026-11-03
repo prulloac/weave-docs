@@ -155,7 +155,7 @@ Response:
   already present. Local OCR/extraction text wins over AI transcription.
 - `inferred_content_metadata` merges into `content_metadata`; `v` is core-owned, existing attribute
   keys are preserved, and new keys are additive.
-- Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_compressed`,
+- Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_raw`, `body_compressed`,
   `body_codec` or `file_path`.
 - `custom_metadata` is stored in the `enrichments` table keyed by bundle, document and enricher.
 - Re-running the same enricher replaces its stored enrichment and inferred keywords.

@@ -116,13 +116,13 @@ weave-codec-<name> decompress
 
 - `sync` preserves a row's codec unless `--codec` is provided.
 - `rebuild --codec` re-encodes binary rows.
-- Text rows always become `none` on rebuild.
+- Text rows always use `body_raw` with NULL `body_codec` on rebuild.
 - An LZ4 row requires `weave-codec-lz4` for reads until rebuilt.
 
 ## 7. Storage and Read Path
 
-- `body_codec` stores `none`, `zstd`, `lz4` or another extension name.
-- `body_compressed` stores the encoded bytes; the name is historical for text rows stored raw.
+- `body_codec` stores `none`, `zstd`, `lz4` or another extension name for `body_compressed` rows.
+- Text rows use `body_raw` and leave `body_codec` NULL; `body_compressed` is NULL.
 - `show --out`, MCP blob reads and export resolve the codec before decoding.
 - A missing stored codec is `CODEC_UNAVAILABLE` and the read fails; it is not treated as an empty
   body.
@@ -179,10 +179,10 @@ Body compression scenarios live in [compression.md](https://github.com/prulloac/
 ## 12. Acceptance Criteria
 
 1. Core ships only `none` and `zstd`; LZ4 is an extension.
-2. Text-readable content is stored raw with `body_codec=none`.
+2. Text-readable content is stored in `body_raw` with NULL `body_codec`.
 3. Binary blobs default to zstd, even when the result is larger.
 4. `--codec lz4` uses `weave-codec-lz4`; missing codec fails before write.
-5. `body_codec` is per row and retrieval resolves the exact codec.
+5. `body_codec` is per compressed row and retrieval resolves the exact codec.
 6. Missing stored codecs fail with `CODEC_UNAVAILABLE`, not empty data.
 7. Codec extensions use raw stdin/stdout and never access the database.
 8. Mixed codecs round-trip and `weave codecs list` is accurate.

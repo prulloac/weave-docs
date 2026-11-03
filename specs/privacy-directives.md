@@ -207,7 +207,8 @@ redacted         INTEGER DEFAULT 0,
 privacy_spans_json TEXT DEFAULT '[]'
 ```
 
-- `body_compressed` holds the transformed body bytes; `body_codec` stays `none` in this slice.
+- `body_raw` holds the transformed text body; `body_compressed` and `body_codec` stay NULL in this
+  slice. Binary blob encryption is out of scope.
 - `privacy_policy` uses `none`, `encrypt`, `tokenize`, `hash` or `mixed`.
 - For `encrypt`, the body is ciphertext and `redacted = 1`; the document's FTS rows are deleted.
 - For `tokenize` and `hash`, the body is the transformed text and stays in FTS.
@@ -308,8 +309,8 @@ privacy key and decryption failures. Audit findings keep the existing `--fail-on
 
 Validation guarantees:
 
-- No plaintext protected content in `documents.body_compressed`, `fts_documents` or `fts_trigrams`
-  after ingest or sync.
+- No plaintext protected content in `documents.body_raw`, `documents.body_compressed`,
+  `fts_documents` or `fts_trigrams` after ingest or sync.
 - No key material in the database, JSON output, logs or MCP payloads.
 - Deterministic output for the same source, keys and database state.
 

@@ -126,8 +126,8 @@ weave search ~/notes "token rotation" --mode semantic --db ~/.weave/index.db
 ```
 
 - `--with-embedder <name>` selects a `weave-<name>` extension with an embedding role.
-- The embedder is invoked after text/metadata enrichment, using `content_metadata.text`, title and
-  description as input.
+- The embedder is invoked after text/metadata enrichment. Its text input is `body_raw` when present;
+  otherwise it is `content_metadata.text` for binary blobs, plus title and description.
 - `weave-ai` is the reference embedder; other embedders use the same protocol.
 
 ### 5.2 Embedding request
