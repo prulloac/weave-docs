@@ -72,7 +72,7 @@ are internal delivery waves, not product versions.
 | Enrichment extension | v1.0 | Shipped: `--with-enricher`, inferred keywords and metadata |
 | Rerank extension | v1.0 | Shipped: `--rerank`, 0.5/0.5 blend and fallback |
 | External crypto providers | v1.0 | Shipped: `weave-crypto-<name>` providers, capabilities, key versions |
-| AI plugin | v1.0 | Shipped: `weave-ai` reference extension (Ollama, OpenAI, Gemini) |
+| AI plugin | v1.0 | Shipped: `weave-ai` reference extension (Ollama, OpenAI, Gemini); repository extraction tracked in [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) |
 | Explainable search | v1.0 | Shipped: per-token/per-field `weave explain` |
 | Bundle audit | v1.0 | Shipped: stable finding codes, `--fail-on` gate, JSON and human reports |
 | Graph relate | v1.0 | Shipped: bounded depth/direction subgraphs |
@@ -501,6 +501,7 @@ needed.
 - [Privacy & Extensions](architecture/privacy-and-extensions.md)
 - [External Crypto Providers](specs/external-crypto-providers.md)
 - [Weave AI Extension](specs/weave-ai-plugin.md)
+- [ADR 0003: Extension Protocol Ownership and weave-ai Extraction](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md)
 - [MCP Server](specs/mcp-server.md)
 - [MCP Sensitive Access](specs/mcp-sensitive.md)
 - [Architecture](architecture/index.md)

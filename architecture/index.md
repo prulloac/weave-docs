@@ -143,6 +143,7 @@ remains the compatibility promise.
 | --- | --- |
 | [ADR 0001](adr/0001-keyword-fuzzy-search-and-ui-retirement.md) | New purpose, keywords, fuzzy search and UI retirement |
 | [ADR 0002](adr/0002-config-paths-and-db-location.md) | Config/cache/DB paths and additive machine output |
+| [ADR 0003](adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) | `weave-ai` extraction and extension protocol ownership |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |

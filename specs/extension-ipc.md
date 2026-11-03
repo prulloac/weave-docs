@@ -80,6 +80,9 @@ Request:
   "v": "weave.cli/v1",
   "type": "enrichment_request",
   "doc_id": "docs/adr-004.md",
+  "doc_path": "docs/adr-004.md",
+  "bundle_root": "/home/user/notes",
+  "workspace": "/tmp/weave-extension-12345",
   "title": "Database Storage Selection",
   "frontmatter": {"type": "adr", "keywords": ["database", "storage"]},
   "body": "We decided to adopt pure-Go SQLite..."
@@ -88,6 +91,10 @@ Request:
 
 - `body` is truncated to 64 KiB.
 - `doc_id`, `title` and `frontmatter` are always present; `frontmatter` may be empty.
+- `doc_path`, `bundle_root` and `workspace` are optional additive fields; an extension may ignore
+  them. `doc_path` is bundle-relative, `bundle_root` is an absolute path to the bundle root, and
+  `workspace` is an absolute per-invocation temporary directory containing a `files/` directory.
+  Core removes the workspace after the invocation.
 
 Response:
 
