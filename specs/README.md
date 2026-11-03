@@ -20,7 +20,7 @@ maturity only.
 | [Privacy Directives](privacy-directives.md) | stable | [Privacy](https://github.com/prulloac/weave/blob/main/docs/bdd/privacy-directives.md) | 12 |
 | [Extension Subprocess IPC](extension-ipc.md) | stable | [Extension IPC](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-ipc.md) | 13, 14, 15 |
 | [External Crypto Providers](external-crypto-providers.md) | stable | [External crypto](https://github.com/prulloac/weave/blob/main/docs/bdd/external-crypto.md) | 17 |
-| [Weave AI Extension](weave-ai-plugin.md) | stable | [AI plugin](https://github.com/prulloac/weave/blob/main/docs/bdd/ai-plugin.md) | 16 |
+| [Weave AI Extension](weave-ai-plugin.md) | stable | [core behavior](https://github.com/prulloac/weave/blob/main/docs/bdd/ai-plugin.md), [plugin protocol](https://github.com/prulloac/weave-ai/blob/main/docs/bdd/ai-plugin.md) | 16 |
 | [MCP Server](mcp-server.md) | stable | [MCP server](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-server.md), [Transport](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-transport.md), [Resources](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-resources.md) | 19, 20, 22, 23, 24 |
 | [MCP Sensitive Access](mcp-sensitive.md) | stable | [MCP sensitive](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-sensitive.md) | 18 |
 | [Multiple Bundle Sources](multi-bundle.md) | stable | [Multi-bundle](https://github.com/prulloac/weave/blob/main/docs/bdd/multi-bundle.md), [MCP multi-source](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-multi-source.md) | 27, 28 |

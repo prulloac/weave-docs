@@ -96,10 +96,10 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Release readiness (regression, smoke, docs) | [release-readiness.md](specs/release-readiness.md) | - | x | x | x | green |
 | Pluggable scoring (post-GA) | [extension-scoring.md](specs/extension-scoring.md) | - | x | x | - | backlog |
 | Extension data API (post-GA) | [extension-data.md](specs/extension-data.md) | - | x | x | x | review |
-| weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | - | x | in-progress |
+| weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 
-ADR 0003 is accepted. The `prulloac/weave-ai` repository, code move, CI, release automation, IPC
-schema/fixtures and conformance tests are complete; removal of `cmd/weave-ai` from `weave` remains.
+ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weave-ai` is removed
+from `weave`, and conformance tests cover both sides. Release tag pending.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and

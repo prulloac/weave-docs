@@ -23,11 +23,10 @@ Accepted on 2026-11-02. It complements [ADR 0002](0002-config-paths-and-db-locat
 
 ## Context
 
-`weave-ai` is the reference AI extension. It currently lives in the `weave` repository at
-[`cmd/weave-ai`](https://github.com/prulloac/weave/blob/main/cmd/weave-ai/main.go), imports no
-`github.com/prulloac/weave` packages, and depends only on the standard library and
-`gopkg.in/yaml.v3`. It speaks `weave.cli/v1` over stdin/stdout like any other `weave-<name>`
-extension.
+`weave-ai` is the reference AI extension. At the time of this decision it lived in the `weave`
+repository at `cmd/weave-ai`, imported no `github.com/prulloac/weave` packages, and depended only on
+the standard library and `gopkg.in/yaml.v3`. It speaks `weave.cli/v1` over stdin/stdout like any
+other `weave-<name>` extension.
 
 Four facts make its current location awkward:
 

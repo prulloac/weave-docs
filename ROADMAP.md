@@ -72,7 +72,7 @@ are internal delivery waves, not product versions.
 | Enrichment extension | v1.0 | Shipped: `--with-enricher`, inferred keywords and metadata |
 | Rerank extension | v1.0 | Shipped: `--rerank`, 0.5/0.5 blend and fallback |
 | External crypto providers | v1.0 | Shipped: `weave-crypto-<name>` providers, capabilities, key versions |
-| AI plugin | v1.0 | Shipped: `weave-ai` reference extension (Ollama, OpenAI, Gemini); repository extraction tracked in [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) |
+| AI plugin | v1.0 | Shipped: [`weave-ai`](https://github.com/prulloac/weave-ai) reference extension (Ollama, OpenAI, Gemini); split recorded in [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) |
 | Explainable search | v1.0 | Shipped: per-token/per-field `weave explain` |
 | Bundle audit | v1.0 | Shipped: stable finding codes, `--fail-on` gate, JSON and human reports |
 | Graph relate | v1.0 | Shipped: bounded depth/direction subgraphs |
@@ -396,7 +396,8 @@ Specs: [Privacy Directives](specs/privacy-directives.md),
 - `weave-<name>` subprocess plugins over `weave.cli/v1` stdio (shipped).
 - Enrichment during ingest, rebuild and sync (shipped).
 - Reranking during search (shipped).
-- Optional `weave-ai` plugin for local/cloud keyword extraction and embeddings.
+- Optional [`weave-ai`](https://github.com/prulloac/weave-ai) plugin for local/cloud keyword
+  extraction and embeddings.
 - External crypto providers (Age, Vault, KMS).
 
 Specs: [Extension Subprocess IPC](specs/extension-ipc.md),

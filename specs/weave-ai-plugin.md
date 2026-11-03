@@ -18,9 +18,9 @@ status: stable
 
 ## 1. Overview
 
-`weave-ai` is an optional reference extension shipped in this repository as `cmd/weave-ai`. It speaks
-the `weave.cli/v1` subprocess protocol from [Extension Subprocess IPC](extension-ipc.md) and
-provides:
+`weave-ai` is an optional reference extension maintained in
+[`prulloac/weave-ai`](https://github.com/prulloac/weave-ai). It speaks the `weave.cli/v1` subprocess
+protocol from [Extension Subprocess IPC](extension-ipc.md) and provides:
 
 - keyword and summary enrichment during `ingest`, `rebuild` and `sync`;
 - optional reranking during `search`.
@@ -45,6 +45,7 @@ weave ingest <path> --with-enricher ai --db ~/.weave/index.db
 weave search <path> "<query>" --rerank ai
 ```
 
+- Install with `go install github.com/prulloac/weave-ai@latest` or a release archive.
 - The binary is named `weave-ai`, installed in `$PATH` or `<bundle>/.weave/bin/`.
 - One request per process, JSON on stdin and stdout, `v: weave.cli/v1`.
 - The plugin honors the runner timeout; it also applies its own provider timeout.
@@ -196,7 +197,8 @@ Core reports these as `EXTENSION_FAILED` or `EXTENSION_TIMEOUT` warnings and con
 
 ## 6. Testing
 
-- `cmd/weave-ai` unit tests with `httptest` for Ollama, OpenAI and Gemini shapes.
+- `weave-ai` unit tests with `httptest` for Ollama, OpenAI and Gemini shapes, plus fixture-driven
+  conformance tests against `contract/v1/golden/extension-ipc/`.
 - Enrichment and rerank protocol round-trips, including clamping and malformed output.
 - Config defaults, env overrides and invalid values.
 - No API key or body content in errors.
@@ -217,6 +219,8 @@ Core reports these as `EXTENSION_FAILED` or `EXTENSION_TIMEOUT` warnings and con
 ## Related Documents
 
 - [Extension Subprocess IPC](extension-ipc.md)
+- [Weave AI repository](https://github.com/prulloac/weave-ai)
+- [ADR 0003: Extension Protocol Ownership and weave-ai Extraction](../architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md)
 - [Privacy Directives](privacy-directives.md)
 - [BM25 Ranking](bm25-ranking.md)
 - [ROADMAP](../ROADMAP.md)
