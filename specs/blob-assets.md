@@ -101,6 +101,8 @@ weave ingest ~/notes --assets --asset-types image/jpeg,image/png,application/pdf
 - `--assets` enables blob scanning; without it, images and other non-Markdown files are ignored as
   before.
 - `--asset-types` accepts comma-separated MIME types and suffix wildcards such as `image/*`.
+- `--assets` without `--asset-types` and without an extension capability exits `2` with
+  `ASSET_TYPES_REQUIRED`.
 - Blob ingestion requires persistent storage; `--no-db` with `--assets` exits with
   `BLOBS_REQUIRE_DB`.
 - Files are matched by detected media type, not by hardcoded core extensions.
@@ -309,8 +311,7 @@ All schema changes are additive inside v1. Goldens and schema baselines update i
 - Delete/sync cascade and size quotas.
 - Full gate, race suite and calibration unchanged.
 
-Behavior scenarios are planned in `weave/docs/bdd/blob-assets.md`; they are not part of this
-specification document yet.
+Behavior scenarios: [blob-assets.md](https://github.com/prulloac/weave/blob/main/docs/bdd/blob-assets.md).
 
 ## 11. Acceptance Criteria
 

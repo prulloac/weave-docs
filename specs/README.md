@@ -31,9 +31,9 @@ maturity only.
 | [Release Readiness](release-readiness.md) | stable | [Release readiness](https://github.com/prulloac/weave/blob/main/docs/bdd/release-readiness.md) | release gate |
 | [Pluggable Scoring](extension-scoring.md) | draft | [Scoring](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-scoring.md) | 31 (post-GA) |
 | [Extension Data API](extension-data.md) | stable | [Extension data](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-data.md) | 32 (post-GA) |
-| [Generic Blob Assets](blob-assets.md) | draft | — | 35 |
-| [Weave Image Extension](weave-image.md) | draft | — | 36 |
-| [Embeddings](embeddings.md) | draft | — | 37 |
+| [Generic Blob Assets](blob-assets.md) | draft | [Blob assets](https://github.com/prulloac/weave/blob/main/docs/bdd/blob-assets.md) | 35 |
+| [Weave Image Extension](weave-image.md) | draft | [Weave image](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-image.md) | 36 |
+| [Embeddings](embeddings.md) | draft | [Embeddings](https://github.com/prulloac/weave/blob/main/docs/bdd/embeddings.md) | 37 |
 
 ## Ownership rules
 

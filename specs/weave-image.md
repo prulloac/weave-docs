@@ -233,8 +233,9 @@ All retrieval is generic core behavior:
 - `weave-image --describe --json` capability shape.
 - Full gate, race suite and no network in unit tests.
 
-Behavior scenarios are planned in `weave-image/docs/bdd/image.md`; the core blob scenarios stay in
-`weave/docs/bdd/blob-assets.md`.
+Core integration behavior: [weave-image.md](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-image.md).
+The future `weave-image` repository owns provider, OCR and installer scenarios. Generic blob
+scenarios stay in [blob-assets.md](https://github.com/prulloac/weave/blob/main/docs/bdd/blob-assets.md).
 
 ## 12. Acceptance Criteria
 

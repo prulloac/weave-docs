@@ -266,8 +266,7 @@ Schemas and goldens update additively within v1.
 - All six targets build with `CGO_ENABLED=0`.
 - Third-party license notice.
 
-Behavior scenarios are planned in `weave/docs/bdd/embeddings.md`; they are not part of this
-specification document yet.
+Behavior scenarios: [embeddings.md](https://github.com/prulloac/weave/blob/main/docs/bdd/embeddings.md).
 
 ## 12. Acceptance Criteria
 
