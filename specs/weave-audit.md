@@ -120,6 +120,9 @@ uses a success envelope containing the report, even when the process exits `1`.
 | `EMPTY_BUNDLE` | warning | No Markdown files |
 | `DANGLING_EXTERNAL` | info | External/dangling link; informational only |
 | `KEY_UNAVAILABLE` | warning | Privacy directive references a missing key (v1.0, `--verify-keys`) |
+| `CODEC_MISSING` | warning | A stored `body_codec` is not installed (v1.1) |
+| `EMBEDDING_STALE` | warning | Embedding `content_hash` differs from the document (v1.1) |
+| `EMBEDDING_INDEX_MISMATCH` | warning | Space registry and `vec0` table disagree (v1.1) |
 
 Severity ordering: `error` > `warning` > `info`.
 
@@ -142,6 +145,8 @@ The audit consumes the engine's existing structures:
 - `Bundle.index`
 - `Graph.Nodes`, `Graph.Edges`, `Graph.Dangling`
 - concept links and frontmatter
+- stored body codecs and the installed codec registry (v1.1)
+- `document_embeddings` and `embedding_indexes` (v1.1)
 
 No new parser behavior is required.
 

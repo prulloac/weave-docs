@@ -1,0 +1,7 @@
+docs(spec): align media, codec and embedding contracts
+
+- persist the resolved asset filter per bundle so sync/rebuild reuse it
+- add original/stored body sizes and document blob validation exemptions
+- require codecs to migrate LZ4 text rows
+- fix embedding source keys, sync re-embedding and shared-space drops
+- add blob MCP resources, export rules and audit finding codes

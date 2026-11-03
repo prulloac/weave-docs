@@ -41,6 +41,8 @@ transport, selection, error behavior and the first-party LZ4 extension.
 - Non-executable files are skipped.
 - Built-ins `none` and `zstd` are always available and cannot be shadowed by an extension.
 - First-party extension: `weave-codec-lz4` provides `lz4`.
+- `none` is a passthrough codec: `can_compress` is false because it never reduces size, but
+  `--codec none` is a valid explicit selection and decompression is a no-op.
 
 `weave codecs list [<path>] --json` returns:
 
@@ -89,7 +91,8 @@ weave-codec-<name> decompress
 - Diagnostics go to stderr; stdout must contain only codec bytes.
 - Exit `0` on success; any other exit fails the operation.
 - One process per operation.
-- The runner enforces a 30-second default timeout, configurable with `--timeout`.
+- The runner uses the global extension timeout: 5 seconds by default, configurable with `--timeout`
+  (see [Extension IPC](extension-ipc.md)).
 - Input is bounded by the blob size limit; decompression output is bounded to prevent bombs.
 - A codec must be deterministic for the same input, options and version.
 
@@ -97,9 +100,10 @@ weave-codec-<name> decompress
 
 ### 6.1 Text-readable content
 
-- `content_kind=document` and text-readable blobs always use `none`.
+- `content_kind=document` and text-readable blobs always use `body_raw`.
+- `body_compressed` and `body_codec` are NULL for text-readable content.
 - `--codec` is ignored for text-readable content with one warning.
-- Text codec metadata is still recorded as `none`.
+- No codec extension is invoked for text-readable content.
 
 ### 6.2 Binary blobs
 
@@ -117,7 +121,7 @@ weave-codec-<name> decompress
 - `sync` preserves a row's codec unless `--codec` is provided.
 - `rebuild --codec` re-encodes binary rows.
 - Text rows always use `body_raw` with NULL `body_codec` on rebuild.
-- An LZ4 row requires `weave-codec-lz4` for reads until rebuilt.
+- An LZ4 binary row requires `weave-codec-lz4` for reads until rebuilt.
 
 ## 7. Storage and Read Path
 
@@ -127,7 +131,7 @@ weave-codec-<name> decompress
 - A missing stored codec is `CODEC_UNAVAILABLE` and the read fails; it is not treated as an empty
   body.
 - Corrupt codec output is `BODY_DECODE_FAILED`; no partial plaintext is returned.
-- `weave audit` reports codecs required by the database but not installed.
+- `weave audit` reports `CODEC_MISSING` for stored codecs that are not installed.
 
 ## 8. LZ4 Extension
 
@@ -163,14 +167,14 @@ weave-codec-<name> decompress
 - Manifest validation and `weave codecs list --json`.
 - Raw compress/decompress round-trip for a custom codec.
 - LZ4 extension round-trip; core without LZ4 fails `--codec lz4` with `CODEC_NOT_FOUND`.
-- Text content stays `none` with or without `--codec`.
+- Text content stays in `body_raw` with NULL `body_codec`, with or without `--codec`.
 - Binary default is zstd; zstd output larger than input is still stored.
 - Missing stored codec fails reads with `CODEC_UNAVAILABLE`.
 - Corrupt/truncated output fails with `BODY_DECODE_FAILED`.
 - Timeout, non-zero exit, invalid manifest and oversized output.
 - Mixed codecs in one bundle; `show --out` round-trips each.
 - `rebuild --codec` and `sync` preserve/change codecs as specified.
-- Migration decompresses text rows and handles LZ4 rows with/without the extension.
+- Migration decompresses text rows; missing LZ4 aborts without changing `user_version`.
 - Full gate, race suite, six static targets.
 
 Behavior scenarios: [codec-extensions.md](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md).

@@ -195,7 +195,8 @@ remains the compatibility promise.
 ## Non-Goals
 
 - Any browser UI, renderer, mount, lens, Astro or Preact work.
-- Synonyms, stemming or embeddings in the core engine.
+- Synonym dictionaries or stemming in the core engine; semantic search uses embeddings as decided in
+  [ADR 0005](adr/0005-embeddings-and-cgo-free-vec0-index.md).
 - Cross-bundle federated search.
 - A query daemon separate from the CLI.
 - An HTTP integration API.

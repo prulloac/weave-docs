@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "Weave AI Extension Specification"
-description: "Reference weave-ai subprocess extension: Ollama, OpenAI-compatible and Gemini providers, enrichment, reranking and sensitive redaction."
+description: "Reference weave-ai subprocess extension: Ollama, OpenAI-compatible and Gemini providers, enrichment, vision, embeddings, reranking and sensitive redaction."
 tags:
   - "specification"
   - "extension"
@@ -175,6 +175,8 @@ timeout: 30s
   - metadata (title, keywords, frontmatter) is public and may be sent.
 - Per-document opt-in is `privacy.ai.send: true` in frontmatter; it sends the body unredacted.
 - The plugin never receives key material, ciphertext or `.weave/index.db`.
+- Vision requests from `weave-image` carry image bytes and EXIF directly; they are not subject to core
+  text redaction. The image enricher is an explicit operator choice.
 - Plugin logs and errors never include document bodies or keys.
 - Cloud providers are expected to be chosen deliberately by the operator; no heuristic detection.
 
@@ -206,7 +208,7 @@ Response:
 }
 ```
 
-- The image is base64-encoded in the request; core does not carry blob bytes.
+- `weave-image` base64-encodes the image; core never carries blob bytes.
 - `vision_model` is used; if it is empty, `model` is used.
 - `text` and `exif` are optional context; `text` takes precedence over any transcription returned.
 - The plugin asks for a strict JSON object; malformed output is an error.
@@ -253,9 +255,11 @@ Response:
 
 ## 3. Behavior
 
-1. Read and bound stdin to 1 MiB.
+1. Read and bound stdin to 32 MiB. A `vision_request` may carry a 20 MiB image; base64 and JSON
+   overhead fit within the bound.
 2. Load config from `WEAVE_AI_CONFIG` or `<cwd>/.weave/ai.yaml`.
-3. Dispatch on `type` (`enrichment_request`, `rerank_request`).
+3. Dispatch on `type` (`enrichment_request`, `vision_request`, `embedding_request`,
+   `rerank_request`).
 4. Build a deterministic prompt with temperature 0 and a JSON response format.
 5. Call the provider with the configured timeout.
 6. Extract and validate the JSON object.
@@ -267,6 +271,12 @@ Response:
 ```text
 core concept -> privacy redaction -> weave-ai subprocess -> provider HTTP
              -> JSON response -> core validation -> keywords/rerank
+
+weave-image -> image bytes + OCR + EXIF -> weave-ai subprocess -> provider HTTP
+            -> JSON response -> weave-image validation -> core persist
+
+core text/query -> weave-ai embedding_request -> provider HTTP
+                -> vector response -> core validation -> document_embeddings + vec0
 ```
 
 ## 5. Validation and Errors
@@ -304,7 +314,8 @@ Core reports these as `EXTENSION_FAILED` or `EXTENSION_TIMEOUT` warnings and con
 - Ollama works by default; OpenAI-compatible and Gemini providers work with configured endpoints.
 - Inferred keywords, vision metadata and embeddings are validated by core and degrade safely.
 - `weave-ai` can serve as the vision backend for `weave-image` and the embedder for semantic search.
-- Protected content never reaches the plugin without `privacy.ai.send: true`.
+- Protected text content never reaches the plugin without `privacy.ai.send: true`; vision images are
+  governed by the explicit image enricher.
 - Keys, bodies, images and EXIF never appear in logs or errors.
 - The full verification gate stays green.
 

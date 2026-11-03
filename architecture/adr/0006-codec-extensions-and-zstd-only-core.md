@@ -46,7 +46,7 @@ database row must record which codec produced its bytes.
 | D7 | `body_codec` stores the codec name per compressed row; retrieval requires that codec |
 | D8 | Explicit missing codecs fail before write; stored missing codecs fail reads with `CODEC_UNAVAILABLE` |
 | D9 | Codec extensions are trusted, bounded and never access the database |
-| D10 | Schema v7 migration decompresses existing text rows into `body_raw`; LZ4 rows require the LZ4 codec or a rebuild |
+| D10 | Schema v7 migration decompresses existing text rows into `body_raw`; LZ4 text rows require the LZ4 codec to migrate |
 
 ## D1 — Text-readable content is raw
 
@@ -60,7 +60,8 @@ Classification is generic:
 
 1. `content_kind = document` is always text-readable.
 2. A blob with a text MIME type (`text/*`, `application/json`, `application/xml`,
-   `application/javascript`, `application/x-yaml`, `application/toml`, ...) is text-readable.
+   `application/javascript`, `application/x-yaml`, `application/toml`, ...) is text-readable only
+   when its bytes are valid UTF-8 without NUL.
 3. Otherwise core samples the bytes: valid UTF-8, no NUL, and a high printable-character ratio means
    text-readable.
 4. Everything else is binary.
@@ -170,7 +171,8 @@ contract, not an implementation detail.
 
 - Codec extensions are trusted executables with the caller's environment.
 - They never receive the database path or write access.
-- The runner bounds stdin/stdout/time; codec timeouts default to 30 seconds and are configurable.
+- The runner bounds stdin/stdout/time. Codec invocations use the global extension timeout: 5 seconds
+  by default, configurable with `--timeout`.
 - Blob size limits from [ADR 0004](0004-generic-blob-assets-and-content-metadata.md) apply before the
   codec runs.
 - Decompression output is bounded to prevent decompression bombs.
@@ -180,10 +182,10 @@ contract, not an implementation detail.
 Schema v7 migration:
 
 1. Decompress existing text-readable rows into `body_raw`; leave `body_compressed`/`body_codec`
-   NULL.
+   NULL and backfill `size`/`stored_size`.
 2. Keep existing `zstd` binary rows as `zstd`.
-3. Existing LZ4 rows require `weave-codec-lz4`; without it they remain unreadable until the extension
-   is installed or the bundle is rebuilt.
+3. Existing LZ4 text rows require `weave-codec-lz4` to migrate. A missing codec aborts the migration
+   with `CODEC_UNAVAILABLE`, leaves `user_version` unchanged and changes no rows.
 4. New binary rows use `zstd` unless `--codec` selects another codec.
 
 ## Consequences

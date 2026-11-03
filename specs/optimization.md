@@ -78,7 +78,7 @@ Measured on the standard CI runner with the 10,000-document corpus unless noted:
 | BM25 search, p95 | < 150 ms |
 | Explain, p95 | < 150 ms |
 | Search index memory | < 3× total body bytes |
-| Stored zstd bodies | < 60% of raw body bytes on the corpus |
+| Stored binary bodies with zstd | < 60% of raw binary body bytes on the corpus |
 | Release binary | < 25 MB |
 
 - Budgets are goals for the program; each optimization slice must move at least one budget or remove

@@ -48,7 +48,7 @@ CREATE TABLE document_embeddings (
     vector BLOB NOT NULL,          -- float32 little-endian, normalized
     content_hash TEXT NOT NULL,
     created_at INTEGER NOT NULL,
-    PRIMARY KEY (bundle_root, doc_id, model),
+    PRIMARY KEY (bundle_root, doc_id, model, dim),
     FOREIGN KEY (bundle_root, doc_id)
         REFERENCES documents(bundle_root, id) ON DELETE CASCADE
 );
@@ -65,7 +65,8 @@ CREATE TABLE embedding_indexes (
 );
 ```
 
-- `document_embeddings` is the source of truth and supports multiple models per document.
+- `document_embeddings` is the source of truth and supports multiple models per document; the same
+  model at two dimensions yields two source rows and two spaces.
 - `vector` is normalized float32 little-endian; `dim` must match its length exactly.
 - `content_hash` detects embeddings produced from an older document version.
 - `embedding_indexes` maps a space tuple to one `vec0` table.
@@ -122,12 +123,18 @@ operation idempotent. `SQLITE_BUSY` retries are bounded.
 
 ```sh
 weave ingest ~/notes --with-embedder ai --db ~/.weave/index.db
+weave sync ~/notes --with-embedder ai --db ~/.weave/index.db
+weave rebuild ~/notes --with-embedder ai --db ~/.weave/index.db
 weave search ~/notes "token rotation" --mode semantic --db ~/.weave/index.db
 ```
 
-- `--with-embedder <name>` selects a `weave-<name>` extension with an embedding role.
+- `--with-embedder <name>` selects a `weave-<name>` extension with an embedding role and applies to
+  `ingest`, `rebuild` and `sync`.
+- Without `--with-embedder`, updated documents keep their old embedding; the `content_hash` mismatch
+  marks it stale until a run with the embedder refreshes it.
 - The embedder is invoked after text/metadata enrichment. Its text input is `body_raw` when present;
-  otherwise it is `content_metadata.text` for binary blobs, plus title and description.
+  otherwise it is `content_metadata.text` for binary blobs, plus title and description. The text is
+  truncated to 8 KiB before the request.
 - `weave-ai` is the reference embedder; other embedders use the same protocol.
 
 ### 5.2 Embedding request
@@ -155,7 +162,8 @@ Response:
 
 - Core validates `model`, `dim`, vector length and finite values; it normalizes the vector before
   storage.
-- The model in the response selects the space; core does not infer it from the configured default.
+- The response `model` must match the request. The response `dim`, validated against the vector
+  length, identifies the space.
 - A malformed or oversized response fails the embedding for that document with a warning.
 - A failed embedding does not fail the document write.
 
@@ -206,14 +214,20 @@ WHERE embedding MATCH vec_f32(?)
 
 ```sh
 weave embeddings list ~/notes --json
-weave embeddings rebuild ~/notes --model <model> --db ~/.weave/index.db
+weave embeddings rebuild ~/notes --model <model> [--with-embedder <name>] --db ~/.weave/index.db
 weave embeddings drop ~/notes --model <model> --db ~/.weave/index.db
 ```
 
-- `list` reports model, dim, metric, element type, table name, active state and row count.
-- `rebuild` recreates the `vec0` table from `document_embeddings`.
-- `drop` removes the index table and registry row; source embeddings may be kept with `--keep-source`.
-- `weave audit` reports missing/stale embeddings and registry/index mismatches.
+- `list` reports model, dim, metric, element type, table name, active state and the bundle's row
+  count.
+- `rebuild` re-derives the bundle's rows from `document_embeddings`: it deletes the bundle partition,
+  re-inserts it and creates the table if absent. Other bundles in the shared table are untouched.
+  When source vectors for the model are absent, it re-embeds with `--with-embedder`; without an
+  embedder the command fails with an actionable error.
+- `drop` deletes the bundle's `document_embeddings` rows and `vec0` partition. It drops the table and
+  registry row only when no bundle still has source rows for that space. `--keep-source` keeps the
+  durable source rows, removes only the index rows and therefore keeps the space registered.
+- `weave audit` reports `EMBEDDING_STALE` and `EMBEDDING_INDEX_MISMATCH` findings.
 
 ## 8. Performance and Limits
 
@@ -221,6 +235,8 @@ weave embeddings drop ~/notes --model <model> --db ~/.weave/index.db
   against the 10k corpus before claiming large-scale behavior.
 - No ANN index is promised in this slice.
 - A 768-dimension float32 vector is ~3 KiB; the durable table duplicates the vector in `vec0`.
+- Embedding input is truncated to 8 KiB of text; tokenization and provider limits beyond that are the
+  embedder's responsibility.
 - `modernc.org/sqlite/vec` adds about 328 KiB to a minimal static binary; all six release targets
   compile without CGO.
 - `sqlite-vec` is v0.1.9 and pre-v1; pin `modernc.org/sqlite` and add regression tests around vec SQL.

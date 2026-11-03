@@ -42,14 +42,21 @@ The public data model lives in `contract/v1/types.go`.
 
 `contractv1.OkfConcept`:
 
-- `id`: bundle-relative path minus `.md`
-- `path`: bundle-relative path including `.md`
-- `type`: required non-empty string
-- `keywords`: required non-empty list of non-empty strings
+- `id`: bundle-relative path minus `.md` for documents; the full path for blobs
+- `path`: bundle-relative path including its suffix
+- `type`: required non-empty string for documents; empty for blobs
+- `keywords`: required non-empty list for documents; may be empty for blobs
 - `title`, `description`, `tags`, `status`: optional
 - `frontmatter`: raw parsed map, unknown keys preserved
-- `body`: text after the closing delimiter
+- `body`: text after the closing delimiter; `body_raw` for text-readable blobs and empty for binary
+  blobs
 - `links`: source-preserving links with resolution metadata
+- `content_kind`: `document` or `blob` (default `document`)
+- `media_type`: stored MIME type (default `text/markdown`)
+- `content_metadata`: versioned JSON envelope (default `{}`)
+
+Blob discovery and media typing are a separate core scanner specified in
+[Generic Blob Assets](blob-assets.md); this parser stays Markdown-only.
 
 ### 3.2 Bundle
 
@@ -64,7 +71,8 @@ The public data model lives in `contract/v1/types.go`.
 ### 3.3 Validation
 
 `contractv1.ConceptValidation` includes `has_frontmatter`, `has_type`, `has_keywords` and
-`warnings`. A bundle is valid only when every concept has all three.
+`warnings`. A bundle is valid only when every document concept has all three. Blob documents
+(`content_kind=blob`) are exempt from OKF frontmatter, type and keyword validation.
 
 Missing keywords:
 

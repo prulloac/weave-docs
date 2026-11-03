@@ -77,6 +77,7 @@ An extension may expose a machine-readable capability manifest with
 - `asset_types` and `requires` are optional.
 - Core uses `asset_types` to filter blob discovery when `--asset-types` is absent.
 - `requires` is informational for core and authoritative for installers and runtime checks.
+- `capabilities` and other unknown manifest fields are informational and ignored by core.
 - A missing or malformed manifest degrades to explicit `--asset-types`; it never blocks text
   enrichment.
 - Codec extensions use the same manifest shape but are named `weave-codec-<name>` and use raw byte
@@ -87,7 +88,10 @@ An extension may expose a machine-readable capability manifest with
 - One request object per process invocation, newline-terminated on stdin.
 - One response object on stdout, optionally followed by whitespace.
 - Stderr is captured as diagnostics and never parsed.
-- Requests and responses are bounded to 1 MiB; larger output is `EXTENSION_PROTOCOL`.
+- Requests and responses are bounded to 1 MiB; larger output is `EXTENSION_PROTOCOL`. Role-specific
+  specs may raise a bound: scoring requests use 8 MiB and enrichment responses use 4 MiB to carry
+  `content_metadata` up to 2 MiB. Direct extension-to-extension vision calls (`weave-image` →
+  `weave-ai`) are outside this transport and define their own larger bound.
 - Every envelope carries `"v": "weave.cli/v1"`.
 - Unknown response fields are ignored; unknown `v` is `EXTENSION_PROTOCOL`.
 - Canonical request and response examples live in
@@ -125,6 +129,8 @@ Request:
   Core removes the workspace after the invocation.
 - `media_type` is optional and defaults to `text/markdown`. Blob documents use their stored MIME
   type; extensions may use it to skip unrelated documents.
+- `body` is `body_raw` when present. For binary blobs it is empty; the extension reads bytes from
+  `bundle_root`/`doc_path` and never receives blob bytes over IPC.
 
 Response:
 
@@ -151,8 +157,9 @@ Response:
 - Inferred keywords are appended to the document's stored keywords, after declared keywords,
   de-duplicated case-insensitively. Declared keywords always win.
 - `inferred_title` and `inferred_description` fill empty document fields only. Declared values win.
-- `inferred_text` and `inferred_text_source` populate `content_metadata.text` only when no text is
-  already present. Local OCR/extraction text wins over AI transcription.
+- `inferred_text` and `inferred_text_source` populate `content_metadata.text` only for binary blobs
+  with no text already present. They are ignored for text-readable documents whose `body_raw` is
+  already searchable. Local OCR/extraction text wins over AI transcription.
 - `inferred_content_metadata` merges into `content_metadata`; `v` is core-owned, existing attribute
   keys are preserved, and new keys are additive.
 - Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_raw`, `body_compressed`,
@@ -227,6 +234,7 @@ Response:
 }
 ```
 
+- `text` is truncated to 8 KiB before the request.
 - Core validates `model`, `dim`, vector length and finite values; it normalizes the vector.
 - The response model selects the embedding space; it must match the embedder's configured model.
 - A malformed, oversized or timed-out response fails that embedding with one warning; the document
@@ -239,8 +247,8 @@ Response:
 ```sh
 weave extensions list [<path>] --json
 weave ingest  <path> --with-enricher <name> [--with-embedder <name>] [--timeout 5s] --json
-weave rebuild <path> --with-enricher <name> [--timeout 5s] --json
-weave sync    <path> --with-enricher <name> [--timeout 5s] --json
+weave rebuild <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
+weave sync    <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
 weave search  <path> <query> --rerank <name> [--timeout 5s] --json
 weave search  <path> <query> --mode semantic [--embedder <name>] --json
 weave ingest  <path> --assets [--asset-types <mime,...>] [--with-enricher <name>] --json

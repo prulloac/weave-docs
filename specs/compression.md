@@ -53,9 +53,13 @@ This spec owns the body compression policy. The codec extension protocol is owne
 The following are stored in `body_raw` with NULL `body_compressed`/`body_codec`:
 
 - every `content_kind = 'document'` (Markdown);
-- blobs whose media type is text-like: `text/*`, `application/json`, `application/xml`,
-  `application/javascript`, `application/x-yaml`, `application/toml`, and similar application types;
+- blobs whose media type is text-like and whose bytes are valid UTF-8 without NUL: `text/*`,
+  `application/json`, `application/xml`, `application/javascript`, `application/x-yaml`,
+  `application/toml`, and similar application types;
 - blobs that pass the generic text heuristic: valid UTF-8, no NUL, high printable-character ratio.
+
+A text-like MIME type with invalid UTF-8 or NUL bytes is treated as binary and stored in
+`body_compressed`.
 
 The heuristic covers source code, configuration and future languages without an extension allowlist.
 A PDF, archive, image, audio or video file remains binary because of its header/control bytes.
@@ -73,6 +77,8 @@ Schema v7 splits the body into two nullable columns:
 body_raw TEXT,                    -- text-readable bodies, or NULL
 body_compressed BLOB,             -- binary blob bodies, or NULL
 body_codec TEXT,                  -- codec for body_compressed, or NULL
+size INTEGER NOT NULL DEFAULT 0,  -- original body bytes
+stored_size INTEGER NOT NULL DEFAULT 0, -- stored body bytes
 CHECK ((body_raw IS NULL) != (body_compressed IS NULL)),
 CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
     OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL))
@@ -82,7 +88,7 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
 - `body_compressed` holds binary blob bytes; `body_codec` is non-null and records the codec.
 - `body_codec` is `none`, `zstd`, `lz4`, or another codec extension name.
 - Exactly one of `body_raw` and `body_compressed` is non-null; both-null and both-set are invalid.
-- `content_hash` and `size` are over the original bytes.
+- `content_hash` and `size` are over the original bytes; `stored_size` is the stored body length.
 
 ## 5. Selection Rules
 
@@ -133,10 +139,12 @@ weave sync <path> [--codec zstd|none|lz4|<name>] [--strict|--permissive] --json
 
 Schema v7 migration:
 
-1. Decompress existing text-readable rows into `body_raw`; set `body_compressed`/`body_codec` NULL.
+1. Decompress existing text-readable rows into `body_raw`; set `body_compressed`/`body_codec` NULL
+   and backfill `size`/`stored_size`.
 2. Keep existing zstd binary rows in `body_compressed` with `body_codec = zstd`.
-3. Existing LZ4 text or binary rows require `weave-codec-lz4`; without it they remain unreadable until
-   the extension is installed or the bundle is rebuilt.
+3. Existing LZ4 text rows require `weave-codec-lz4` to migrate. A missing codec aborts the migration
+   with `CODEC_UNAVAILABLE`, leaves `user_version` at 6 and changes no rows; install the extension
+   and reopen. LZ4 binary rows created after v7 remain compressed and require the codec for reads.
 4. New text rows use `body_raw`; new binary rows use `body_compressed` with zstd unless `--codec`
    selects another codec.
 
@@ -144,7 +152,8 @@ The migration is core-owned. Extensions never run migrations.
 
 ## 9. Privacy
 
-- Encrypted whole-body text documents always use `none`; ciphertext is not double-compressed.
+- Encrypted whole-body text documents always use `body_raw` with NULL `body_codec`; ciphertext is
+  not double-compressed.
 - Tokenized, hashed and mixed text bodies are text-readable and therefore stored raw.
 - Binary blob encryption is out of scope for the first slice.
 - Codec extensions never receive key material or the database path.
@@ -174,7 +183,7 @@ The migration is core-owned. Extensions never run migrations.
 - Mixed codecs in one bundle; per-row codec is reported by `show --json`.
 - Missing stored codec fails with `CODEC_UNAVAILABLE`.
 - Corrupt/truncated body fails with `BODY_DECODE_FAILED`.
-- Migration decompresses text rows; LZ4 rows behave as specified.
+- Migration decompresses text rows; missing LZ4 aborts without changing `user_version`.
 - `rebuild --codec` and `sync` preserve/change codecs as specified.
 - Search, explain and calibration are unchanged.
 

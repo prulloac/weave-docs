@@ -132,6 +132,8 @@ Rules:
 - Errors map to MCP tool errors with `INVALID_REQUEST`, `CONCEPT_NOT_FOUND`, `PATH_NOT_FOUND`,
   `INTERNAL`, etc.
 - Tools are read-only.
+- `weave_show` returns metadata plus the blob resource URI for blob documents; it never embeds
+  bytes.
 - `weave_audit` returning findings is a successful tool call; the report contains its own `ok`.
 - `top_k` defaults to the process default and is capped at 100.
 
@@ -151,16 +153,20 @@ Resources are read-only and use the same initialize/auth gate as tools.
 | URI template | Payload |
 | --- | --- |
 | `weave://concept/{id}` | `ShowResult` |
+| `weave://blob/{id}` | MCP `blob` content with the stored `media_type` |
 | `weave://graph/neighborhood/{id}` | `RelateResult` |
 | `weave://source/{source}/bundle/index` | `IndexEntry[]` from one source |
 | `weave://source/{source}/bundle/stats` | counts from one source |
 | `weave://source/{source}/concept/{id}` | `ShowResult` from one source |
+| `weave://source/{source}/blob/{id}` | MCP `blob` content from one source |
 | `weave://source/{source}/graph/neighborhood/{id}` | `RelateResult` from one source |
 
 - URIs without a source segment target the primary `--bundle`.
 - Source segments must match a configured alias; unknown sources return `RESOURCE_NOT_FOUND`.
 - `{id}` may contain slash-separated path segments and is URL-unescaped before lookup.
-- Resource contents are JSON text with `mimeType: application/json`.
+- Concept, graph and index resources are JSON text with `mimeType: application/json`. Blob
+  resources return MCP `blob` content with the stored `media_type`; see
+  [Generic Blob Assets](blob-assets.md).
 - Resources never accept an arbitrary bundle path.
 - Unknown resources return JSON-RPC `-32602` with data code `RESOURCE_NOT_FOUND`.
 - Calls before initialize return `-32002 NOT_INITIALIZED`.

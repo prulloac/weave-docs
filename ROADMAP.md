@@ -105,9 +105,9 @@ weave path <path> <id|file> <id|file> --json
 weave audit <path> [--fail-on error|warning|none] [--verify-keys] --json
 weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] --json
 weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k <n>] --json
-weave ingest <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--with-enricher <name>] [--timeout <d>] --json
-weave rebuild <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--with-enricher <name>] [--timeout <d>] --json
-weave sync <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--with-enricher <name>] [--timeout <d>] [--watch [--events]] --json
+weave ingest <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--timeout <d>] --json
+weave rebuild <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--timeout <d>] --json
+weave sync <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--timeout <d>] [--watch [--events]] --json
 weave export <path> --out <dir> --format raw|encrypted [--key-id <id>] [--yes] [--force] --json
 weave config show|path|init [--json]
 weave extensions list [<path>] --json
@@ -360,6 +360,8 @@ privacy directives ──┬── show --decrypt
 4. durable embeddings and `vec0` spaces,
 5. `weave-image` as the first blob consumer,
 6. semantic search, retrieval and release integration.
+
+Release order: `weave-ai v1.1.0` → `weave v1.1.0` → `weave-image v0.1.0`.
 
 **Critical path:**
 

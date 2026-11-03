@@ -121,6 +121,8 @@ The `documents` table stores exactly one body form per row:
 body_raw TEXT,                    -- text-readable bodies, or NULL
 body_compressed BLOB,             -- binary blob bodies, or NULL
 body_codec TEXT,                  -- codec for body_compressed, or NULL
+size INTEGER NOT NULL DEFAULT 0,  -- original body bytes
+stored_size INTEGER NOT NULL DEFAULT 0, -- stored body bytes
 CHECK ((body_raw IS NULL) != (body_compressed IS NULL))
 CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
     OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL))
@@ -128,7 +130,8 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
 
 - Text-readable content uses `body_raw` and leaves `body_compressed` and `body_codec` NULL:
   Markdown, `.txt`, JSON, XML, CSV and source code. Classification uses `content_kind`, text MIME
-  types and a generic UTF-8/printable heuristic; there is no language-extension allowlist.
+  types whose bytes are valid UTF-8 without NUL, and a generic printable heuristic; there is no
+  language-extension allowlist.
 - Binary blobs use `body_compressed` and leave `body_raw` NULL. `body_codec` is non-null and records
   `zstd`, `none` or an extension codec name such as `lz4`.
 - The codec is recorded per compressed row and must not be inferred from the bundle, media type or a
@@ -138,8 +141,8 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
   codec. Text-readable content ignores `--codec` with a warning and stays raw.
 - `none` and `zstd` are the only built-in codecs. LZ4 and other algorithms are
   `weave-codec-<name>` extensions; see [ADR 0006](0006-codec-extensions-and-zstd-only-core.md).
-- `content_hash` and `size` are computed over the original bytes, not the stored bytes. A stored size
-  may be recorded for diagnostics.
+- `content_hash` and `size` are computed over the original bytes, not the stored bytes;
+  `stored_size` records the stored body length.
 - `body_codec` is core-owned. Extensions cannot choose or override it directly.
 - `show --out`, MCP reads and export write `body_raw` directly or decode `body_compressed` using its
   codec. A missing codec extension fails with `CODEC_UNAVAILABLE`, not an empty body.
@@ -253,6 +256,8 @@ that are not required to prove the model.
   compressed rows only. Existing text rows migrate to `body_raw`; existing rows default to
   `content_kind=document` and `media_type=text/markdown`.
 - The parser gains a generic asset scanner, not image parsing.
+- The bundle registry stores the resolved asset filter so `rebuild` and `sync` reuse it instead of
+  requiring repeated flags; `--no-assets` clears it and removes the bundle's blob rows.
 - The extension IPC gains `media_type` on enrichment requests and generic metadata fields on
   responses.
 - `show`, `list`, search hits, MCP and export gain additive content-kind fields.

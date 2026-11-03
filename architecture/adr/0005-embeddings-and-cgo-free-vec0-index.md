@@ -72,7 +72,7 @@ CREATE TABLE document_embeddings (
     vector BLOB NOT NULL,          -- float32 little-endian, normalized
     content_hash TEXT NOT NULL,
     created_at INTEGER NOT NULL,
-    PRIMARY KEY (bundle_root, doc_id, model),
+    PRIMARY KEY (bundle_root, doc_id, model, dim),
     FOREIGN KEY (bundle_root, doc_id)
         REFERENCES documents(bundle_root, id) ON DELETE CASCADE
 );
@@ -205,6 +205,10 @@ The query and documents must be embedded by the same model. A generic embedder r
 The first release embeds `content_metadata.text` (OCR, transcripts, PDF text), title and description
 as text. Image-pixel or other multimodal embeddings use a later model and a separate space; the
 schema supports them from day one.
+
+> **Amendment (2026-11-03):** Following the body split in
+> [ADR 0004](0004-generic-blob-assets-and-content-metadata.md), the text input is `body_raw` when
+> present; otherwise it is `content_metadata.text`. Title and description are unchanged.
 
 ### Rationale
 

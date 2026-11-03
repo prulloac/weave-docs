@@ -92,7 +92,7 @@ rerank: ""
 | `cache` | bool | `true` | `--no-cache` inverted |
 | `cache_dir` | path | empty (user cache dir) | env `WEAVE_CACHE_DIR` |
 | `codec` | `zstd\|none\|<name>` | `zstd` | `--codec` (binary blobs only) |
-| `search_mode` | `hybrid\|keyword\|fuzzy\|bm25` | `hybrid` | `--mode` |
+| `search_mode` | `hybrid\|keyword\|fuzzy\|bm25\|semantic` | `hybrid` | `--mode` |
 | `top_k` | int `1..100` | `10` | `--top-k` |
 | `ingest_mode` | `strict\|permissive` | `permissive` | `--strict`/`--permissive` |
 | `timeout` | duration | `5s` | `--timeout` |

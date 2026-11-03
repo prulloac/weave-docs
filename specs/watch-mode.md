@@ -64,7 +64,8 @@ weave mcp --bundle <path> --db .weave/index.db --watch
 - Watch the bundle root recursively.
 - Ignore `.git`, `node_modules`, `.weave`, other dot-directories and dot-files, editor swap files and
   files ending in `~`, `.tmp` or `.swp`.
-- Only Markdown files participate in snapshots and sync; other files never trigger a sync.
+- Markdown files and files matching the bundle's stored asset filter participate in snapshots and
+  sync; other files never trigger a sync. A bundle without an asset filter watches Markdown only.
 - Coalesce bursts by polling: sync runs only when the snapshot differs from the last synced one.
 - Snapshot before the initial sync, then sync; a change during startup is detected on the next tick
   instead of being folded into the baseline.

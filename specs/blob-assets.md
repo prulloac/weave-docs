@@ -48,19 +48,23 @@ content_metadata TEXT NOT NULL DEFAULT '{}',
 body_raw TEXT,                    -- text-readable bodies, or NULL
 body_compressed BLOB,             -- binary blob bodies, or NULL
 body_codec TEXT,                  -- codec for body_compressed, or NULL
+size INTEGER NOT NULL DEFAULT 0,  -- original body bytes
+stored_size INTEGER NOT NULL DEFAULT 0, -- stored body bytes
 CHECK ((body_raw IS NULL) != (body_compressed IS NULL)),
 CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
     OR (body_compressed IS NOT NULL AND body_codec IS NOT NULL))
 ```
 
 - Existing rows migrate to `content_kind='document'` and `media_type='text/markdown'`; their decoded
-  text body moves to `body_raw`.
+  text body moves to `body_raw`, and `size`/`stored_size` are backfilled from it.
 - Text-readable content uses `body_raw` and leaves `body_compressed`/`body_codec` NULL.
 - Binary blobs use `body_compressed` and leave `body_raw` NULL; `body_codec` is non-null.
 - `media_type` is a lowercase MIME type without parameters.
 - `body_codec` is `zstd`, `none` or an extension codec name such as `lz4`, and applies only to
   `body_compressed`.
-- `content_hash` and `size` are over the original bytes, not the stored bytes.
+- `content_hash` and `size` are over the original bytes, not the stored bytes; `stored_size` records
+  the body column length.
+- For text rows `size` and `stored_size` are equal.
 - `doc_type` may carry an extension-provided label (`Image`, `Video`, `PDF`); core never branches on
   it.
 
@@ -105,7 +109,8 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
 
 - Text-readable content uses `body_raw` and leaves `body_compressed` and `body_codec` NULL:
   Markdown, `.txt`, JSON, XML, CSV and source code. Core classifies text through `content_kind`, text
-  MIME types and a generic UTF-8/printable heuristic; there is no language-extension allowlist.
+  MIME types whose bytes are valid UTF-8 without NUL, and a generic printable heuristic; there is no
+  language-extension allowlist.
 - Binary blobs use `body_compressed` and a non-null `body_codec`. They use `zstd` by default, always,
   even when zstd output is larger than the input.
 - `--codec` applies to binary blobs only. It accepts `zstd`, `none`, or an extension codec name such
@@ -127,13 +132,20 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
 
 ```sh
 weave ingest ~/notes --assets --asset-types image/jpeg,image/png,application/pdf
+weave sync ~/notes --no-assets
 ```
 
-- `--assets` enables blob scanning; without it, images and other non-Markdown files are ignored as
-  before.
-- `--asset-types` accepts comma-separated MIME types and suffix wildcards such as `image/*`.
-- `--assets` without `--asset-types` and without an extension capability exits `2` with
-  `ASSET_TYPES_REQUIRED`.
+- `--assets` enables blob scanning for `ingest`, `rebuild` and `sync`. A bundle with no stored asset
+  filter stays Markdown-only.
+- `--asset-types` accepts comma-separated MIME types and suffix wildcards such as `image/*`; it
+  implies `--assets`.
+- `--assets` without `--asset-types`, an extension capability, or a stored bundle filter exits `2`
+  with `ASSET_TYPES_REQUIRED`.
+- The resolved filter is stored per bundle in `bundles.asset_types_json`. `rebuild` and `sync` reuse
+  it when neither flag is given, so blobs stay indexed without repeating flags.
+- `--asset-types` on a later run replaces the stored filter.
+- `--no-assets` clears the stored filter; the next ingest, rebuild or sync removes the bundle's blob
+  rows. Combining it with `--assets` or `--asset-types` exits `2` with `INVALID_REQUEST`.
 - Blob ingestion requires persistent storage; `--no-db` with `--assets` exits with
   `BLOBS_REQUIRE_DB`.
 - Files are matched by detected media type, not by hardcoded core extensions.
@@ -159,7 +171,7 @@ weave-image --describe --json
 ```
 
 - When `--asset-types` is absent and `--with-enricher <name>` is set, core uses the extension's
-  `asset_types`.
+  `asset_types`; otherwise the stored bundle filter applies.
 - When both are present, `--asset-types` wins.
 - `requires` is informational for core and authoritative for the extension installer/runtime.
 - The human `--describe` output remains valid; `--json` is the machine contract.
@@ -180,6 +192,7 @@ weave-image --describe --json
 | Blob per bundle | 1 GiB | Warning and skip; `--strict` fails |
 | `content_metadata` | 2 MiB | Warning; metadata discarded, document kept |
 | `text` | 1 MiB | Truncated or rejected by the extension |
+| Enrichment response | 4 MiB | `EXTENSION_PROTOCOL`; the bound carries 2 MiB metadata |
 
 Symlinks that escape the bundle and non-regular files are rejected. `.git` and `node_modules` are
 ignored, as in the Markdown parser.
@@ -189,6 +202,7 @@ ignored, as in the Markdown parser.
 - `id` and `file_path` are the bundle-relative path.
 - `title` starts empty; `weave list`/`show` fall back to the filename when empty.
 - `description` and `keywords` start empty.
+- Blob documents are exempt from OKF `type`/`keywords` validation; they are not Markdown concepts.
 - `content_metadata` starts `{"v":1}`.
 - Text-readable blobs use `body_raw` and leave `body_codec` NULL.
 - Binary blobs use `body_compressed` and a non-null `body_codec`.
@@ -255,6 +269,8 @@ Rules:
 ### 5.3 Text precedence
 
 - Extension-local OCR/extraction text wins over AI transcription.
+- For text-readable documents, `inferred_text` is ignored because `body_raw` is already the
+  searchable text.
 - If the document already has `content_metadata.text`, later extensions do not overwrite it unless
   the user explicitly rebuilds with a different enricher.
 - If no text exists, the extension may use `inferred_text`.
@@ -326,7 +342,7 @@ weave list ~/notes --type Image --json
 | Search hits | `content_kind`, `media_type` | Optional result fields |
 | `EnrichmentRequest` | `media_type` | Optional media type |
 | `EnrichmentResponse` | `inferred_title`, `inferred_description`, `inferred_text`, `inferred_text_source`, `inferred_content_metadata` | Additive fields |
-| CLI | `--assets`, `--asset-types`, `show --out`, `list --type` | Blob commands |
+| CLI | `--assets`, `--no-assets`, `--asset-types`, `show --out`, `list --type` | Blob commands |
 | MCP | `weave://blob/<id>`, `weave://source/<alias>/blob/<id>` | Blob resources |
 | Extension manifest | `weave.extension/v1` with `asset_types`, `requires` | Capability declaration |
 
@@ -348,6 +364,7 @@ All schema changes are additive inside v1. Goldens and schema baselines update i
 - Mixed codecs: text rows raw, binary rows zstd, an extension-codec blob round-trips; missing codecs
   fail with `CODEC_UNAVAILABLE`.
 - Search/list fields, raw export, encrypted-export warning.
+- Asset filter persistence across `sync`/`rebuild`, filter replacement, `--no-assets` removal.
 - Delete/sync cascade and size quotas.
 - Full gate, race suite and calibration unchanged.
 
@@ -362,7 +379,8 @@ Behavior scenarios: [blob-assets.md](https://github.com/prulloac/weave/blob/main
    raw blob is never indexed as text.
 4. `show --out` and MCP return the exact original bytes from `body_raw` or after decoding
    `body_compressed` with the stored per-row codec.
-5. `--assets` is required; existing bundles without it are unchanged.
+5. `--assets` is required on first ingest; the resolved filter persists for `rebuild`/`sync`, and
+   `--no-assets` clears it. Bundles that never enabled assets are unchanged.
 6. AI/extension metadata fills empty fields only; declared metadata always wins.
 7. Raw export includes blobs; encrypted export warns and excludes them in the first slice.
 8. `--no-db` rejects blob ingestion, ingestion failures preserve the previous state, and quotas are

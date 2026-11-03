@@ -51,11 +51,14 @@ weave export <path> --out <dir> --format raw|encrypted [--db <file>] [--key-id <
 - `--format` is required; there is no default, to avoid accidental plaintext exports.
 - `raw`:
   - Missing keys for encrypted documents → `PRIVACY_KEY_UNAVAILABLE`, exit `3`, before any write.
+  - Blob documents are written from `body_raw` or decoded `body_compressed`; a missing codec or
+    corrupt body is an export error.
   - Interactive confirmation on a TTY unless `--yes`.
   - `--json` without `--yes` never prompts; exits `2` with `CONFIRMATION_REQUIRED`.
 - `encrypted`:
   - `--key-id` is required; missing → exit `2`.
   - The key resolves from `WEAVE_KEY_<ID>` or `<source>/.weave/security.yaml`.
+  - Blob documents are skipped with one warning each; opaque blob encryption is deferred.
   - No confirmation is required.
 - `--force` allows writing into a non-empty target directory; it does not delete unrelated files and
   does not imply `--yes`.
@@ -83,6 +86,7 @@ weave export <path> --out <dir> --format raw|encrypted [--db <file>] [--key-id <
   "format": "raw",
   "source": "/home/user/notes",
   "documents": 42,
+  "blobs": 3,
   "encrypted": 3,
   "tokenized": 1,
   "hashed": 1,
@@ -90,6 +94,10 @@ weave export <path> --out <dir> --format raw|encrypted [--db <file>] [--key-id <
 }
 ```
 
+- For `raw`, `documents` counts every written document including blobs, and `blobs` is the subset
+  with `content_kind=blob`.
+- For `encrypted`, `documents` counts written Markdown documents and `blobs` counts blob documents
+  skipped with warnings.
 - `generated_at` is the only nondeterministic field.
 - Export reports use the same counts.
 
@@ -98,13 +106,19 @@ weave export <path> --out <dir> --format raw|encrypted [--db <file>] [--key-id <
 - Encrypted bodies are decrypted with the declared key and written as plaintext.
 - Tokenized and hashed bodies are written as stored aliases; they are one-way and cannot be reversed.
 - Stored keywords, including enriched keywords, are written to frontmatter `keywords`.
-- Bodies are written exactly as stored after decompression and decryption, preserving Markdown.
+- Markdown bodies are written from `body_raw` after decryption, preserving their content exactly.
+- Blob documents are written at their original bundle-relative path: `body_raw` directly or
+  `body_compressed` after decoding with its stored codec.
 - `weave-export.json` records how many documents remain tokenized or hashed so the loss is visible.
+- The manifest records each blob's `content_kind`, `media_type`, body form, `body_codec`, hash,
+  original/stored sizes and `content_metadata`.
 - No `.weave` directory, database or cache is copied.
 
 ### 2.4 Encrypted format
 
-- Every document body is encrypted with AES-256-GCM using `--key-id`.
+- Every Markdown document body is encrypted with AES-256-GCM using `--key-id`.
+- Blob documents are excluded in the first slice and reported as skipped; only Markdown documents
+  are written.
 - Frontmatter keeps metadata and adds:
 
 ```yaml
@@ -218,6 +232,8 @@ storage/sqlite documents + index
   ciphertext, `show --decrypt` restores with the key.
 - `--force` semantics and refusal to overwrite a foreign export target.
 - Source/target overlap rejection.
+- Raw export writes text and binary blobs byte-for-byte and records them in the manifest.
+- Encrypted export skips blobs with one warning each.
 - Deterministic files except `generated_at`; completion marker written last.
 - Index entries and frontmatter keywords survive export.
 - Full gate, race suite and docs-lint.

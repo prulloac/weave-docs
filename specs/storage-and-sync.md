@@ -43,9 +43,9 @@ Current schema is **7**. Version 4 adds `search_tokens` (`bundle_root`, `field`,
 `postings` BLOB) for the persistent fuzzy/hybrid path. Version 5 adds `search_vocabulary`
 (`bundle_root`, `field`, `token`) so fuzzy queries only load postings for candidate tokens. Version
 6 adds `extension_data`; version 7 adds generic blob metadata, the `body_raw`/`body_compressed`
-split, durable embeddings and the embedding space registry. Older databases migrate automatically;
-new tables start empty, and fuzzy/hybrid search falls back to the in-memory engine until the next
-ingest, rebuild or sync populates them.
+split, the per-bundle asset filter, durable embeddings and the embedding space registry. Older
+databases migrate automatically; new tables start empty, and fuzzy/hybrid search falls back to the
+in-memory engine until the next ingest, rebuild or sync populates them.
 
 ```sql
 -- 0. Bundle Registry
@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS bundles (
     okf_version TEXT,
     index_json TEXT NOT NULL,            -- Serialized []IndexEntry
     validation_json TEXT NOT NULL,       -- Serialized Validation
+    asset_types_json TEXT NOT NULL DEFAULT '[]', -- Resolved blob filter; [] = Markdown-only
     updated_at INTEGER NOT NULL
 );
 
@@ -78,7 +79,9 @@ CREATE TABLE IF NOT EXISTS documents (
     body_raw TEXT,                       -- Text-readable body, or NULL
     body_compressed BLOB,                -- Binary blob body, or NULL
     body_codec TEXT,                     -- Codec for body_compressed, or NULL
-    privacy_policy TEXT DEFAULT 'none',  -- none | encrypt | redact
+    size INTEGER NOT NULL DEFAULT 0,     -- Original body bytes
+    stored_size INTEGER NOT NULL DEFAULT 0, -- Stored body bytes
+    privacy_policy TEXT DEFAULT 'none',  -- none | encrypt | tokenize | hash | mixed
     updated_at INTEGER NOT NULL,         -- Unix timestamp of sync
     CHECK ((body_raw IS NULL) != (body_compressed IS NULL)),
     CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
@@ -143,7 +146,7 @@ CREATE TABLE IF NOT EXISTS document_embeddings (
     vector BLOB NOT NULL,                -- float32 little-endian, normalized
     content_hash TEXT NOT NULL,
     created_at INTEGER NOT NULL,
-    PRIMARY KEY (bundle_root, doc_id, model),
+    PRIMARY KEY (bundle_root, doc_id, model, dim),
     FOREIGN KEY (bundle_root, doc_id)
         REFERENCES documents(bundle_root, id) ON DELETE CASCADE
 );
@@ -173,7 +176,7 @@ Syncing avoids parsing unchanged files by maintaining a hash registry. Every sta
 `bundle_root`, so syncing one bundle never touches another bundle in the shared database.
 
 ```text
-Filesystem Scan (*.md)
+Filesystem Scan (*.md + bundle asset filter)
          │
          ▼
 Compute SHA-256 of file content
@@ -220,9 +223,9 @@ enrichments follow in later slices.
 ### 5.1 Commands
 
 ```text
-weave ingest <path> [--db <file>] [--strict|--permissive] [--json] [--no-cache]
-weave rebuild <path> [--db <file>] [--strict|--permissive] [--json] [--no-cache]
-weave sync <path> [--db <file>] [--strict|--permissive] [--json] [--no-cache]
+weave ingest <path> [--db <file>] [--strict|--permissive] [--assets|--no-assets] [--asset-types <mime,...>] [--json] [--no-cache]
+weave rebuild <path> [--db <file>] [--strict|--permissive] [--assets|--no-assets] [--asset-types <mime,...>] [--json] [--no-cache]
+weave sync <path> [--db <file>] [--strict|--permissive] [--assets|--no-assets] [--asset-types <mime,...>] [--json] [--no-cache]
 
 weave parse <path> ... [--db <file> | --no-db]
 weave graph <path> ... [--db <file> | --no-db]
@@ -258,6 +261,9 @@ weave explain <path> ... [--db <file> | --no-db]
   dangling.
 - `sync` uses the mode stored at ingest by default. Explicit `--strict` or `--permissive` overrides
   the mode for the sync and updates the stored mode.
+- The resolved blob filter is stored per bundle. `ingest --assets` (or `--asset-types`) resolves and
+  stores it; `rebuild` and `sync` reuse it when the flags are absent. `--no-assets` clears it and
+  removes the bundle's blob rows on the next run.
 - `--watch` belongs to [Watch Mode](watch-mode.md) and is not part of this slice.
 - Source bundles are never modified.
 - The `~/.weave` directory is created with mode `0700` when the database is first written.

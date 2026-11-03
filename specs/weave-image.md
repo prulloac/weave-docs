@@ -70,7 +70,7 @@ Non-goals:
 ## 4. Ingest Flow
 
 1. Core discovers a file whose media type matches `asset_types`.
-2. Core creates a blob document and invokes `weave-image` as the enricher.
+2. Core stages a blob document and invokes `weave-image` as the enricher.
 3. `weave-image` reads the image from `bundle_root`/`doc_path`.
 4. It verifies the media type and magic bytes.
 5. It tries local OCR, then extracts EXIF and dimensions.
@@ -78,7 +78,7 @@ Non-goals:
 7. It returns `inferred_title`, `inferred_description`, `inferred_text`,
    `inferred_text_source`, `inferred_content_metadata`, `inferred_keywords` and
    `custom_metadata`.
-8. Core persists metadata and the image blob in the same transaction.
+8. Core persists the blob, metadata and enrichment in the same write transaction.
 
 The extension does not receive or send the blob through core IPC; it reads the source file directly.
 
@@ -141,8 +141,8 @@ The extension does not receive or send the blob through core IPC; it reads the s
 - `weave-image` validates the response shape and size.
 - `weave-ai` must use a vision-capable model; `weave-ai --describe` reports `vision: true`.
 - Provider payloads are defined in the AI extension spec.
-- Image size sent to AI is capped at 20 MiB after base64 decoding; larger images fail with
-  `IMAGE_TOO_LARGE`.
+- Image size sent to AI is capped at 20 MiB after base64 decoding; larger images skip AI with
+  `IMAGE_TOO_LARGE` and keep local OCR/EXIF/dimensions.
 - The runner timeout applies; document `weave ingest --timeout 60s` for slow local vision models.
 
 ### 7.2 Precedence
@@ -183,6 +183,7 @@ A failed extension never aborts the document write.
 | Dimensions | Positive integers; omit if unknown |
 
 - MIME detection uses extension plus magic bytes.
+- OCR and vision text share the 1 MiB `content_metadata.text` bound; longer output is truncated.
 - A mismatch is a warning; `weave-image` rejects unsupported media types with
   `UNSUPPORTED_IMAGE`.
 - Animated GIF/WebP are stored as-is; only the first frame is used for vision/OCR.
@@ -198,7 +199,8 @@ A failed extension never aborts the document write.
 The installer:
 
 - installs `weave-image` to the user-level bin directory;
-- checks for `weave-ai` and installs it into the same directory if missing;
+- checks for `weave-ai` and installs or upgrades it into the same directory when missing or below the
+  minimum;
 - verifies `weave-ai --version` and the minimum version;
 - supports `--no-ai` to skip automatic installation;
 - prints actionable errors when `weave` is too old or missing.
@@ -206,7 +208,8 @@ The installer:
 At runtime:
 
 - `weave-image` locates `weave-ai` on `PATH` or in the bundle’s `.weave/bin/`;
-- missing or old `weave-ai` yields `MISSING_DEPENDENCY` with the install command;
+- missing or old `weave-ai` yields a `MISSING_DEPENDENCY` warning with the install command; local
+  OCR/EXIF/dimensions still enrich the document;
 - `weave-image --describe` reports the exact requirements.
 
 Homebrew/Scoop dependencies are a later delivery concern; `go install` users install both binaries
