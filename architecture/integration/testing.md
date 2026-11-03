@@ -99,6 +99,8 @@ MRR@10 = 1.0.
   selection, thresholds, migration, corrupt bodies and compression parity.
   `cmd/weave/extensions_bdd_test.go` and `engine/extensions/extensions_test.go` cover discovery,
   `weave.cli/v1` transport, enrichment fallbacks, rerank blending and timeout handling.
+  `contract/v1/types_test.go` validates the canonical IPC fixtures against
+  `extension-ipc.schema.json`, and `engine/extensions/schema_test.go` checks core request shapes.
   `release/release_test.go` and `cmd/weave/release_bdd_test.go` cover version injection, artifact
   packaging, checksum ordering, build info and the release workflow contract.
   `cmd/weave/multi_bundle_bdd_test.go` covers source aliases, merged search/list/audit, qualified
