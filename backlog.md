@@ -101,7 +101,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | - | x | x | - | in-progress |
 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | - | x | x | - | backlog |
-| Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | - | x | x | - | backlog |
+| Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | - | x | x | x | in-progress |
 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | - | x | x | x | in-progress |
 
 User-level installers: `v1.0.0` published for `weave` and `weave-ai`; Unix and PowerShell installers
@@ -111,9 +111,9 @@ ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weav
 from `weave`, and conformance tests cover both sides. The `v1.0.0` release is published.
 
 Media and embeddings: ADR 0004/0005/0006 are accepted and the specs/BDD are approved (2026-11-03).
-`weave-ai` vision/embeddings are green. Core schema v7, blob ingestion/retrieval and the codec
-extension protocol are implemented. Next: the standalone `weave-codec-lz4` extension, embedding
-indexes and `weave-image`.
+`weave-ai` vision/embeddings are green. Core schema v7, blob ingestion/retrieval, codec extensions
+and the embedding ingest/search/list/rebuild/drop path are implemented. Next: embedding audit
+findings, the standalone `weave-codec-lz4` extension, and `weave-image`.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
