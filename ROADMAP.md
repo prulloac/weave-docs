@@ -231,8 +231,8 @@ is the completeness check: no feature is considered planned until it appears her
 | 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | deferred |
 | 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA | deferred |
 | 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | shipped |
-| 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | in-progress |
-| 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | backlog |
+| 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | review |
+| 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | in-progress |
 | 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | backlog |
 | 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | backlog |
 | 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | backlog |
