@@ -12,7 +12,7 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
-status: draft
+status: stable
 ---
 
 # Specification: Generic Blob Assets
