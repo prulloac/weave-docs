@@ -235,7 +235,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | in-progress |
 | 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | backlog |
 | 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | backlog |
-| 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | backlog |
+| 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | in-progress |
 
 Rules:
 
