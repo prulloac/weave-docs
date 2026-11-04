@@ -111,9 +111,9 @@ ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weav
 from `weave`, and conformance tests cover both sides. The `v1.0.0` release is published.
 
 Media and embeddings: ADR 0004/0005/0006 are accepted and the specs/BDD are approved (2026-11-03).
-`weave-ai` vision/embeddings are green. Core schema v7 (split bodies, content metadata, asset filter
-and embedding tables) is implemented. Next: blob ingestion/retrieval, then codec extensions,
-embedding indexes and `weave-image`.
+`weave-ai` vision/embeddings are green. Core schema v7 and blob ingestion/retrieval are implemented:
+asset filtering, `body_raw`/zstd bodies, `show --out`, sync, MCP blob resources and raw export.
+Next: codec extensions, embedding indexes and `weave-image`.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
