@@ -29,7 +29,8 @@ newest first.
 - [x] Release dry run built six static targets and verified checksums for `weave-ai`,
   `weave-codec-lz4`, `weave` and `weave-image`.
 - [x] Installers validated for published `weave` and `weave-ai` v1.0.0 (shell and PowerShell);
-  `weave-image` and `weave-codec-lz4` installers validated against local release-base overrides.
+  `weave-image` and `weave-codec-lz4` shell installers validated against local release-base
+  overrides, and their PowerShell installers pass parser checks.
 - [x] Repository gates pass locally: `weave`, `weave-image` and `weave-codec-lz4` `verify.sh`.
 - [x] CI on `main` passed: `weave-ai` (`41754981087`), `weave` (`41955725462`),
   `weave-image` (`41955463694`), `weave-codec-lz4` (`41955463584`).
