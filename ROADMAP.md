@@ -361,8 +361,9 @@ privacy directives ──┬── show --decrypt
 5. `weave-image` as the first blob consumer,
 6. semantic search, retrieval and release integration.
 
-Release order: `weave-ai v1.1.0` → `weave v1.1.0` → `weave-image v0.1.0`. Specs and BDD approved
-2026-11-03; TDD starts with `weave-ai` vision and embeddings.
+Release order: `weave-ai v1.1.0` → `weave-codec-lz4 v0.1.0` → `weave v1.1.0` →
+`weave-image v0.1.0`. Specs and BDD approved 2026-11-03; implementation is complete, releases are
+the owner action.
 
 **Critical path:**
 

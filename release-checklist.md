@@ -1,6 +1,60 @@
-# v1.0.0 Release Checklist
+# Release Checklist
 
-This checklist records the release state. The tag and publish steps are owner actions.
+This checklist records the release state. Tag and publish steps are owner actions. Sections are
+newest first.
+
+# v1.1.0
+
+## Complete
+
+- [x] ADR 0004, 0005 and 0006 accepted; media and embedding specs/BDD approved.
+- [x] `weave-ai` vision and embedding requests, provider payloads, 32 MiB stdin and 20 MiB image cap
+  covered by tests.
+- [x] Core schema v7 body split: text bodies stay raw, binary bodies use `body_compressed` with zstd
+  by default.
+- [x] Blob ingestion and retrieval, MCP blob resources and raw export implemented and tested.
+- [x] Codec extension resolution, manifest validation and round-trip tests implemented.
+- [x] Durable embeddings with per-space `vec0`, semantic search, audit findings and re-embedding
+  implemented and tested.
+- [x] Enrichment persists title, description, text, metadata and warnings; extension warnings are
+  counted without discarding local metadata.
+- [x] `weave-image` v0.1.0 repository with OCR, EXIF, dimensions, `weave-ai` vision, best-effort
+  fallbacks, installers, CI and tests.
+- [x] `weave-codec-lz4` v0.1.0 repository with the raw codec protocol, manifest, installers, CI and
+  tests.
+- [x] Real vision validated with `weave-ai` and Ollama `qwen2.5vl:3b`; title and description stored
+  with zero warnings.
+- [x] Real embeddings validated with Ollama `embeddinggemma-2:latest`; semantic search returned the
+  expected document.
+- [x] Release dry run built six static targets and verified checksums for `weave-ai`,
+  `weave-codec-lz4`, `weave` and `weave-image`.
+- [x] Installers validated for published `weave` and `weave-ai` v1.0.0 (shell and PowerShell);
+  `weave-image` and `weave-codec-lz4` installers validated against local release-base overrides.
+- [x] Repository gates pass locally: `weave`, `weave-image` and `weave-codec-lz4` `verify.sh`.
+- [x] CI on `main` passed: `weave` (`41955463857`), `weave-image` (`41955463694`),
+  `weave-codec-lz4` (`41955463584`).
+
+## Owner steps
+
+- [ ] Decide the final versions: `weave-ai v1.1.0`, `weave-codec-lz4 v0.1.0`, `weave v1.1.0`,
+  `weave-image v0.1.0`.
+- [ ] Tag and push in order: `weave-ai`, `weave-codec-lz4`, `weave`, `weave-image`.
+- [ ] Review each draft release, then publish manually with
+  `gh release edit <tag> --draft=false`.
+- [ ] After `weave-ai v1.1.0` is published, run the `weave-image` installer without `--no-ai` to
+  exercise the automatic `weave-ai >= 1.1.0` dependency install.
+- [ ] Verify all four installers against the published assets on Linux and Windows.
+
+## Notes
+
+- `weave-image` requires `weave >= 1.1.0` and `weave-ai >= 1.1.0`, so `weave-ai` must be published
+  first.
+- `weave-codec-lz4` has no dependency on the other releases; publishing it before core keeps the
+  documented release order and lets core v1.1.0 advertise it from day one.
+- Publishing remains manual; a tag push only creates a draft release.
+- No v1.1.0 tags exist yet.
+
+# v1.0.0
 
 ## Complete
 
