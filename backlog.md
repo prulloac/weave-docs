@@ -100,7 +100,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | - | x | x | - | in-progress |
-| Image knowledge extension | [weave-image.md](specs/weave-image.md) | - | x | x | x | in-progress |
+| Image knowledge extension | [weave-image.md](specs/weave-image.md) | - | x | x | x | green |
 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | - | x | x | x | green |
 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | - | x | x | x | in-progress |
 
