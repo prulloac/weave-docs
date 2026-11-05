@@ -32,14 +32,20 @@ This checklist records the release state. Tag and publish steps are owner action
   PowerShell); `weave-image` and `weave-codec-lz4` shell installers validated against local
   release-base overrides, and their PowerShell installers pass parser checks.
 - [x] Repository gates pass locally: `weave`, `weave-image` and `weave-codec-lz4` `verify.sh`.
-- [x] CI on `main` passed before the version-floor alignment: `weave-ai` (`41754981087`),
-  `weave` (`41955725462`), `weave-image` (`41955463694`), `weave-codec-lz4` (`41955463584`).
-- [ ] CI on `main` rerun after the version-floor alignment.
+- [x] CI on `main` passed after the version-floor alignment: `weave-ai` (`41957311395`),
+  `weave` (`41957310892`), `weave-image` (`41957344502`), `weave-codec-lz4` (`41955463584`).
+- [x] Release workflows created draft releases for all four repositories:
+  `weave-ai` (`41957649744`), `weave-codec-lz4` (`41957658011`), `weave` (`41957665269`),
+  `weave-image` (`41957671904`).
+- [x] Draft assets downloaded and checksums verified; Linux binaries report `v1.0.0`.
 
 ## Release actions
 
-- [ ] Remove the previous `weave` and `weave-ai` `v1.0.0` releases and tags.
-- [ ] Tag the current `main` heads as `v1.0.0` in all four repositories and push the tags.
+- [x] Remove the previous `weave` and `weave-ai` `v1.0.0` releases and tags.
+- [x] Tag the current `main` heads as `v1.0.0` and push: `weave-ai` (`55c48ec`),
+  `weave-codec-lz4` (`235bac9`), `weave` (`9c13315`), `weave-image` (`0b5e200`).
+- [x] Confirm the four workflows created draft releases with six archives each and verified
+  checksums.
 - [ ] Review the four draft releases, then publish in order: `weave-ai`, `weave-codec-lz4`,
   `weave`, `weave-image`.
 - [ ] After `weave-ai` is published, run the `weave-image` installer without `--no-ai` to exercise
@@ -50,6 +56,8 @@ This checklist records the release state. Tag and publish steps are owner action
 
 - This release supersedes the earlier v1.0.0 artifacts. The previous `weave` and `weave-ai` releases
   and tags are removed before re-tagging.
+- Because the tag reuses `v1.0.0`, installs from the earlier artifacts do not auto-upgrade; users
+  must reinstall or download the new assets explicitly.
 - `weave-image` requires `weave >= 1.0.0` and `weave-ai >= 1.0.0`.
 - Publish `weave-ai` before running the `weave-image` installer so the dependency install resolves.
 - Publishing remains manual; a tag push only creates a draft release.
