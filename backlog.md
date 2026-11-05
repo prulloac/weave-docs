@@ -112,8 +112,9 @@ from `weave`, and conformance tests cover both sides. The `v1.0.0` release is pu
 
 Media and embeddings: ADR 0004/0005/0006 are accepted and the specs/BDD are approved (2026-11-03).
 `weave-ai` vision/embeddings are green. Core schema v7, blob ingestion/retrieval, codec extensions
-and the embedding ingest/search/list/rebuild/drop path are implemented. Next: embedding audit
-findings, the standalone `weave-codec-lz4` extension, and `weave-image`.
+and the embedding ingest/search/list/rebuild/drop path are implemented. `weave-codec-lz4` now exists
+as a standalone extension repository; no releases are tagged yet. Next: embedding audit findings
+and `weave-image`.
 
 Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
