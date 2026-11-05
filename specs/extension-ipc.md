@@ -68,8 +68,8 @@ An extension may expose a machine-readable capability manifest with
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
   "requires": [
-    {"name": "weave", "min_version": "1.1.0"},
-    {"name": "weave-ai", "min_version": "1.1.0"}
+    {"name": "weave", "min_version": "1.0.0"},
+    {"name": "weave-ai", "min_version": "1.0.0"}
   ]
 }
 ```

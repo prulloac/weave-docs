@@ -177,8 +177,8 @@ draft PR #15; not merged.
 - [x] Bundle export: raw plaintext with confirmation and re-ingestable encrypted export
 - [x] External crypto providers: `weave-crypto-<name>` selection, IPC, key versions and audit
 - [x] Global configuration: YAML file, `WEAVE_*` variables, `config show|path|init`
-- [x] Body compression (v1.0): per-row codec and decode recovery; v1.1 moves to text raw, binary
-  zstd and extension-provided LZ4/other codecs
+- [x] Body compression: per-row codec and decode recovery; v1.0 uses text raw, binary zstd and
+  extension-provided LZ4/other codecs
 
 ## Dependency Order
 

@@ -66,8 +66,8 @@ are internal delivery waves, not product versions.
 | BM25 lexical ranking | v1.0 | Shipped: SQLite FTS5 `--mode bm25` |
 | BM25 calibration | v1.0 | Shipped: BM25 + fuzzy hybrid corpus and baseline |
 | BM25 explain | v1.0 | Shipped: lexical raw/normalized scores, fields and term evidence |
-| Memory/body compression | v1.1 | Text-readable bodies raw; binary blobs zstd; LZ4/others via codec extensions |
-| Codec extensions | v1.1 | Planned: raw-byte `weave-codec-<name>`; LZ4 is the first-party extension |
+| Memory/body compression | v1.0 | Shipped: text-readable bodies raw; binary blobs zstd; LZ4/others via codec extensions |
+| Codec extensions | v1.0 | Shipped: raw-byte `weave-codec-<name>`; LZ4 is the first-party extension |
 | Privacy directives | v1.0 | Shipped: `encrypt`, `tokenize`, `hash`, key resolution, `show --decrypt` |
 | Extension runner | v1.0 | Shipped: subprocess IPC (`weave-<name>`) over `weave.cli/v1` stdio |
 | Enrichment extension | v1.0 | Shipped: `--with-enricher`, inferred keywords and metadata |
@@ -82,10 +82,10 @@ are internal delivery waves, not product versions.
 | User-level installers | v1.0 | Shipped: checksum-verifying `install.sh`/`install.ps1` for `weave` and `weave-ai`; no admin rights |
 | Bundle export | v1.0 | Shipped: raw plaintext (confirmed) and encrypted OKF export |
 | Multiple bundle sources | v1.0 | Shipped: repeatable `--source` aliases across CLI and MCP |
-| Generic blob assets | v1.1 | Planned: native blob documents, `content_metadata`, generic retrieval |
-| Image knowledge extension | v1.1 | Planned: `weave-image` OCR/EXIF/vision enrichment |
-| AI vision and embeddings | v1.1 | Planned: `weave-ai` vision and embedding requests |
-| Semantic search | v1.1 | Planned: durable embeddings and per-space `vec0` KNN |
+| Generic blob assets | v1.0 | Shipped: native blob documents, `content_metadata`, generic retrieval |
+| Image knowledge extension | v1.0 | Shipped: `weave-image` OCR/EXIF/vision enrichment |
+| AI vision and embeddings | v1.0 | Shipped: `weave-ai` vision and embedding requests |
+| Semantic search | v1.0 | Shipped: durable embeddings and per-space `vec0` KNN |
 | Optimization program | Stretch | Post-GA: benchmarks, budgets, maintainability and UX targets |
 | Global configuration | v1.0 | Shipped: YAML config, `WEAVE_*` variables and `weave config` |
 
@@ -361,8 +361,8 @@ privacy directives ──┬── show --decrypt
 5. `weave-image` as the first blob consumer,
 6. semantic search, retrieval and release integration.
 
-Release order: `weave-ai v1.1.0` → `weave-codec-lz4 v0.1.0` → `weave v1.1.0` →
-`weave-image v0.1.0`. Specs and BDD approved 2026-11-03; implementation is complete, releases are
+Release order: `weave-ai v1.0.0` → `weave-codec-lz4 v1.0.0` → `weave v1.0.0` →
+`weave-image v1.0.0`. Specs and BDD approved 2026-11-03; implementation is complete, releases are
 the owner action.
 
 **Critical path:**
@@ -400,7 +400,7 @@ Specs: [audit](specs/weave-audit.md), [relate](specs/weave-relate.md),
 - `sha256` content hashes, cascading graph updates and a polling watch loop shipped; `fsnotify`
   event delivery is a post-GA stretch goal.
 - Body compression: text-readable content is raw, binary blobs use zstd by default, and LZ4/other
-  codecs are extension-provided in v1.1; `weave sync --watch` and `weave mcp --watch` are wired;
+  codecs are extension-provided in v1.0; `weave sync --watch` and `weave mcp --watch` are wired;
   posting compression is a post-GA stretch goal.
 
 Specs: [Storage & Sync](specs/storage-and-sync.md),
@@ -483,8 +483,8 @@ needed.
 
 - The shipped core is in-memory; v1.0 adds optional SQLite persistence. It is not an enterprise
   search cluster.
-- Core semantic search is planned for v1.1 through local embeddings and `vec0` KNN; no external
-  vector database or ANN cluster.
+- Core semantic search ships in v1.0 through local embeddings and `vec0` KNN; no external vector
+  database or ANN cluster.
 - No custom retrieval or index extensions. Post-GA pluggable scoring reorders a bounded core
   candidate set.
 - Core does not interpret media. It stores opaque blobs and generic metadata; extensions provide

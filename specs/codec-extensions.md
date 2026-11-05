@@ -7,7 +7,7 @@ tags:
   - "compression"
   - "codecs"
   - "extensions"
-  - "v1.1"
+  - "v1.0"
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
