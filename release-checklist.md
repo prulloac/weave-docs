@@ -28,16 +28,17 @@ This checklist records the release state. Tag and publish steps are owner action
   expected document.
 - [x] Release dry run built six static targets and verified checksums for `weave-ai`,
   `weave-codec-lz4`, `weave` and `weave-image` at `v1.0.0`.
-- [x] Installers validated for the previous `weave` and `weave-ai` v1.0.0 assets (shell and
-  PowerShell); `weave-image` and `weave-codec-lz4` shell installers validated against local
-  release-base overrides, and their PowerShell installers pass parser checks.
+- [x] All four installers validated against the published v1.0.0 assets on Linux and Windows.
+- [x] `weave-image` automatic `weave-ai` installation validated against the published release.
 - [x] Repository gates pass locally: `weave`, `weave-image` and `weave-codec-lz4` `verify.sh`.
 - [x] CI on `main` passed after the version-floor alignment: `weave-ai` (`41957311395`),
-  `weave` (`41957310892`), `weave-image` (`41957344502`), `weave-codec-lz4` (`41955463584`).
+  `weave` (`41957310892`), `weave-image` (`41958502906`), `weave-codec-lz4` (`41955463584`).
 - [x] Release workflows created draft releases for all four repositories:
   `weave-ai` (`41957649744`), `weave-codec-lz4` (`41957658011`), `weave` (`41957665269`),
   `weave-image` (`41957671904`).
 - [x] Draft assets downloaded and checksums verified; Linux binaries report `v1.0.0`.
+- [x] Published v1.0.0 releases for `weave-ai`, `weave-codec-lz4`, `weave` and `weave-image` with
+  six archives each and checksums.
 
 ## Release actions
 
@@ -46,11 +47,13 @@ This checklist records the release state. Tag and publish steps are owner action
   `weave-codec-lz4` (`235bac9`), `weave` (`9c13315`), `weave-image` (`0b5e200`).
 - [x] Confirm the four workflows created draft releases with six archives each and verified
   checksums.
-- [ ] Review the four draft releases, then publish in order: `weave-ai`, `weave-codec-lz4`,
+- [x] Review the four draft releases and publish in order: `weave-ai`, `weave-codec-lz4`,
   `weave`, `weave-image`.
-- [ ] After `weave-ai` is published, run the `weave-image` installer without `--no-ai` to exercise
-  the automatic `weave-ai >= 1.0.0` dependency install.
-- [ ] Verify all four installers against the published assets on Linux and Windows.
+- [x] After `weave-ai` was published, run the `weave-image` installer without `--no-ai`; the
+  automatic `weave-ai >= 1.0.0` dependency install succeeded.
+- [x] Verify all four installers against the published assets on Linux and Windows.
+- [x] Fixed the `weave-image` dependency installer to use bash and honor the requested bin
+  directory (`23d0299`).
 
 ## Notes
 
@@ -59,6 +62,6 @@ This checklist records the release state. Tag and publish steps are owner action
 - Because the tag reuses `v1.0.0`, installs from the earlier artifacts do not auto-upgrade; users
   must reinstall or download the new assets explicitly.
 - `weave-image` requires `weave >= 1.0.0` and `weave-ai >= 1.0.0`.
-- Publish `weave-ai` before running the `weave-image` installer so the dependency install resolves.
+- `weave-ai` was published first so the `weave-image` installer could resolve its dependency.
 - Publishing remains manual; a tag push only creates a draft release.
 - The performance optimization program is a post-GA stretch goal and does not block this tag.
