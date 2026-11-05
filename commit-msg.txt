@@ -1,5 +1,0 @@
-docs: re-baseline the release as v1.0.0
-
-Release the media and embeddings wave as v1.0.0 across weave-ai,
-weave-codec-lz4, weave and weave-image. Update dependency floors,
-roadmap targets and the release checklist.
