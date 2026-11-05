@@ -166,7 +166,9 @@ The extension does not receive or send the blob through core IPC; it reads the s
 | OCR and AI text empty | Blob remains searchable by metadata |
 | Unsupported image format | Skip with warning; no blob document |
 
-A failed extension never aborts the document write.
+A failed extension never aborts the document write. When AI or OCR degrades but local metadata is
+available, the extension returns a successful response with `warnings`; core counts them and keeps
+the local metadata. A non-zero exit keeps the previous document state and counts one warning.
 
 ## 8. Formats and Limits
 

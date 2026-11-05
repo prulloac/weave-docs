@@ -162,6 +162,8 @@ Response:
   already searchable. Local OCR/extraction text wins over AI transcription.
 - `inferred_content_metadata` merges into `content_metadata`; `v` is core-owned, existing attribute
   keys are preserved, and new keys are additive.
+- `warnings` is an optional string array. Core counts one report warning per entry and may print it
+  as an extension diagnostic. A response with warnings is still applied.
 - Extensions cannot set `content_kind`, `media_type`, `content_hash`, `body_raw`, `body_compressed`,
   `body_codec` or `file_path`.
 - `custom_metadata` is stored in the `enrichments` table keyed by bundle, document and enricher.
