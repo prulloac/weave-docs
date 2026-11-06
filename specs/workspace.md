@@ -180,8 +180,8 @@ weave mcp --workspace <dir|file> [--db <file>] [--watch] [--stdio|--listen <addr
 - Source-less `weave://concept/...` and `weave://graph/...` resources resolve across active
   workspace sources and fail with `INVALID_REQUEST` when the target is ambiguous.
 - `weave://bundle/index` and `weave://bundle/stats` are not valid in workspace mode; they return
-  `INVALID_REQUEST` with a hint to use the workspace or source form. An empty non-workspace bundle
-  index returns `[]`, never `null`.
+  `RESOURCE_NOT_FOUND` with a hint to use the workspace or source form. An empty non-workspace
+  bundle index returns `[]`, never `null`.
 
 ### 8.1 Re-reconciliation
 

@@ -151,7 +151,7 @@ Resources are read-only and use the same initialize/auth gate as tools.
 | `weave://workspace/concepts` | `ListResult[]` across active sources |
 | `weave://workspace/stats` | aggregate and per-source counts |
 
-In workspace mode the `weave://bundle/...` resources are not valid and return `INVALID_REQUEST`;
+In workspace mode the `weave://bundle/...` resources are not valid and return `RESOURCE_NOT_FOUND`;
 use the workspace or `weave://source/<alias>/...` form.
 
 ### 6.2 Resource templates
