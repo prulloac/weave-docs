@@ -236,6 +236,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | review |
 | 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | review |
 | 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | review |
+| 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | backlog |
 
 Rules:
 
@@ -271,6 +272,7 @@ The phases below are not arbitrary; they follow this dependency graph.
 | External crypto plugins | privacy + extension runner | Age, Vault, KMS |
 | MCP in-memory | operations + relate/audit/explain | in-memory agent retrieval |
 | MCP persistent | MCP in-memory + storage/sync/watch/privacy | persistent, sensitive-aware MCP |
+| Workspace and source registry | multi-bundle + storage + MCP + watch | dynamic multi-source serving, CLI/MCP parity |
 
 ```text
 contract/v1
@@ -364,6 +366,17 @@ privacy directives ──┬── show --decrypt
 Release order: `weave-ai v1.0.0` → `weave-codec-lz4 v1.0.0` → `weave v1.0.0` →
 `weave-image v1.0.0`. Specs and BDD approved 2026-11-03; implementation is complete, releases are
 the owner action.
+
+**Wave 10 — workspaces and dynamic sources:**
+
+1. workspace manifest and persisted source registry,
+2. `weave workspace` and `weave source` commands,
+3. `weave mcp --workspace` with runtime source re-reconciliation,
+4. multi-source watch and single-writer index ownership.
+
+Spec: [Workspace and Source Registry](specs/workspace.md); ADR
+[0007](architecture/adr/0007-workspace-and-source-registry.md). Status: draft/proposed; TDD not
+started.
 
 **Critical path:**
 

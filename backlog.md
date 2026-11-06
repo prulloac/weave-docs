@@ -124,6 +124,18 @@ transactional import), E2 (CLI list/get/gc), E3 (show refs, MCP blob
 resources) and E4 (raw export, encrypted-export policy) implemented in
 draft PR #15; not merged.
 
+## Tier 8 — Workspace and sources
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Workspace and source registry | [workspace.md](specs/workspace.md) | - | x | - | - | backlog |
+
+Workspace and sources: ADR 0007 and the
+[Workspace and Source Registry specification](specs/workspace.md) are drafted (2026-11-06). They
+introduce `weave.workspace.yaml`, a persisted source registry, `weave workspace`/`weave source`
+commands and `weave mcp --workspace` with runtime re-reconciliation. BDD and TDD are not started;
+approval gates the next step.
+
 ## Cross-cutting
 
 - [x] Knowledge corpus: vision + related concepts (`knowledge/`)
