@@ -59,6 +59,8 @@ This checklist records the release state. Tag and publish steps are owner action
 
 - This release supersedes the earlier v1.0.0 artifacts. The previous `weave` and `weave-ai` releases
   and tags are removed before re-tagging.
+- The `v1.0.0` tag was re-pointed again on 2026-11-06 for `weave` (workspaces and agent skills) and
+  `weave-image` (installer fix); both replacement releases were published.
 - Because the tag reuses `v1.0.0`, installs from the earlier artifacts do not auto-upgrade; users
   must reinstall or download the new assets explicitly.
 - `weave-image` requires `weave >= 1.0.0` and `weave-ai >= 1.0.0`.
