@@ -128,13 +128,13 @@ draft PR #15; not merged.
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Workspace and source registry | [workspace.md](specs/workspace.md) | - | x | - | - | backlog |
+| Workspace and source registry | [workspace.md](specs/workspace.md) | - | x | x | x | in-progress |
 
 Workspace and sources: ADR 0007 and the
-[Workspace and Source Registry specification](specs/workspace.md) are drafted (2026-11-06). They
-introduce `weave.workspace.yaml`, a persisted source registry, `weave workspace`/`weave source`
-commands and `weave mcp --workspace` with runtime re-reconciliation. BDD and TDD are not started;
-approval gates the next step.
+[Workspace and Source Registry specification](specs/workspace.md) are accepted (2026-11-06). The
+schema v8 registry, `weave workspace`/`weave source` commands, `weave mcp --workspace` with the
+`weave_sources` tool, and runtime re-reconciliation are implemented and covered by tests. Remaining:
+`ingest|rebuild|sync --workspace`, the single-writer lock, and a live reconcile end-to-end check.
 
 ## Cross-cutting
 
