@@ -375,8 +375,8 @@ the owner action.
 4. multi-source watch and single-writer index ownership.
 
 Spec: [Workspace and Source Registry](specs/workspace.md); ADR
-[0007](architecture/adr/0007-workspace-and-source-registry.md). Status: draft/proposed; TDD not
-started.
+[0007](architecture/adr/0007-workspace-and-source-registry.md). Status: accepted/stable; BDD drafted,
+awaiting approval before TDD.
 
 **Critical path:**
 

@@ -11,7 +11,7 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0004](0004-generic-blob-assets-and-content-metadata.md) | accepted | Generic blob documents with `content_kind`, `media_type`, `body_raw`/`body_compressed` and versioned `content_metadata` |
 | [0005](0005-embeddings-and-cgo-free-vec0-index.md) | accepted | Durable embeddings, per-space `vec0` indexes and CGo-free semantic search |
 | [0006](0006-codec-extensions-and-zstd-only-core.md) | accepted | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
-| [0007](0007-workspace-and-source-registry.md) | proposed | Workspace and source registry; MCP becomes a read-only view with runtime source re-reconciliation |
+| [0007](0007-workspace-and-source-registry.md) | accepted | Workspace and source registry; MCP becomes a read-only view with runtime source re-reconciliation |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.
