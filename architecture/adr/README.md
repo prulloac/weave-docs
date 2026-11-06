@@ -12,6 +12,7 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0005](0005-embeddings-and-cgo-free-vec0-index.md) | accepted | Durable embeddings, per-space `vec0` indexes and CGo-free semantic search |
 | [0006](0006-codec-extensions-and-zstd-only-core.md) | accepted | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
 | [0007](0007-workspace-and-source-registry.md) | accepted | Workspace and source registry; MCP becomes a read-only view with runtime source re-reconciliation |
+| [0008](0008-agent-skills-standalone-distribution.md) | accepted | Agent skills for CLI-only workflows live in a standalone `weave-skills` repository |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.
