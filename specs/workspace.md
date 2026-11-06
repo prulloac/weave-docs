@@ -170,10 +170,18 @@ weave mcp --workspace <dir|file> [--db <file>] [--watch] [--stdio|--listen <addr
 
 | Tool | Input | Result |
 | --- | --- | --- |
-| `weave_sources` | — | Registry entries with `alias`, `path`, `status` |
+| `weave_sources` | — | Registry entries with `alias`, `path`, `status`, `concepts`, `edges`, `index_entries` and `valid` |
 
-- Resources add `weave://workspace/sources` (registry JSON) and keep the
-  `weave://source/<alias>/...` templates, resolved from persisted aliases.
+- Resources add:
+  - `weave://workspace/sources` — registry entries with counts;
+  - `weave://workspace/concepts` — concept catalog across active sources;
+  - `weave://workspace/stats` — aggregate and per-source counts.
+- `weave://source/<alias>/...` templates remain and resolve from persisted aliases.
+- Source-less `weave://concept/...` and `weave://graph/...` resources resolve across active
+  workspace sources and fail with `INVALID_REQUEST` when the target is ambiguous.
+- `weave://bundle/index` and `weave://bundle/stats` are not valid in workspace mode; they return
+  `INVALID_REQUEST` with a hint to use the workspace or source form. An empty non-workspace bundle
+  index returns `[]`, never `null`.
 
 ### 8.1 Re-reconciliation
 

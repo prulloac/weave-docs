@@ -57,7 +57,7 @@ in-memory engine or the persistent store; the operations and tool schemas stay t
 weave mcp --bundle <path> [--source <alias=path> ...] [--db <file>] [--watch] [--listen 127.0.0.1:7331] [--token <token>] [--top-k-default 10] [--allow-sensitive]
 ```
 
-- `--bundle` is required and is the primary source.
+- `--bundle` is required unless `--workspace` is used; it is the primary source.
 - `--source` adds bundle sources; repeatable, using the same alias rules as the CLI.
 - `--listen` defaults to `127.0.0.1:7331`.
 - `--token` is required for non-loopback binding. For loopback, a token is optional but recommended.
@@ -145,8 +145,14 @@ Resources are read-only and use the same initialize/auth gate as tools.
 
 | URI | Payload |
 | --- | --- |
-| `weave://bundle/index` | `IndexEntry[]` |
+| `weave://bundle/index` | `IndexEntry[]`; `[]` when the bundle has no root index |
 | `weave://bundle/stats` | bundle counts and validation summary |
+| `weave://workspace/sources` | source registry with status and counts |
+| `weave://workspace/concepts` | `ListResult[]` across active sources |
+| `weave://workspace/stats` | aggregate and per-source counts |
+
+In workspace mode the `weave://bundle/...` resources are not valid and return `INVALID_REQUEST`;
+use the workspace or `weave://source/<alias>/...` form.
 
 ### 6.2 Resource templates
 
@@ -161,7 +167,8 @@ Resources are read-only and use the same initialize/auth gate as tools.
 | `weave://source/{source}/blob/{id}` | MCP `blob` content from one source |
 | `weave://source/{source}/graph/neighborhood/{id}` | `RelateResult` from one source |
 
-- URIs without a source segment target the primary `--bundle`.
+- URIs without a source segment target the primary `--bundle`; in workspace mode they resolve
+  across active sources and fail when the target is ambiguous.
 - Source segments must match a configured alias; unknown sources return `RESOURCE_NOT_FOUND`.
 - `{id}` may contain slash-separated path segments and is URL-unescaped before lookup.
 - Concept, graph and index resources are JSON text with `mimeType: application/json`. Blob
@@ -324,7 +331,7 @@ weave mcp --bundle <path> --db <file> --watch
 - All tools return the same payloads as the CLI operations.
 - Unknown tools and invalid inputs return structured MCP errors.
 - A non-loopback bind without a token is refused.
-- The server is read-only and bundle-bound.
+- The server is read-only and serves one bundle or workspace.
 - Conformance and race tests pass.
 
 ## Related Documents
