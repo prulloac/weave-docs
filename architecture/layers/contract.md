@@ -138,6 +138,7 @@ Nodes carry `keywords` plus type, title, status, tags and in/out degree. Edges r
 - `lexical` is additive for `bm25` and persistent `hybrid`; it carries raw and normalized BM25 scores.
 - `semantic` is additive for `semantic` mode and carries cosine scores.
 - A reranker adds `rerank_score` to the selected hit list and blends `0.5 * core + 0.5 * rerank`.
+- A scorer adds `scorer_score` and a `scorer` block with name, weight and candidate count.
 - Every list is independently capped at `top_k`.
 - Scores and ordering are deterministic.
 - `find` and `FindResult` no longer exist.

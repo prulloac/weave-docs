@@ -139,6 +139,7 @@ remains the compatibility promise.
 | Extensions | v1.0 subprocess IPC over `weave.cli/v1` |
 | Blob assets | v1.0 opaque blob documents with `content_metadata`; media semantics stay in extensions |
 | Workspaces | v1.0 manifest plus persisted `sources` registry (schema v8) and one index per workspace |
+| Scoring | Opt-in `--scorer` extensions reorder a bounded candidate set with a configurable blend; default ranking unchanged |
 | Integration | CLI first; Go package optional; MCP tools, transport, resources, multi-source and sensitive access shipped |
 | Presentation | Cancelled and removed |
 
@@ -182,6 +183,7 @@ remains the compatibility promise.
 | [Multiple Bundle Sources spec](../specs/multi-bundle.md) | Aliased multi-root reads and writes |
 | [Workspace and Source Registry spec](../specs/workspace.md) | Workspace manifest, persisted source registry and MCP catalog |
 | [Extension Data spec](../specs/extension-data.md) | Extension-owned opaque artifacts and retrieval |
+| [Pluggable Scoring spec](../specs/extension-scoring.md) | Opt-in scorer extensions, context and blend weights |
 | [Optimization spec](../specs/optimization.md) | Benchmarks, budgets and maintainability targets |
 | [Performance baseline](performance.md) | Corpus, baselines, budgets and O4/O5 findings |
 | [Configuration spec](../specs/configuration.md) | Global YAML config and `WEAVE_*` variables |

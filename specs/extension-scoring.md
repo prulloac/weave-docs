@@ -11,7 +11,7 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-10-31T00:00:00Z"
-status: draft
+status: stable
 ---
 
 # Specification: Pluggable Scoring and Custom Ranking
@@ -172,7 +172,7 @@ weave explain <path> <query> --scorer <name> [--scorer-weight <0..1>] [--candida
 - `--scorer` names one extension. The name follows the extension naming rules.
 - `--scorer-weight` defaults to `0.5`, accepts `0` through `1` inclusive, and is rounded to two
   decimal places for display only.
-- `--candidate-k` defaults to `100`, accepts `1` through `1000`, and must be at least `--top-k`.
+- `--candidate-k` defaults to `100`, accepts `1` through `100`, and must be at least `--top-k`.
 - `--scorer` and `--rerank` are mutually exclusive.
 - `--scorer-weight` and `--candidate-k` require `--scorer`.
 - `--timeout` applies to the scorer invocation.
@@ -186,7 +186,7 @@ weave explain <path> <query> --scorer <name> [--scorer-weight <0..1>] [--candida
   "scorer": {
     "name": "semantic",
     "weight": 0.8,
-    "candidate_k": 200
+    "candidate_k": 100
   }
 }
 ```
@@ -269,7 +269,7 @@ final = (1 - scorer_weight) * core_score + scorer_weight * scorer_score
 
 - The same bundle, query, mode, scorer and weights must produce the same candidate set and order.
 - Extensions must be deterministic for the same request if reproducible ranking is required.
-- `candidate_k` is capped at `1000`; `top_k` remains capped at `100`.
+- `candidate_k` is capped at `100`; `top_k` remains capped at `100`.
 - The request is capped at `8 MiB`; the response at `1 MiB`.
 - The scorer is invoked once per search.
 - No scorer runs for `--mode keyword --scorer-weight 0` or any other weight-zero request.
@@ -295,7 +295,7 @@ list.
 | `--scorer` and `--rerank` together | Usage error, exit `2` |
 | `--scorer-weight` outside `[0,1]` | Usage error, exit `2` |
 | `--candidate-k` below `--top-k` | Usage error, exit `2` |
-| `--candidate-k` above `1000` | Usage error, exit `2` |
+| `--candidate-k` above `100` | Usage error, exit `2` |
 | Missing scorer executable | `EXTENSION_NOT_FOUND`, exit `2` |
 | Scorer exits non-zero | Core results unchanged, warning, exit `0` |
 | Scorer times out | Core results unchanged, warning, exit `0` |
@@ -325,7 +325,7 @@ Behavior scenarios: [extension-scoring.md](https://github.com/prulloac/weave/blo
 - Calibration stays green without `--scorer`; scorer fixtures are deterministic and do not enter
   the labeled corpus.
 - Race coverage for concurrent CLI invocations; no shared scorer process state.
-- Performance benchmark at `candidate_k = 100`, `500` and `1000` after implementation.
+- Performance benchmark at `candidate_k = 100` after implementation.
 
 ## 8. Acceptance Criteria
 

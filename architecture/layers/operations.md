@@ -44,6 +44,7 @@ type OperationRequest struct {
     Codec, CodecSet                // body compression
     Assets, NoAssets, AssetTypes   // blob scanning
     Enricher, Embedder, Rerank     // extensions
+    Scorer, ScorerWeight, CandidateK // scoring
     TimeoutMS
     Sources                        // multi-source reads and writes
     Out, Format, KeyID, Provider   // export and crypto providers

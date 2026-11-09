@@ -96,7 +96,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Performance and maintainability | [optimization.md](specs/optimization.md) | - | x | x | x | stretch |
 | Global configuration | [configuration.md](specs/configuration.md) | - | x | x | x | green |
 | Release readiness (regression, smoke, docs) | [release-readiness.md](specs/release-readiness.md) | - | x | x | x | green |
-| Pluggable scoring (post-GA) | [extension-scoring.md](specs/extension-scoring.md) | - | x | x | - | backlog |
+| Pluggable scoring (post-GA) | [extension-scoring.md](specs/extension-scoring.md) | - | x | x | - | in-progress |
 | Extension data API (post-GA) | [extension-data.md](specs/extension-data.md) | [#15](https://github.com/prulloac/weave/pull/15) | x | x | x | green |
 | weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
@@ -118,7 +118,8 @@ and the embedding ingest/search/audit/list/rebuild/drop path are implemented and
 and release workflows. `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image` v1.0.0 are
 published; see [release-checklist.md](release-checklist.md).
 
-Post-GA pluggable scoring: spec and BDD approved; implementation has not started.
+Post-GA pluggable scoring: spec and BDD approved; search and explain CLI slices are implemented and
+under review.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
 transactional import), E2 (CLI list/get/gc), E3 (show refs, MCP blob
 resources) and E4 (raw export, encrypted-export policy) are merged in PR #15 and released in

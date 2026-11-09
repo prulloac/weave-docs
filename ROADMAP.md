@@ -106,14 +106,14 @@ are internal delivery waves, not product versions.
 weave contract --json
 weave parse <path> [--source <alias=path>] --json
 weave graph <path> [--source <alias=path>] --json
-weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25|semantic] [--top-k <n>] [--embedder <name>] [--rerank <name>] [--timeout <d>] --json
+weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25|semantic] [--top-k <n>] [--embedder <name>] [--rerank <name>] [--scorer <name>] [--scorer-weight <0..1>] [--candidate-k <n>] [--timeout <d>] --json
 weave list <path> [--type <t>] [--tag <t>] [--status <s>] [--limit <n>] --json
 weave show <path> <id|file> [--out <file>] [--decrypt] [--provider <name>] --json
 weave backlinks <path> <id|file> --json
 weave path <path> <id|file> <id|file> --json
 weave audit <path> [--fail-on error|warning|none] [--verify-keys] --json
 weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] --json
-weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] --json
+weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--scorer <name>] [--scorer-weight <0..1>] [--candidate-k <n>] --json
 weave ingest <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--dry-run] --json
 weave rebuild <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] --json
 weave sync <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--dry-run] [--watch [--events]] --json
@@ -245,7 +245,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 28 | MCP multiple sources | [multi-bundle.md](specs/multi-bundle.md) | Tier 6 | multi-bundle CLI, MCP resources | 7 / P3 | shipped |
 | 29 | Performance and maintainability | [optimization.md](specs/optimization.md) | Tier 7 | all packages | Stretch | stretch |
 | 30 | Global configuration | [configuration.md](specs/configuration.md) | Tier 7 | CLI, contract, optimization | 8 / P2 | shipped |
-| 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | deferred |
+| 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | planned |
 | 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA (delivered early) | shipped |
 | 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | shipped |
 | 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | shipped |
