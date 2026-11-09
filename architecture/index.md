@@ -56,16 +56,19 @@ The detailed contract and algorithms are in
 | --- | --- | --- | --- |
 | Contract | JSON Schema + Go | `contract/v1` | Documents, keywords, search results, envelopes, goldens |
 | OKF | Go | `engine/okf` | Parse bundles, frontmatter, links, validation, cache |
+| Assets | Go | `engine/assets` | Blob documents, media types and content metadata |
 | Graph | Go | `engine/graph` | Nodes, edges, degrees, traversal |
-| Search | Go | `engine/search` | In-memory catalog, keyword/fuzzy index, BM25 hybrid ranking, explain evidence |
 | Audit | Go | `engine/audit` | Conformance, links, index coverage and orphan findings |
 | Relate | Go | `engine/relate` | Bounded graph neighborhoods |
+| Search | Go | `engine/search` | In-memory catalog, keyword/fuzzy index, BM25 hybrid ranking, explain evidence |
 | Privacy | Go | `engine/privacy` | Encryption, tokenization, hashing and key resolution |
+| Compression | Go | `engine/compression` | zstd body codec and per-row policy |
+| Codecs | Go | `engine/codecs` | Built-in and `weave-codec-<name>` codec resolution |
 | Extensions | Go | `engine/extensions` | `weave-<name>` discovery, enrichment and rerank IPC |
-| Storage | Go | `storage/sqlite` | Persistent documents, edges, FTS, postings and sync |
+| Storage | Go | `storage/sqlite` | Persistent documents, edges, FTS, postings, embeddings/`vec0`, workspace sources and sync |
 | Watch | Go | `watch` | Polling snapshots and incremental sync |
 | MCP | Go | `mcp` | Tool descriptors, resources and stdio/TCP transport |
-| Operations | Go | `engine/operations` | Transport-neutral ingest, rebuild, search, navigation, audit, relate and explain requests |
+| Operations | Go | `engine/operations` | Transport-neutral ingest, rebuild, search (including semantic), navigation, audit, relate and explain requests |
 | CLI | Go | `cmd/weave` | Argv, stdout/stderr, envelopes, exit codes and MCP startup |
 
 ## Integration Surfaces
@@ -134,6 +137,8 @@ remains the compatibility promise.
 | Ranking | Persistent hybrid BM25 + fuzzy; `--no-db` legacy keyword + fuzzy |
 | Privacy | v1.0 explicit encrypt/tokenize/hash directives |
 | Extensions | v1.0 subprocess IPC over `weave.cli/v1` |
+| Blob assets | v1.0 opaque blob documents with `content_metadata`; media semantics stay in extensions |
+| Workspaces | v1.0 manifest plus persisted `sources` registry (schema v8) and one index per workspace |
 | Integration | CLI first; Go package optional; MCP tools, transport, resources, multi-source and sensitive access shipped |
 | Presentation | Cancelled and removed |
 
@@ -147,6 +152,8 @@ remains the compatibility promise.
 | [ADR 0004](adr/0004-generic-blob-assets-and-content-metadata.md) | Generic blob documents, media types and content metadata |
 | [ADR 0005](adr/0005-embeddings-and-cgo-free-vec0-index.md) | Durable embeddings, per-space `vec0` indexes and semantic search |
 | [ADR 0006](adr/0006-codec-extensions-and-zstd-only-core.md) | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
+| [ADR 0007](adr/0007-workspace-and-source-registry.md) | Workspace manifest, persisted source registry and single-writer index |
+| [ADR 0008](adr/0008-agent-skills-standalone-distribution.md) | Standalone distribution of the agent skills |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |
@@ -173,6 +180,8 @@ remains the compatibility promise.
 | [Release Automation spec](../specs/release-automation.md) | Tag-driven verified GitHub Releases |
 | [Bundle Export spec](../specs/bundle-export.md) | Raw and encrypted bundle reconstruction |
 | [Multiple Bundle Sources spec](../specs/multi-bundle.md) | Aliased multi-root reads and writes |
+| [Workspace and Source Registry spec](../specs/workspace.md) | Workspace manifest, persisted source registry and MCP catalog |
+| [Extension Data spec](../specs/extension-data.md) | Extension-owned opaque artifacts and retrieval |
 | [Optimization spec](../specs/optimization.md) | Benchmarks, budgets and maintainability targets |
 | [Performance baseline](performance.md) | Corpus, baselines, budgets and O4/O5 findings |
 | [Configuration spec](../specs/configuration.md) | Global YAML config and `WEAVE_*` variables |
@@ -215,10 +224,11 @@ Permissive ingestion synthesizes metadata for dirty Markdown, `weave sync` recon
 by SHA-256 hash, and persistent hybrid search combines normalized BM25 with fuzzy scores.
 Calibration passes its baseline. The UI and old TypeScript stack are removed.
 
-The v1.0 feature set is shipped, including external crypto providers, the AI plugin, MCP sensitive
-access and `weave sync --watch`. MCP tools, stdio/TCP transport, auth, resources and watch reload
-are available, privacy directives ship with encrypted, tokenized and hashed storage, bodies use
-zstd by default, and `weave-<name>` extensions enrich writes and rerank searches. The remaining
-pre-GA work is the [release readiness gate](../specs/release-readiness.md): regression hardening,
-the built-binary smoke suite and documentation integrity. The [optimization
-program](../specs/optimization.md) is a post-GA stretch goal.
+The v1.0 feature set is shipped and `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image`
+v1.0.0 are published; see the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
+transport, auth, resources and watch reload are available, privacy directives ship with encrypted,
+tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes and
+rerank searches, blob assets and codec extensions are in place, embeddings back semantic search, and
+the schema v8 workspace registry provides `weave workspace`, `weave source` and `weave mcp
+--workspace`. The remaining work is post-GA: watch event delivery (register #40), pluggable scoring
+and the [optimization program](../specs/optimization.md).

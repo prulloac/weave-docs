@@ -39,13 +39,15 @@ The database records its own schema version with `PRAGMA user_version` (starting
 migrations bump this number independently of the product version and `weave.contract/v1`; a binary
 refuses to open a database with a newer `user_version`.
 
-Current schema is **7**. Version 4 adds `search_tokens` (`bundle_root`, `field`, `token`,
+Current schema is **8**. Version 4 adds `search_tokens` (`bundle_root`, `field`, `token`,
 `postings` BLOB) for the persistent fuzzy/hybrid path. Version 5 adds `search_vocabulary`
 (`bundle_root`, `field`, `token`) so fuzzy queries only load postings for candidate tokens. Version
 6 adds `extension_data`; version 7 adds generic blob metadata, the `body_raw`/`body_compressed`
-split, the per-bundle asset filter, durable embeddings and the embedding space registry. Older
-databases migrate automatically; new tables start empty, and fuzzy/hybrid search falls back to the
-in-memory engine until the next ingest, rebuild or sync populates them.
+split, the per-bundle asset filter, durable embeddings and the embedding space registry; version 8
+adds the workspace source registry (`sources`), specified in
+[Workspace and Source Registry](workspace.md). Older databases migrate automatically; new tables
+start empty, and fuzzy/hybrid search falls back to the in-memory engine until the next ingest,
+rebuild or sync populates them.
 
 ```sql
 -- 0. Bundle Registry
@@ -167,6 +169,9 @@ CREATE TABLE IF NOT EXISTS embedding_indexes (
 Each embedding space also has a dynamically created `vec0` virtual table. Its schema, lifecycle and
 search contract live in [Embeddings](embeddings.md); it is derived from `document_embeddings` and
 can be rebuilt.
+
+The workspace source registry (`sources`, schema v8) is specified in
+[Workspace and Source Registry](workspace.md).
 
 ---
 
@@ -337,7 +342,7 @@ func (s *Store) Close() error
 
 ### 5.4 Schema Version
 
-- The current schema is `PRAGMA user_version = 7`.
+- The current schema is `PRAGMA user_version = 8`.
 - Older databases migrate automatically through each migration step.
 - A binary refuses to open a database with a newer `user_version` and exits `2` with
   `INVALID_REQUEST`.

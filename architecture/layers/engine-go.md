@@ -39,9 +39,12 @@ engine/
 │   ├── frontmatter.go   # YAML frontmatter and keyword extraction
 │   ├── links.go         # source-preserving link scanner
 │   └── cache.go         # optional per-file cache
+├── assets/              # blob documents, media types and content metadata
 ├── graph/
 │   ├── build.go         # nodes, edges, dangling links
 │   └── traverse.go      # BFS, neighbors, orphans
+├── audit/               # conformance, link and index findings
+├── relate/              # bounded graph neighborhoods
 ├── search/
 │   ├── build.go         # documents, keyword postings, field/trigram indexes
 │   ├── query.go         # keyword, fuzzy and hybrid top-K
@@ -51,7 +54,8 @@ engine/
 │   └── nav.go           # normalize, list, show, backlinks, path
 ├── privacy/             # directives, key resolution and crypto providers
 ├── compression/         # zstd body codec and per-row policy
-├── extensions/          # weave-<name> discovery and transport, including codec extensions
+├── codecs/              # built-in and weave-codec-<name> codec resolution
+├── extensions/          # weave-<name> discovery and transport
 └── operations/          # transport-neutral envelopes
 ```
 
@@ -142,6 +146,10 @@ the calibration/benchmark suite; the 10k-file budgets in the spec remain the rel
 ## Related Documents
 
 - [Keyword + Fuzzy Search spec](../../specs/keyword-fuzzy-search.md)
+- [Audit spec](../../specs/weave-audit.md)
+- [Relate spec](../../specs/weave-relate.md)
+- [Compression spec](../../specs/compression.md)
+- [Generic Blob Assets spec](../../specs/blob-assets.md)
 - [Contract layer](contract.md)
 - [Operations layer](operations.md)
 - [CLI layer](cli-go.md)
