@@ -113,6 +113,24 @@ CI refreshes the baseline on the pinned runner with higher sample counts.
 | Index / body ratio | 3.411× | < 3.0× | **fail** |
 | Peak RSS during ingest | 462.387 MB | — | baseline |
 
+## Scorer overhead
+
+`--scorer` adds bounded context construction, score blending and one subprocess invocation. The
+in-process overhead at the first-slice cap (`candidate_k = 100`) on the environment above:
+
+| Benchmark | Time | Memory | Allocs |
+| --- | ---: | ---: | ---: |
+| `BenchmarkScorerCandidates100` | ~69 µs | 76 KiB | 412 |
+| `BenchmarkScorerBlend100` | ~6.6 µs | 19 KiB | 104 |
+| `BenchmarkScorerRequestMarshal100` | ~167 µs | 82 KiB | 3 |
+
+The extension process dominates end-to-end latency; these numbers cover core context building,
+blending and request encoding. Reproduce with:
+
+```sh
+go test ./engine/operations ./engine/extensions -run '^$' -bench Scorer -benchmem
+```
+
 ## Findings for O4/O5
 
 - **O4 — time.** Keyword answers from SQLite metadata in 62 ms. Fuzzy and hybrid use a persistent

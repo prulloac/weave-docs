@@ -325,7 +325,8 @@ Behavior scenarios: [extension-scoring.md](https://github.com/prulloac/weave/blo
 - Calibration stays green without `--scorer`; scorer fixtures are deterministic and do not enter
   the labeled corpus.
 - Race coverage for concurrent CLI invocations; no shared scorer process state.
-- Performance benchmark at `candidate_k = 100` after implementation.
+- Performance benchmark at `candidate_k = 100`; results are in
+  [Performance baseline](../architecture/performance.md#scorer-overhead).
 
 ## 8. Acceptance Criteria
 
@@ -354,9 +355,10 @@ Behavior scenarios: [extension-scoring.md](https://github.com/prulloac/weave/blo
 
 Each slice is a separate stacked PR. S1 must not change default output or `--rerank`.
 
-## 10. Open Questions
+## 10. Decisions and Open Questions
 
-- Should MCP expose `scorer` in `weave_search` after the CLI slice, or keep scoring CLI-only?
+- **MCP:** decided CLI-only for the first slice. Wiring `scorer` into `weave_search` and
+  `weave_explain` needs a separate additive tool-schema change.
 - Should a future retrieval extension be allowed to propose candidate filters, or is core-mode
   candidate generation the permanent boundary?
 - Should scorers be allowed to return an optional explanation string, or is numeric evidence
