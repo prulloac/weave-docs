@@ -22,27 +22,23 @@ The UI is retired by [ADR 0001](../adr/0001-keyword-fuzzy-search-and-ui-retireme
 
 ### Commands
 
-```sh
-weave contract --json
-weave ingest <path> [--db <file>] [--strict|--permissive] --json
-weave rebuild <path> [--db <file>] [--strict|--permissive] --json
-weave sync <path> [--db <file>] [--strict|--permissive] --json
-weave mcp --bundle <path> [--db <file>] [--stdio | --listen <addr>] [--token <token>]
-weave parse <path> --json
-weave graph <path> --json
-weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] --json
-weave list <path> [--type <t>] [--tag <t>] [--status <s>] [--limit <n>] --json
-weave show <path> <id|file> --json
-weave backlinks <path> <id|file> --json
-weave path <path> <id|file> <id|file> --json
-weave version --json
+The canonical command surface lives in [ROADMAP §4](../../ROADMAP.md) and the
+[CLI layer](../layers/cli-go.md); this contract applies to every command family. The stable
+families are:
+
+```text
+contract · parse · graph · search · list · show · backlinks · path
+audit · relate · explain
+ingest · rebuild · sync · export
+workspace · source · embeddings · codecs · extensions · config · completion
+mcp · version
 ```
 
 Guarantees:
 
 - stdout is one JSON envelope in `--json` mode.
 - stderr is diagnostics.
-- Exit codes: 0 success, 1 runtime/no match, 2 usage/invalid parameters, 3 permission.
+- Exit codes: 0 success, 1 runtime/no match, 2 usage/confirmation, 3 permission/privacy.
 - No network, daemon or UI.
 - Bundle reads use `~/.weave/index.db` by default; `--no-db` forces in-memory parsing and
   `--db <file>` selects another database.
@@ -100,12 +96,15 @@ See [Contract layer](../layers/contract.md) for full fields.
   "top_k": 10,
   "keyword": [],
   "fuzzy": [],
-  "hybrid": []
+  "hybrid": [],
+  "lexical": [],
+  "semantic": []
 }
 ```
 
+- `mode` is `keyword`, `fuzzy`, `hybrid`, `bm25` or `semantic`.
 - Top-K default 10; valid range 1..100.
-- Keyword, fuzzy and hybrid lists are independently capped.
+- Keyword, fuzzy and hybrid lists are independently capped; `lexical` and `semantic` are additive.
 - Keyword exact = 1.0, prefix = 0.75, AND across query tokens.
 - Fuzzy weights: title 1.00, description 0.60, body 0.30.
 - Hybrid = persistent normalized BM25 + fuzzy (50/50); `--no-db` keeps legacy keyword + fuzzy.

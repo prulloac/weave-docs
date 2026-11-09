@@ -14,7 +14,7 @@ maturity only.
 | [Weave Explain](weave-explain.md) | stable | [Explain](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-explain.md), [BM25 explain](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-explain.md) | 1, 4, 21 |
 | [Permissive Ingestion](permissive-ingestion.md) | stable | [Permissive ingestion](https://github.com/prulloac/weave/blob/main/docs/bdd/permissive-ingestion.md) | 5 |
 | [Storage & Sync](storage-and-sync.md) | stable | [Storage](https://github.com/prulloac/weave/blob/main/docs/bdd/storage-and-sync.md), [Incremental sync](https://github.com/prulloac/weave/blob/main/docs/bdd/incremental-sync.md) | 6, 7 |
-| [Watch Mode](watch-mode.md) | stable | [Watch mode](https://github.com/prulloac/weave/blob/main/docs/bdd/watch-mode.md), [Sync watch](https://github.com/prulloac/weave/blob/main/docs/bdd/sync-watch.md) | 8, 24 |
+| [Watch Mode](watch-mode.md) | stable | [Watch mode](https://github.com/prulloac/weave/blob/main/docs/bdd/watch-mode.md), [Sync watch](https://github.com/prulloac/weave/blob/main/docs/bdd/sync-watch.md) | 8, 24, 40 |
 | [BM25 Ranking](bm25-ranking.md) | stable | [BM25](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-ranking.md), [Calibration](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-calibration.md) | 9, 10, 21 |
 | [Compression](compression.md) | stable | [Compression](https://github.com/prulloac/weave/blob/main/docs/bdd/compression.md), [Codec extensions](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md) | 11, 38 |
 | [Codec Extensions](codec-extensions.md) | stable | [Codec extensions](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md) | 38 |

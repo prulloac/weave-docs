@@ -25,7 +25,7 @@ status: stable
 - Why did this document rank where it did?
 
 ```sh
-weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k <n>] [--json]
+weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--json]
 ```
 
 ## 2. Goals and Non-Goals
@@ -47,7 +47,7 @@ weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k 
 ## 3. Command Contract
 
 ```text
-weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k <n>] [--json] [--no-cache]
+weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--json] [--no-cache]
 ```
 
 - `--id` selects the concept to explain.

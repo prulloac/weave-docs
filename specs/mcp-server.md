@@ -121,6 +121,7 @@ func (s *Server) Call(ctx context.Context, name string, arguments map[string]any
 | `weave_show` | `id` | `ShowResult` |
 | `weave_backlinks` | `id` | `BacklinksResult` |
 | `weave_path` | `from`, `to` | `PathResult` |
+| `weave_sources` | — | workspace source registry |
 | `weave_contract` | — | `ContractInfo` |
 
 Rules:

@@ -99,19 +99,25 @@ func (e *Engine) Path(from, to string) (*contractv1.PathResult, bool)
 
 ## Search
 
-The full contract is in [Keyword + Fuzzy Search](../../specs/keyword-fuzzy-search.md).
+The full contract is in [Keyword + Fuzzy Search](../../specs/keyword-fuzzy-search.md) and
+[BM25 Ranking](../../specs/bm25-ranking.md).
 
 - **Keyword index:** normalized keyword token -> documents.
 - **Fuzzy index:** per-field token postings and trigram index.
 - **Keyword score:** exact `1.0`, prefix `0.75`, AND across query tokens.
 - **Fuzzy score:** max of normalized Levenshtein and trigram Dice per token; field weights
   `title 1.00`, `description 0.60`, `body 0.30`; normalized by `1.90`.
-- **Hybrid score:** `0.50 * keyword + 0.50 * fuzzy`.
+- **In-memory hybrid:** `0.50 * keyword + 0.50 * fuzzy`; used when `--no-db` is set.
+- **Persistent hybrid:** `0.50 * normalized BM25 + 0.50 * fuzzy` over SQLite FTS5.
+- **BM25:** FTS5 lexical ranking with OR terms, phrases and negative terms.
+- **Semantic:** `weave search --mode semantic` runs KNN over durable embeddings; the query path lives
+  in `engine/operations` with `storage/sqlite`, not in `engine/search`.
+- **Explain evidence:** per-token keyword, per-field fuzzy and BM25 lexical breakdowns.
 - **Top-K:** default 10, maximum 100.
-- Results contain keyword, fuzzy and hybrid lists with component scores and match metadata.
+- Results contain keyword, fuzzy and hybrid lists plus additive `lexical` and `semantic` lists.
 - Ranking is deterministic with id tie-breaks.
 - Calibration lives in `engine/search/testdata/calibration.json` and is guarded by
-  `TestCalibration`.
+  `TestCalibration` and the BM25 calibration suite.
 
 ## Graph
 
@@ -131,8 +137,9 @@ The full contract is in [Keyword + Fuzzy Search](../../specs/keyword-fuzzy-searc
 
 ## Performance
 
-Go benchmark on 1,000 generated files (local x86_64): parse ~47 ms. Search latency is measured by
-the calibration/benchmark suite; the 10k-file budgets in the spec remain the release gate.
+Go benchmark on 1,000 generated files (local x86_64): parse ~47 ms. Search and storage budgets are
+tracked by the post-GA optimization program; the current corpus, baselines and failing budgets are in
+[Performance baseline](../performance.md).
 
 ## Testing
 

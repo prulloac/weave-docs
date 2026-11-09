@@ -34,23 +34,35 @@ are gone or deferred.
 
 ```sh
 weave contract [--json]
-weave parse <path> [--json] [--no-cache]
-weave graph <path> [--json] [--no-cache]
-weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--json] [--no-cache]
-weave list <path> [--type <t>] [--tag <t>] [--status <s>] [--limit <n>] [--json] [--no-cache]
-weave show <path> <id|file> [--json] [--no-cache]
-weave backlinks <path> <id|file> [--json] [--no-cache]
-weave path <path> <id|file> <id|file> [--json] [--no-cache]
-weave audit <path> [--fail-on error|warning|none] [--verify-keys] [--json] [--no-cache]
-weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--json] [--no-cache]
-weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k <n>] [--json] [--no-cache]
-weave ingest <path> [--db <file>] [--strict|--permissive] [--json] [--no-cache]
-weave rebuild <path> [--db <file>] [--strict|--permissive] [--json] [--no-cache]
-weave sync <path> [--db <file>] [--strict|--permissive] [--json] [--no-cache]
-weave mcp --bundle <path> [--db <file>] [--stdio | --listen <addr>] [--token <token>]
+weave parse <path> [--source <alias=path>] [--json] [--no-cache]
+weave graph <path> [--source <alias=path>] [--json] [--no-cache]
+weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25|semantic] [--top-k <n>] [--embedder <name>] [--rerank <name>] [--json] [--no-cache]
+weave list <path> [--type <t>] [--tag <t>] [--status <s>] [--limit <n>] [--json]
+weave show <path> <id|file> [--out <file>] [--decrypt] [--provider <name>] [--json]
+weave backlinks <path> <id|file> [--json]
+weave path <path> <id|file> <id|file> [--json]
+weave audit <path> [--fail-on error|warning|none] [--verify-keys] [--provider <name>] [--json]
+weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--json]
+weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--json]
+weave ingest <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--dry-run] [--json]
+weave rebuild <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--json]
+weave sync <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--watch [--events]] [--json]
+weave embeddings list|rebuild|drop <path> [--model <model>] [--dim <n>] [--keep-source] [--json]
+weave codecs list [<path>] [--json]
+weave export <path> --out <dir> --format raw|encrypted [--key-id <id>] [--yes] [--force] [--json]
+weave workspace init|show|path [--workspace <dir>] [--json]
+weave source add|remove|list|show [--workspace <dir>] [--prune] [--json]
+weave extensions list [<path>] [--json]
+weave extensions data list|get|gc <path> [--extension <name>] [--doc <id>] [--out <file>] [--force] [--dry-run] [--json]
+weave config show|get|paths|path|init [--json]
+weave completion bash|zsh|fish
+weave mcp --bundle <path>|--workspace <dir> [--source <alias=path>] [--db <file>] [--stdio | --listen <addr>] [--token <token>] [--top-k-default <n>] [--allow-sensitive]
 weave version [--json]
 weave --version | --help
 ```
+
+[`ROADMAP.md` §4](../../ROADMAP.md) owns the canonical CLI surface; keep this list and the roadmap
+in sync when a command is added or removed.
 
 ## Machine Mode
 
@@ -76,8 +88,8 @@ Rules:
 | --- | --- |
 | 0 | Success |
 | 1 | Runtime error, no matches, unknown concept, no route |
-| 2 | Usage error, invalid root, invalid search parameters |
-| 3 | Permission denied |
+| 2 | Usage error, invalid root, invalid search parameters, confirmation required |
+| 3 | Permission, privacy key or decryption failure |
 
 - No network, daemon or interactive prompt.
 - The parse cache is enabled by default; `--no-cache` disables it.
@@ -89,7 +101,8 @@ weave search <path> <query> --mode hybrid --top-k 10
 ```
 
 - Mode defaults to `hybrid`; `--top-k` defaults to 10 and accepts 1..100.
-- JSON responses always contain keyword, fuzzy and hybrid lists.
+- JSON responses always contain keyword, fuzzy and hybrid lists; `lexical` and `semantic` are
+  additive and appear when those modes are selected.
 - Human output:
   - hybrid: `<total_score> <title> [<path>]`
   - keyword: `<score> <title> [<matched keywords>]`

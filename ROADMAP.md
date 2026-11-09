@@ -486,8 +486,8 @@ needed.
 - **Product:** v1.0 is the single full-scope release. Every feature marked `shipped` in the register
   gates v1.0; `stretch` and `deferred` items do not. Phases are internal delivery waves, not
   separate releases.
-- **Contract:** `weave.contract/v1` is authoritative. Until v1.0.0 GA it may evolve in place; after
-  GA, breaking changes require `contract/v2`.
+- **Contract:** `weave.contract/v1` is authoritative. v1.0.0 has shipped, so breaking changes now
+  require `contract/v2`; additive fields and enum values remain allowed.
 - **CLI and extensions:** `weave.cli/v1` is authoritative. Additive messages and fields are allowed
   before and after GA; breaking changes after GA require `weave.cli/v2`.
 - **Storage:** the SQLite schema uses `PRAGMA user_version` with explicit migrations, independent of
@@ -558,8 +558,14 @@ needed.
 - [Release Automation](specs/release-automation.md)
 - [Bundle Export](specs/bundle-export.md)
 - [Multiple Bundle Sources](specs/multi-bundle.md)
+- [Workspace and Source Registry](specs/workspace.md)
+- [Extension Data API](specs/extension-data.md)
+- [Pluggable Scoring](specs/extension-scoring.md)
 - [Performance and Maintainability](specs/optimization.md)
 - [Configuration](specs/configuration.md)
+- [Node Graph Engine](specs/node-graph-engine.md)
+- [OKF Bundle Parser](specs/okf-bundle-parser.md)
+- [Release Readiness](specs/release-readiness.md)
 - [Privacy & Extensions](architecture/privacy-and-extensions.md)
 - [External Crypto Providers](specs/external-crypto-providers.md)
 - [Weave AI Extension](specs/weave-ai-plugin.md)
@@ -571,6 +577,8 @@ needed.
 - [ADR 0004: Generic Blob Assets and Content Metadata](architecture/adr/0004-generic-blob-assets-and-content-metadata.md)
 - [ADR 0005: Embeddings and CGo-Free vec0 Index](architecture/adr/0005-embeddings-and-cgo-free-vec0-index.md)
 - [ADR 0006: Codec Extensions and zstd-only Core](architecture/adr/0006-codec-extensions-and-zstd-only-core.md)
+- [ADR 0007: Workspace and Source Registry](architecture/adr/0007-workspace-and-source-registry.md)
+- [ADR 0008: Agent Skills as a Standalone Distribution](architecture/adr/0008-agent-skills-standalone-distribution.md)
 - [MCP Server](specs/mcp-server.md)
 - [MCP Sensitive Access](specs/mcp-sensitive.md)
 - [Architecture](architecture/index.md)

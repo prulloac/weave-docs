@@ -338,7 +338,7 @@ func (s *Store) Close() error
 - `Ingest` and `Rebuild` run in one transaction scoped to `bundle.Root`.
 - `HasBundle` checks whether a bundle is present before a database-backed read.
 - `LoadBundle` reconstructs a `contractv1.Bundle` for the given root without reading source files.
-- `Sync` lands with the incremental-sync slice.
+- `Sync` incrementally reconciles a bundle root against the stored hashes.
 
 ### 5.4 Schema Version
 

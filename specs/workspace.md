@@ -214,7 +214,7 @@ observes snapshots. Contention is reported as `INDEX_LOCKED`, not as a silent fa
 | `--workspace` with `--bundle` | `INVALID_REQUEST` | Exit `2` |
 | `source remove` unknown alias | `SOURCE_NOT_FOUND` | Exit `1` |
 | Writer lock unavailable | `INDEX_LOCKED` | Exit `1`, names the holder |
-| Source not yet indexed | `SOURCE_INDEXING` | Warning; not served |
+| Source not yet indexed | `indexing` status | Excluded from serving until the first sync completes |
 | Source sync failed | `SOURCE_DEGRADED` | Warning; last snapshot served |
 | Sync of an unindexed source | `BUNDLE_NOT_INDEXED` | Exit `1`, alias named |
 

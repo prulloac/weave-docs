@@ -286,9 +286,12 @@ weave://extension/<name>/<key>
 | `EXTENSION_DATA_TOO_LARGE` | A file, manifest or total workspace exceeds a limit |
 | `EXTENSION_DATA_QUOTA` | The document or bundle quota is exceeded |
 | `EXTENSION_DATA_NOT_FOUND` | Requested extension data does not exist |
-| `OUTPUT_REQUIRED` | `data get` was called without `--out` |
-| `OUTPUT_EXISTS` | `data get` target exists and `--force` is absent |
+| `INVALID_REQUEST` (`OUTPUT_REQUIRED` message) | `data get` was called without `--out` |
+| `INVALID_REQUEST` (`OUTPUT_EXISTS` message) | `data get` target exists and `--force` is absent |
 | `EXTENSION_PROTOCOL` | Existing extension transport failure |
+
+`EXTENSION_DATA_*` are contract error codes carried in the failure envelope. `OUTPUT_REQUIRED` and
+`OUTPUT_EXISTS` are stable message prefixes on `INVALID_REQUEST`, because both are usage errors.
 
 Import errors are warnings on ingest/sync, never a document failure, unless the extension itself
 fails before producing a manifest.

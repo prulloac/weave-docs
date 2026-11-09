@@ -127,7 +127,7 @@ remains the compatibility promise.
 | Ingestion | Strict OKF for parse/graph/search; permissive mode for `ingest`/`rebuild`/`audit` |
 | Default mode | Hybrid |
 | Default top-K | 10; max 100 |
-| Contract version | New v1 replaces the previous v1 in place |
+| Contract version | v1 shipped in v1.0.0; additive changes only, breaking changes need v2 |
 | CLI operation | `search` replaces `find` |
 | Calibration | Labeled corpus with NDCG@K and MRR@K baselines |
 | Storage | Bundle-scoped SQLite default at `~/.weave/index.db`; `--no-db` in-memory; XDG state migration deferred (ADR 0002) |
