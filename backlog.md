@@ -60,6 +60,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Persistent SQLite storage | [storage-and-sync.md](specs/storage-and-sync.md) | - | x | x | x | green |
 | Incremental sync | [storage-and-sync.md](specs/storage-and-sync.md) | - | x | x | x | green |
 | Watch mode | [watch-mode.md](specs/watch-mode.md) | - | x | x | x | green |
+| Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | - | - | - | - | backlog |
 | Permissive Markdown ingestion | [permissive-ingestion.md](specs/permissive-ingestion.md) | - | x | x | x | green |
 | BM25 lexical ranking | [bm25-ranking.md](specs/bm25-ranking.md) | - | x | x | x | green |
 | BM25 calibration | [bm25-ranking.md](specs/bm25-ranking.md) | - | x | x | x | green |
@@ -211,6 +212,7 @@ Execution waves:
 9. Release readiness: documentation integrity, regression hardening and the built-binary smoke suite.
 10. Stretch: maintainability and UX follow-ups, benchmarks, time and space.
 11. Post-GA: pluggable scoring extensions with document context and configurable blend weights.
+12. Post-GA: `fsnotify` watch event delivery with a polling fallback.
 
 Critical path: `contract -> parser/graph/search -> storage -> sync -> BM25 -> privacy -> extension runner -> MCP sensitive`.
 

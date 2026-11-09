@@ -7,7 +7,8 @@ published; the tag and publish record lives in [release-checklist.md](release-ch
 engine, introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive
 ingestion, privacy directives, body compression, extension IPC with enrichment/rerank, workspaces,
 blob assets, codecs, embeddings and semantic search, release automation, and the MCP server are
-shipped. Post-GA work is limited to pluggable scoring and the optimization program.
+shipped. Post-GA work is limited to watch event delivery, pluggable scoring and the optimization
+program.
 
 ## 1. What Weave Is
 
@@ -68,7 +69,7 @@ are internal delivery waves, not product versions.
 | --- | --- | --- |
 | Persistent SQLite storage | v1.0 | Shipped: pure-Go `modernc.org/sqlite`, bundle-scoped, WAL |
 | Incremental sync | v1.0 | Shipped: SHA-256 add/update/remove/skip with cascade |
-| Watch mode | v1.0 | Shipped: SHA-256 polling watcher, MCP live reload; `fsnotify` is a post-GA stretch |
+| Watch mode | v1.0 | Shipped: SHA-256 polling watcher, MCP live reload; `fsnotify` is a tracked post-GA follow-up (#40) |
 | Permissive ingestion | v1.0 | Shipped: synthetic Markdown documents with warnings |
 | BM25 lexical ranking | v1.0 | Shipped: SQLite FTS5 `--mode bm25` |
 | BM25 calibration | v1.0 | Shipped: BM25 + fuzzy hybrid corpus and baseline |
@@ -253,6 +254,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | shipped |
 | 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | shipped |
 | 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
+| 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-GA | planned |
 
 Rules:
 
@@ -278,6 +280,7 @@ The phases below are not arbitrary; they follow this dependency graph.
 | SQLite storage | parser, graph, contract | sync, BM25, compression, privacy storage, MCP persistent |
 | Incremental sync (shipped) | storage, parser, graph | watch, enrichment, MCP persistent |
 | Watch mode | incremental sync | live MCP reload |
+| Watch event delivery (`fsnotify`) | watch mode, incremental sync | lower idle watch CPU and I/O |
 | BM25 lexical ranking (shipped) | storage/FTS5, search contract, calibration | BM25 hybrid ranking |
 | Compression | storage | memory/body budgets |
 | Privacy directives | parser, storage, search, CLI, contract, key resolver | decrypt, audit key checks, sensitive MCP, crypto plugins |
@@ -428,7 +431,7 @@ Specs: [audit](specs/weave-audit.md), [relate](specs/weave-relate.md),
 - Default bundle-scoped database at `~/.weave/index.db`.
 - `weave ingest`, `weave rebuild`, `weave sync` and `--mode bm25` shipped.
 - `sha256` content hashes, cascading graph updates and a polling watch loop shipped; `fsnotify`
-  event delivery is a post-GA stretch goal.
+  event delivery is a tracked post-GA follow-up (register #40).
 - Body compression: text-readable content is raw, binary blobs use zstd by default, and LZ4/other
   codecs are extension-provided in v1.0; `weave sync --watch` and `weave mcp --watch` are wired;
   posting compression is a post-GA stretch goal.
