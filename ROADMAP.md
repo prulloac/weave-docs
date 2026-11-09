@@ -2,10 +2,12 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v1 feature-complete; release gate in progress.** The core engine, introspection commands,
-SQLite storage, incremental sync, watch reload, BM25, permissive ingestion, privacy directives, body
-compression, extension IPC with enrichment/rerank, release automation, and the MCP server through
-watch reload are shipped on `main`. The optimization program is a post-GA stretch goal.
+Status: **v1.0.0 shipped.** `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image` v1.0.0 are
+published; the tag and publish record lives in [release-checklist.md](release-checklist.md). The core
+engine, introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive
+ingestion, privacy directives, body compression, extension IPC with enrichment/rerank, workspaces,
+blob assets, codecs, embeddings and semantic search, release automation, and the MCP server are
+shipped. Post-GA work is limited to pluggable scoring and the optimization program.
 
 ## 1. What Weave Is
 
@@ -51,6 +53,11 @@ It is **CLI-first**, local, offline-capable, and has **no UI**.
 | Permissive ingestion | Shipped | Synthetic Markdown documents with warnings; exact keyword excluded |
 | Incremental sync | Shipped | SHA-256 add/update/remove/skip with cascade and dangling links |
 | BM25 lexical ranking | Shipped | SQLite FTS5 `--mode bm25` with field weights and phrases |
+| Blob assets | Shipped | Native blob documents with `content_metadata`, generic retrieval and export |
+| Embeddings and semantic search | Shipped | Durable embeddings with per-space `vec0` KNN |
+| Codec extensions | Shipped | `weave-codec-<name>` raw-byte codecs; LZ4 is the first-party extension |
+| Workspaces and sources | Shipped | Manifest, persisted source registry, `--workspace` writes, MCP catalog |
+| Extension data API | Shipped | Extension-owned opaque artifacts with list/get/gc |
 
 ## 3. v1.0 Scope
 
@@ -88,6 +95,7 @@ are internal delivery waves, not product versions.
 | Semantic search | v1.0 | Shipped: durable embeddings and per-space `vec0` KNN |
 | Optimization program | Stretch | Post-GA: benchmarks, budgets, maintainability and UX targets |
 | Global configuration | v1.0 | Shipped: YAML config, `WEAVE_*` variables and `weave config` |
+| Workspaces and sources | v1.0 | Shipped: manifest, persisted source registry, `--workspace` writes and MCP re-reconciliation |
 
 ## 4. CLI Surface
 
@@ -95,23 +103,29 @@ are internal delivery waves, not product versions.
 
 ```sh
 weave contract --json
-weave parse <path> --json
-weave graph <path> --json
-weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--rerank <name>] [--timeout <d>] --json
+weave parse <path> [--source <alias=path>] --json
+weave graph <path> [--source <alias=path>] --json
+weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25|semantic] [--top-k <n>] [--embedder <name>] [--rerank <name>] [--timeout <d>] --json
 weave list <path> [--type <t>] [--tag <t>] [--status <s>] [--limit <n>] --json
-weave show <path> <id|file> [--decrypt] --json
+weave show <path> <id|file> [--out <file>] [--decrypt] [--provider <name>] --json
 weave backlinks <path> <id|file> --json
 weave path <path> <id|file> <id|file> --json
 weave audit <path> [--fail-on error|warning|none] [--verify-keys] --json
 weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] --json
-weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy] [--top-k <n>] --json
-weave ingest <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--timeout <d>] --json
-weave rebuild <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--timeout <d>] --json
-weave sync <path> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--timeout <d>] [--watch [--events]] --json
+weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] --json
+weave ingest <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--dry-run] --json
+weave rebuild <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] --json
+weave sync <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--dry-run] [--watch [--events]] --json
+weave embeddings list|rebuild|drop <path> [--model <model>] [--dim <n>] [--keep-source] --json
+weave codecs list [<path>] --json
 weave export <path> --out <dir> --format raw|encrypted [--key-id <id>] [--yes] [--force] --json
-weave config show|path|init [--json]
+weave workspace init|show|path [--workspace <dir>] --json
+weave source add|remove|list|show [--workspace <dir>] [--prune] --json
+weave config show|get|paths|path|init [--json]
 weave extensions list [<path>] --json
-weave mcp --bundle <path> [--stdio|--listen <addr>] [--token <t>] [--db <file>] [--watch]
+weave extensions data list|get|gc <path> [--extension <name>] [--doc <id>] [--out <file>] [--dry-run] --json
+weave completion bash|zsh|fish
+weave mcp --bundle <path>|--workspace <dir> [--stdio|--listen <addr>] [--token <t>] [--db <file>] [--watch] [--allow-sensitive]
 weave version --json
 ```
 
@@ -131,6 +145,8 @@ Multi-source reads and writes use repeatable `--source <alias=path>` flags; see 
 - **Hybrid:** persistent searches use `0.50 * BM25 + 0.50 * fuzzy`; `--no-db` keeps legacy
   keyword + fuzzy.
 - **BM25:** SQLite FTS5 `--mode bm25`, OR terms, phrases, negative terms.
+- **Semantic:** `--mode semantic` runs per-space `vec0` KNN over durable embeddings; it requires an
+  embedder extension and the persistent database.
 - **Top-K:** default 10, max 100.
 
 ### Current
@@ -229,14 +245,14 @@ is the completeness check: no feature is considered planned until it appears her
 | 29 | Performance and maintainability | [optimization.md](specs/optimization.md) | Tier 7 | all packages | Stretch | stretch |
 | 30 | Global configuration | [configuration.md](specs/configuration.md) | Tier 7 | CLI, contract, optimization | 8 / P2 | shipped |
 | 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | deferred |
-| 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA | deferred |
+| 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA (delivered early) | shipped |
 | 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | shipped |
-| 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | review |
-| 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | in-progress |
-| 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | review |
-| 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | review |
-| 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | review |
-| 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | backlog |
+| 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | shipped |
+| 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | shipped |
+| 36 | Image knowledge extension | [weave-image.md](specs/weave-image.md) | Tier 7 | blob assets, AI vision | 9 / P1 | shipped |
+| 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | shipped |
+| 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | shipped |
+| 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
 
 Rules:
 
@@ -364,8 +380,8 @@ privacy directives ──┬── show --decrypt
 6. semantic search, retrieval and release integration.
 
 Release order: `weave-ai v1.0.0` → `weave-codec-lz4 v1.0.0` → `weave v1.0.0` →
-`weave-image v1.0.0`. Specs and BDD approved 2026-11-03; implementation is complete, releases are
-the owner action.
+`weave-image v1.0.0`. Specs and BDD approved 2026-11-03; all four releases are published, with the
+tag and verification record in [release-checklist.md](release-checklist.md).
 
 **Wave 10 — workspaces and dynamic sources:**
 
@@ -375,8 +391,9 @@ the owner action.
 4. multi-source watch and single-writer index ownership.
 
 Spec: [Workspace and Source Registry](specs/workspace.md); ADR
-[0007](architecture/adr/0007-workspace-and-source-registry.md). Status: accepted/stable; implemented
-and tested (schema v8 registry, workspace/source CLI, `--workspace` writes and MCP re-reconciliation).
+[0007](architecture/adr/0007-workspace-and-source-registry.md). Status: accepted/stable; shipped in
+v1.0.0 (schema v8 registry, workspace/source CLI, `--workspace` writes, MCP re-reconciliation and
+single-writer index ownership).
 
 **Critical path:**
 
@@ -451,7 +468,8 @@ Specs: [Extension Subprocess IPC](specs/extension-ipc.md),
 - Tools: `weave_search`, `weave_explain`, `weave_relate`, `weave_audit`, `weave_show`,
   `weave_path`.
 - Strict sensitive-data boundary; encrypted fields require explicit opt-in (shipped).
-- M4 polish (request-rate limits, metrics/logging and service examples) is deferred until after GA.
+- M4 polish (request-rate limits, metrics/logging and service examples) is post-GA work and is not
+  scheduled.
 
 Spec: [MCP Server](specs/mcp-server.md).
 

@@ -96,7 +96,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Global configuration | [configuration.md](specs/configuration.md) | - | x | x | x | green |
 | Release readiness (regression, smoke, docs) | [release-readiness.md](specs/release-readiness.md) | - | x | x | x | green |
 | Pluggable scoring (post-GA) | [extension-scoring.md](specs/extension-scoring.md) | - | x | x | - | backlog |
-| Extension data API (post-GA) | [extension-data.md](specs/extension-data.md) | - | x | x | x | review |
+| Extension data API (post-GA) | [extension-data.md](specs/extension-data.md) | [#15](https://github.com/prulloac/weave/pull/15) | x | x | x | green |
 | weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | - | x | x | x | green |
@@ -114,15 +114,14 @@ Media and embeddings: ADR 0004/0005/0006 are accepted and the specs/BDD are appr
 `weave-ai` vision/embeddings are green. Core schema v7, blob ingestion/retrieval, codec extensions
 and the embedding ingest/search/audit/list/rebuild/drop path are implemented and covered by tests.
 `weave-codec-lz4` and `weave-image` exist as standalone extension repositories with installers, CI
-and release workflows. Implementation and local release validation are complete; no releases are
-tagged yet. Remaining work is the owner's tag and publish sequence recorded in
-[release-checklist.md](release-checklist.md).
+and release workflows. `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image` v1.0.0 are
+published; see [release-checklist.md](release-checklist.md).
 
-Post-GA pluggable scoring: spec and BDD approved; TDD is deferred until after v1.0.0.
+Post-GA pluggable scoring: spec and BDD approved; implementation has not started.
 Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
 transactional import), E2 (CLI list/get/gc), E3 (show refs, MCP blob
-resources) and E4 (raw export, encrypted-export policy) implemented in
-draft PR #15; not merged.
+resources) and E4 (raw export, encrypted-export policy) are merged in PR #15 and released in
+v1.0.0.
 
 ## Tier 8 — Workspace and sources
 
@@ -134,8 +133,7 @@ Workspace and sources: ADR 0007 and the
 [Workspace and Source Registry specification](specs/workspace.md) are accepted (2026-11-06). The
 schema v8 registry, `weave workspace`/`weave source` commands, `ingest|rebuild|sync --workspace`,
 `weave mcp --workspace` with the `weave_sources` tool, runtime re-reconciliation and the
-single-writer index lock are implemented and covered by tests. Implementation is complete; owner
-review is the next step.
+single-writer index lock are implemented, merged on `main` and released in v1.0.0.
 
 ## Cross-cutting
 
