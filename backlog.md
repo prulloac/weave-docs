@@ -150,11 +150,12 @@ Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no o
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | x | - | in-progress |
+| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | x | x | review |
 
-Specification is stable. Core C1 and the first `weave-code` repository slice are implemented: Go and
-Python extraction, lexical fallback, project analysis, symbol documents and relations. Target:
-0.8 / P1. Next: remaining language parsers and incremental sync analysis.
+Specification is stable. Slices C1-C5 are implemented: core protocol and graph relations,
+eleven-language parsing, cross-file relations, optional symbols and external documents, traversal,
+raw export manifests, ignore rules and resource limits. Target: 0.8 / P1. Remaining: the 0.8.0
+release.
 
 ## Cross-cutting
 

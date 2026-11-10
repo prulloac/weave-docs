@@ -257,7 +257,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
-| 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | planned |
+| 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | in progress |
 
 Rules:
 
@@ -409,8 +409,9 @@ single-writer index ownership).
 4. remaining languages and cross-file relations,
 5. optional symbol documents, external dependency documents and export manifests.
 
-Spec: [Weave Code Extension](specs/weave-code.md). Status: stable specification; implementation not
-started. Core contract decision: [ADR 0010](architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
+Spec: [Weave Code Extension](specs/weave-code.md). Status: stable specification; slices C1-C5 are
+implemented and in review for 0.8.0. Core contract decision:
+[ADR 0010](architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
 
 **Critical path:**
 
