@@ -264,9 +264,13 @@ Rules:
 ### 6.3 Synchronization
 
 - `ingest` and `rebuild` run a full project analysis.
-- `sync` runs project analysis over the current file list. The extension may use `content_hash` and
-  its own cache under `WEAVE_CACHE_DIR` to avoid reparsing unchanged files.
-- The response must still contain the full relation set; cached analysis is allowed.
+- `sync` with a project analyzer is deferred in the first delivery slice: it returns
+  `INVALID_REQUEST` and instructs the operator to run `weave rebuild`. Incremental project analysis
+  needs the extension cache and a dedicated apply path.
+- When incremental analysis lands, `sync` runs project analysis over the current file list. The
+  extension may use `content_hash` and its own cache under `WEAVE_CACHE_DIR` to avoid reparsing
+  unchanged files.
+- A future incremental response must still contain the full relation set; cached analysis is allowed.
 - If the cache is missing or invalid, the extension performs a full parse.
 
 ## 7. Relationships
