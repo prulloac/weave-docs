@@ -26,6 +26,13 @@ BDD behavior scenarios stay in the sibling [`weave`](https://github.com/prulloac
 Specs link to their BDD scenarios in `weave` with absolute GitHub URLs. The `weave` repository keeps
 end-user documentation, BDD scenarios and repository instructions.
 
+## Issues
+
+This repository does not accept issues. Report first-party defects and documentation errors in
+[`prulloac/weave`](https://github.com/prulloac/weave/issues/new/choose); security reports use private
+vulnerability reporting there. The triage policy is in
+[1.0 Stability Gate and Issue Policy](specs/stability-gate.md).
+
 ## Contributing
 
 - Read [AGENTS.md](AGENTS.md) before changing docs.

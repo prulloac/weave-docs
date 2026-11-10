@@ -31,6 +31,7 @@ maturity only.
 | [Configuration](configuration.md) | stable | [Configuration](https://github.com/prulloac/weave/blob/main/docs/bdd/configuration.md), [Machine output](https://github.com/prulloac/weave/blob/main/docs/bdd/machine-output.md), [Help](https://github.com/prulloac/weave/blob/main/docs/bdd/help.md), [Feedback](https://github.com/prulloac/weave/blob/main/docs/bdd/feedback.md), [Onboarding](https://github.com/prulloac/weave/blob/main/docs/bdd/onboarding.md), [Local-first](https://github.com/prulloac/weave/blob/main/docs/bdd/local-first.md), [Error contract](https://github.com/prulloac/weave/blob/main/docs/bdd/error-contract.md), [Dry run](https://github.com/prulloac/weave/blob/main/docs/bdd/dryrun.md) | 30 |
 | [Optimization Program](optimization.md) | draft | — | 29 (stretch) |
 | [Release Readiness](release-readiness.md) | stable | [Release readiness](https://github.com/prulloac/weave/blob/main/docs/bdd/release-readiness.md) | release gate |
+| [1.0 Stability Gate and Issue Policy](stability-gate.md) | stable | — | 41 |
 | [Pluggable Scoring](extension-scoring.md) | stable | [Scoring](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-scoring.md) | 31 (0.7) |
 | [Extension Data API](extension-data.md) | stable | [Extension data](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-data.md) | 32 (0.7) |
 | [Generic Blob Assets](blob-assets.md) | stable | [Blob assets](https://github.com/prulloac/weave/blob/main/docs/bdd/blob-assets.md) | 35 |

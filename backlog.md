@@ -136,6 +136,16 @@ schema v8 registry, `weave workspace`/`weave source` commands, `ingest|rebuild|s
 `weave mcp --workspace` with the `weave_sources` tool, runtime re-reconciliation and the
 single-writer index lock are implemented, merged on `main` and released in v0.7.0.
 
+## Tier 9 — Stability and community
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | - | x | - | - | green |
+
+Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no open
+`confirmed-defect` issue in `prulloac/weave`. The current window started on 2026-11-10. Only
+`prulloac/weave` accepts issues; the other repositories are closed and link here.
+
 ## Cross-cutting
 
 - [x] Knowledge corpus: vision + related concepts (`knowledge/`)

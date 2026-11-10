@@ -256,6 +256,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | shipped |
 | 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
+| 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 
 Rules:
 
@@ -497,6 +498,14 @@ needed.
 - **Feature status:** the roadmap uses `shipped`, `stretch`, `deferred` and `planned`; the backlog
   uses pipeline states. 1.0 is a stability claim, not a feature label.
 
+### 1.0 Stability Gate
+
+1.0.0 opens only after **30 consecutive days** without a declared defect on `main`, with no open
+`confirmed-defect` issue in `prulloac/weave`. Only the Weave repository accepts issues; the other
+product repositories are closed and point here. The full rule, supported issue types and triage
+timeline are in [1.0 Stability Gate and Issue Policy](specs/stability-gate.md). The current window
+started on **2026-11-10**; the earliest 1.0.0 date is **2026-12-10**.
+
 ### Quality gates
 
 - `go test -race ./...`
@@ -567,6 +576,7 @@ needed.
 - [Node Graph Engine](specs/node-graph-engine.md)
 - [OKF Bundle Parser](specs/okf-bundle-parser.md)
 - [Release Readiness](specs/release-readiness.md)
+- [1.0 Stability Gate and Issue Policy](specs/stability-gate.md)
 - [Privacy & Extensions](architecture/privacy-and-extensions.md)
 - [External Crypto Providers](specs/external-crypto-providers.md)
 - [Weave AI Extension](specs/weave-ai-plugin.md)

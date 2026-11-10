@@ -24,6 +24,17 @@ This checklist records the release state. Tag and publish steps are owner action
 - [x] Roadmap, backlog, specs, architecture, READMEs and installation docs describe 0.7 and no
   longer claim a 1.0 GA.
 
+## 1.0 stability window
+
+- [x] Window started on **2026-11-10**, the date `v0.7.0` was published.
+- [x] Earliest possible `v1.0.0`: **2026-12-10**.
+- [x] Confirmed defects declared since the window started: **none**.
+- [ ] No `confirmed-defect` issue remains open on the evaluation date.
+- [ ] 30 consecutive days completed without a defect reset.
+
+The rule and triage procedure are in
+[1.0 Stability Gate and Issue Policy](specs/stability-gate.md).
+
 ## Notes
 
 - 0.7 is a **pre-1.0** release. `weave.contract/v1` and `weave.cli/v1` remain authoritative and may
