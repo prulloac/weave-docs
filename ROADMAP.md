@@ -106,14 +106,14 @@ are internal delivery waves, not product versions.
 ```sh
 weave contract --json
 weave parse <path> [--source <alias=path>] --json
-weave graph <path> [--source <alias=path>] --json
+weave graph <path> [--source <alias=path>] [--relation <kind,...>] --json
 weave search <path> <query> [--mode hybrid|keyword|fuzzy|bm25|semantic] [--top-k <n>] [--embedder <name>] [--rerank <name>] [--scorer <name>] [--scorer-weight <0..1>] [--candidate-k <n>] [--timeout <d>] --json
 weave list <path> [--type <t>] [--tag <t>] [--status <s>] [--limit <n>] --json
 weave show <path> <id|file> [--out <file>] [--decrypt] [--provider <name>] --json
 weave backlinks <path> <id|file> --json
-weave path <path> <id|file> <id|file> --json
+weave path <path> <id|file> <id|file> [--relation <kind,...>] --json
 weave audit <path> [--fail-on error|warning|none] [--verify-keys] --json
-weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] --json
+weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--relation <kind,...>] --json
 weave explain <path> <query> [--id <id>] [--mode hybrid|keyword|fuzzy|bm25] [--top-k <n>] [--scorer <name>] [--scorer-weight <0..1>] [--candidate-k <n>] --json
 weave ingest <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] [--dry-run] --json
 weave rebuild <path>|--workspace <dir> [--db <file>] [--strict|--permissive] [--codec zstd|none|<name>] [--assets|--no-assets] [--asset-types <mime,...>] [--with-enricher <name>] [--with-embedder <name>] --json

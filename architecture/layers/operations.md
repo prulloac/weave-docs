@@ -39,7 +39,7 @@ type OperationRequest struct {
     From, To, Types, Tags          // path, list filters
     Status, Limit
     FailOn, VerifyKeys, Decrypt    // audit and privacy
-    Depth, Direction               // relate
+    Depth, Direction, Relations    // relate and traversal
     DB, NoDB, Strict, Permissive   // persistence and ingest mode
     Codec, CodecSet                // body compression
     Assets, NoAssets, AssetTypes   // blob scanning
