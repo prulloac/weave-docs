@@ -254,8 +254,9 @@ Rules:
 
 Rules:
 
-- Every request file appears exactly once in `documents` unless it failed to parse; failed files
-  return a warning and keep the file document with lexical metadata.
+- Every returned document maps to one request file and appears at most once. Files skipped by ignore
+  rules, generated-code policy or a resource limit are omitted with a warning; files that fail to
+  parse keep the file document with lexical metadata.
 - Unknown response fields are ignored.
 - `v` must be `weave.cli/v1`.
 - Response limit is **64 MiB**. Oversized responses are `EXTENSION_PROTOCOL`; ingestion fails in
