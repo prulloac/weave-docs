@@ -469,4 +469,5 @@ Each slice is a separate stacked pull request. C1 must not change output without
 - [Keyword + Fuzzy Search](keyword-fuzzy-search.md)
 - [Node graph behavior](https://github.com/prulloac/weave/blob/main/docs/bdd/node-graph-engine.md)
 - [Weave code behavior](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-code.md)
+- [weave-code repository](https://github.com/prulloac/weave-code)
 - [Roadmap](../ROADMAP.md)
