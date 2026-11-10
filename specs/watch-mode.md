@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "Watch Mode Specification"
-description: "v1.0 filesystem watch mode for incremental sync and live MCP reload."
+description: "0.7 filesystem watch mode for incremental sync and live MCP reload."
 tags:
   - "specification"
   - "watch"
@@ -17,7 +17,7 @@ status: stable
 
 ## 1. Overview
 
-Watch mode keeps a v1.0 persistent index current while files change. It is built on the incremental
+Watch mode keeps a 0.7 persistent index current while files change. It is built on the incremental
 sync engine and is used by both `weave sync --watch` and `weave mcp --watch`.
 
 ```sh
@@ -76,7 +76,7 @@ weave mcp --bundle <path> --db .weave/index.db --watch
 
 ## 5. Sync Semantics
 
-Watch mode delegates to the v1.0 sync workflow:
+Watch mode delegates to the 0.7 sync workflow:
 
 1. Hash changed files with SHA-256.
 2. Skip unchanged hashes.

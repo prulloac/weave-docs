@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "Permissive Ingestion Specification"
-description: "v1.0 ingestion mode for indexing arbitrary Markdown trees with warnings instead of hard validation failures."
+description: "0.7 ingestion mode for indexing arbitrary Markdown trees with warnings instead of hard validation failures."
 tags:
   - "specification"
   - "ingestion"
@@ -18,7 +18,7 @@ status: stable
 ## 1. Overview
 
 Strict parsing accepts only OKF documents with `type` and `keywords`. Permissive ingestion lets
-v1.0 index arbitrary Markdown trees while preserving warnings. It is opt-in and never changes the
+0.7 index arbitrary Markdown trees while preserving warnings. It is opt-in and never changes the
 meaning of strict mode.
 
 ```sh
@@ -53,7 +53,7 @@ weave audit <path> --permissive --json
 
 - `--permissive` and `--strict` are mutually exclusive.
 - `weave ingest --strict` exits `1` when validation has errors; JSON mode still emits the report.
-- The mode is stored with the v1.0 database so later syncs are consistent.
+- The mode is stored with the 0.7 database so later syncs are consistent.
 - `--strict` on a permissive database reports documents that would be invalid.
 
 ## 4. Synthetic Documents

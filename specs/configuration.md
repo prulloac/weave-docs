@@ -34,9 +34,9 @@ Secrets are never read from the configuration file; privacy keys stay in `WEAVE_
 
 Non-goals:
 
-- Project-local configuration files in v1.0; `.weave/config.yaml` is deferred until after GA by
+- Project-local configuration files in 0.7; `.weave/config.yaml` is deferred until after 1.0 by
   [ADR 0002](../architecture/adr/0002-config-paths-and-db-location.md).
-- Moving the default database to an XDG state directory in v1.0; `~/.weave/index.db` remains the
+- Moving the default database to an XDG state directory in 0.7; `~/.weave/index.db` remains the
   storage invariant until a migration is specified.
 - Configuring `--json`, `--help` or output formatting.
 - Storing key material, tokens or provider credentials in the config file.
@@ -100,7 +100,7 @@ rerank: ""
 | `rerank` | name | empty | `--rerank` |
 
 - Paths support `~` expansion.
-- The default database stays `~/.weave/index.db` in v1.0. `--db`, `WEAVE_DB` and `db` move it;
+- The default database stays `~/.weave/index.db` in 0.7. `--db`, `WEAVE_DB` and `db` move it;
   no automatic state-directory migration happens. See
   [ADR 0002](../architecture/adr/0002-config-paths-and-db-location.md).
 - Unknown keys are ignored with the warning `CONFIG_UNKNOWN_KEY`; `--strict-config` turns them into
@@ -189,7 +189,7 @@ weave config init [--force]
 
 ### 2.5 Machine-output policy
 
-`weave.cli/v1` is additive inside v1.0:
+`weave.cli/v1` is additive inside 0.7:
 
 - no field is removed and no field changes JSON type;
 - new fields are optional;

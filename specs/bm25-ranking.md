@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "BM25 Lexical Ranking Specification"
-description: "v1.0 SQLite FTS5 lexical ranking, field weights, hybrid normalization, explain diagnostics and calibration."
+description: "0.7 SQLite FTS5 lexical ranking, field weights, hybrid normalization, explain diagnostics and calibration."
 tags:
   - "specification"
   - "search"
@@ -18,7 +18,7 @@ status: stable
 
 ## 1. Overview
 
-The shipped core uses exact/prefix keyword matching with strict AND semantics. v1.0 adds **BM25
+The shipped core uses exact/prefix keyword matching with strict AND semantics. 0.7 adds **BM25
 lexical ranking** through SQLite FTS5 so multi-token queries do not drop documents that match only
 some terms.
 
@@ -54,7 +54,7 @@ weave explain <path> <query> --mode bm25 --id <id> --json
 | `fuzzy` | Weighted Levenshtein + trigram similarity |
 | `hybrid` | Normalized BM25 + fuzzy for persistent searches; legacy keyword + fuzzy with `--no-db` |
 
-- `keyword` is an alias for `exact` during the v1.0 transition; new documentation prefers `exact`.
+- `keyword` is an alias for `exact` during the 0.7 transition; new documentation prefers `exact`.
 - Default mode remains `hybrid`.
 - `--mode bm25` is additive; it does not change existing `keyword` or `fuzzy` results.
 - BM25 mode, FTS indexing, hybrid calibration and explain evidence are implemented.
@@ -183,7 +183,7 @@ Baseline metrics:
 ## 10. Migration and Compatibility
 
 - Exact/prefix keyword search remains available as `--mode exact`.
-- `keyword` remains an alias during the v1.0 transition.
+- `keyword` remains an alias during the 0.7 transition.
 - The v1 contract adds mode `bm25`, optional raw lexical scores and per-term diagnostics.
 - Existing goldens are retained until the BM25 cutover; BM25 gets its own calibration corpus.
 

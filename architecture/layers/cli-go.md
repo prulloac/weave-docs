@@ -118,7 +118,7 @@ binary and fail fast on an unsupported contract major.
 
 ## Deferred Modes
 
-`weave engine --stdio` and any legacy output format remain outside v1.0. They are not part of the
+`weave engine --stdio` and any legacy output format remain outside 0.7. They are not part of the
 current contract.
 
 ## Testing

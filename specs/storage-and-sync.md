@@ -20,7 +20,7 @@ status: stable
 
 ## 1. Overview
 
-Weave v1.0 transitions the storage engine from a transient, in-memory parser to an incremental, persistent SQLite database. The goals are:
+Weave 0.7 transitions the storage engine from a transient, in-memory parser to an incremental, persistent SQLite database. The goals are:
 
 1. **Sub-10ms CLI cold starts:** Querying a 10,000-document repository without re-parsing files.
 2. **Zero-CGO static compilation:** Utilizing pure-Go SQLite (`modernc.org/sqlite`).

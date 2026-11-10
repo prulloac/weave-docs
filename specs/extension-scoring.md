@@ -18,8 +18,7 @@ status: stable
 
 ## 1. Overview
 
-This is a **post-GA** feature. The shipped v1.0 release does not depend on it and the default ranking
-does not change.
+This ships in **0.7**. It does not change the default ranking.
 
 Weave already supports a lightweight reranker: `weave search --rerank <name>` sends the query and
 the current top-K candidate IDs and scores to a `weave-<name>` process, then blends the returned
@@ -340,8 +339,8 @@ Behavior scenarios: [extension-scoring.md](https://github.com/prulloac/weave/blo
 8. `weave explain --scorer` reports core, scorer and final scores.
 9. Existing `--rerank`, default search output, contract goldens and calibration remain unchanged.
 10. A missing scorer exits `2`; a failed scorer exits `0` with core results and one warning.
-11. CLI help, README, spec index and backlog describe the post-GA feature.
-12. The feature is not part of the v1.0 release gate.
+11. CLI help, README, spec index and backlog describe the 0.7 feature.
+12. The feature ships in the 0.7 release.
 
 ## 9. Delivery Slices
 
@@ -351,7 +350,7 @@ Behavior scenarios: [extension-scoring.md](https://github.com/prulloac/weave/blo
 | S2 | Document context, snippets, privacy filtering and `candidate_k` |
 | S3 | Blend weights, `scorer_score`, response metadata and `explain` |
 | S4 | BDD scenarios, CLI process tests, fixtures and performance benchmark |
-| S5 | Documentation and post-GA release notes |
+| S5 | Documentation and release notes |
 
 Each slice is a separate stacked PR. S1 must not change default output or `--rerank`.
 
@@ -371,5 +370,5 @@ Each slice is a separate stacked PR. S1 must not change default output or `--rer
 - [BM25 Ranking](bm25-ranking.md) — lexical ranking and normalization
 - [Weave Explain](weave-explain.md) — score evidence
 - [Privacy Directives](privacy-directives.md) — masked snippets and encrypted content
-- [Optimization Program](optimization.md) — post-GA performance work
-- [Roadmap](../ROADMAP.md) — post-GA feature register
+- [Optimization Program](optimization.md) — performance work
+- [Roadmap](../ROADMAP.md) — feature register

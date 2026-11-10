@@ -315,7 +315,7 @@ weave mcp --bundle <path> --db <file> --watch
 - Bundle/index/stats resources (implemented).
 - Concept and graph-neighborhood resources (implemented).
 - Frame-size limits (implemented).
-- Request-rate limits, metrics/logging and packaging/service examples are deferred until after GA.
+- Request-rate limits, metrics/logging and packaging/service examples are deferred until after 1.0.
 
 ## 10. Testing
 

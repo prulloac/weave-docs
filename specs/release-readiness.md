@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "Release Readiness: Regression, Smoke and Documentation Integrity"
-description: "Release gate for v1.0 covering deterministic regression tests, built-binary smoke coverage and documentation integrity."
+description: "Release gate for 0.7 covering deterministic regression tests, built-binary smoke coverage and documentation integrity."
 tags:
   - "specification"
   - "release"
@@ -18,8 +18,8 @@ status: stable
 
 ## 1. Overview
 
-Weave is feature-complete for v1.0. Optimization is reclassified as a **stretch goal**: it may ship
-after GA and must not block the release. The release gate is instead defined by two outcomes:
+Weave is feature-complete for 0.7. Optimization is reclassified as a **stretch goal**: it may ship
+after 1.0 and must not block the release. The release gate is instead defined by two outcomes:
 
 1. **We can prove the shipped binary still works.** A deterministic regression suite plus a
    built-binary smoke suite exercise every command, mode and error boundary from a clean environment.
@@ -426,13 +426,13 @@ stack; R4–R5 as one test stack; R6–R7 as the release stack.
 | ADR numbering | Adopted: `0001`/`0002` contiguous, ADR index added, references updated |
 | Feature IDs | Adopted: register contiguous from 1 and sorted ascending |
 | Phase and wave axes | Adopted: phases 1–6 remain; wave 7–8 references use the wave names |
-| Optimization | Adopted: post-GA stretch goal; no v1.0 gate |
-| MCP M4 polish | Adopted: rate limits, metrics and service examples deferred until after GA |
+| Optimization | Adopted: post-1.0 stretch goal; no 0.7 gate |
+| MCP M4 polish | Adopted: rate limits, metrics and service examples deferred until after 1.0 |
 | Markdown lint | Adopted: Node action in CI and release verification; `verify.sh` stays Go-first |
 
 ## 14. Related Documents
 
-- [Release checklist](../release-checklist.md) — current v1.0.0 preparation state
+- [Release checklist](../release-checklist.md) — current v0.7.0 preparation state
 - [Optimization program](optimization.md) — stretch performance work
 - [Release Automation](release-automation.md) — tag, build matrix and draft release
 - [Configuration](configuration.md) — paths and provenance used by the smoke suite

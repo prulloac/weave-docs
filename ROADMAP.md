@@ -2,32 +2,33 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v1.0.0 shipped.** `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image` v1.0.0 are
-published; the tag and publish record lives in [release-checklist.md](release-checklist.md). The core
-engine, introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive
-ingestion, privacy directives, body compression, extension IPC with enrichment/rerank, workspaces,
-blob assets, codecs, embeddings and semantic search, release automation, and the MCP server are
-shipped. Post-GA work is limited to watch event delivery, pluggable scoring and the optimization
-program.
+Status: **v0.7.0 is the current pre-1.0 release.** `weave`, `weave-ai`, `weave-codec-lz4`,
+`weave-image` and `weave-skills` v0.7.0 are published; the tag and publish record lives in
+[release-checklist.md](release-checklist.md). The core engine, introspection commands, SQLite
+storage, incremental sync, watch reload, BM25, permissive ingestion, privacy directives, body
+compression, extension IPC with enrichment/rerank, workspaces, blob assets, codecs, embeddings,
+semantic search, pluggable scoring, release automation and the MCP server are shipped. Work after
+0.7 is watch event delivery, the optimization program and MCP polish; 1.0 remains the stability
+target.
 
 ## 1. What Weave Is
 
 Weave is a **local-first, related-document knowledge database**:
 
-- **v1 core (shipped):** ingest OKF/Markdown bundles into memory or a persistent SQLite index,
+- **0.7 core (shipped):** ingest OKF/Markdown bundles into memory or a persistent SQLite index,
   build a graph, search by mandatory keywords, weighted fuzzy similarity and BM25 lexical ranking,
   navigate with `show`, `backlinks` and `path`, audit bundle quality with `weave audit`, explore
   graph neighborhoods with `weave relate`, explain ranking with `weave explain`, ingest non-OKF
   Markdown permissively, and sync indexed bundles incrementally.
-- **v1.0 platform (shipped):** persist and incrementally sync bundles into SQLite, lexical BM25,
+- **0.7 platform (shipped):** persist and incrementally sync bundles into SQLite, lexical BM25,
   permissive Markdown ingestion, explicit privacy directives, and external enrichment/reranking and
   crypto extensions.
-- **v1.0 MCP (shipped):** expose the same operations through an in-memory and persistent,
+- **0.7 MCP (shipped):** expose the same operations through an in-memory and persistent,
   sensitive-aware MCP server.
 
 It is **CLI-first**, local, offline-capable, and has **no UI**.
 
-## 2. Current Capabilities (shipped v1 core)
+## 2. Current Capabilities (shipped 0.7 core)
 
 | Capability | Status | Notes |
 | --- | --- | --- |
@@ -60,43 +61,43 @@ It is **CLI-first**, local, offline-capable, and has **no UI**.
 | Workspaces and sources | Shipped | Manifest, persisted source registry, `--workspace` writes, MCP catalog |
 | Extension data API | Shipped | Extension-owned opaque artifacts with list/get/gc |
 
-## 3. v1.0 Scope
+## 3. 0.7 Scope
 
-Everything below is part of v1.0 except the stretch item. There is no separate v2 platform; phases
+Everything below is part of 0.7 except the stretch item. There is no separate v2 platform; phases
 are internal delivery waves, not product versions.
 
 | Capability | Target | Notes |
 | --- | --- | --- |
-| Persistent SQLite storage | v1.0 | Shipped: pure-Go `modernc.org/sqlite`, bundle-scoped, WAL |
-| Incremental sync | v1.0 | Shipped: SHA-256 add/update/remove/skip with cascade |
-| Watch mode | v1.0 | Shipped: SHA-256 polling watcher, MCP live reload; `fsnotify` is a tracked post-GA follow-up (#40) |
-| Permissive ingestion | v1.0 | Shipped: synthetic Markdown documents with warnings |
-| BM25 lexical ranking | v1.0 | Shipped: SQLite FTS5 `--mode bm25` |
-| BM25 calibration | v1.0 | Shipped: BM25 + fuzzy hybrid corpus and baseline |
-| BM25 explain | v1.0 | Shipped: lexical raw/normalized scores, fields and term evidence |
-| Memory/body compression | v1.0 | Shipped: text-readable bodies raw; binary blobs zstd; LZ4/others via codec extensions |
-| Codec extensions | v1.0 | Shipped: raw-byte `weave-codec-<name>`; LZ4 is the first-party extension |
-| Privacy directives | v1.0 | Shipped: `encrypt`, `tokenize`, `hash`, key resolution, `show --decrypt` |
-| Extension runner | v1.0 | Shipped: subprocess IPC (`weave-<name>`) over `weave.cli/v1` stdio |
-| Enrichment extension | v1.0 | Shipped: `--with-enricher`, inferred keywords and metadata |
-| Rerank extension | v1.0 | Shipped: `--rerank`, 0.5/0.5 blend and fallback |
-| External crypto providers | v1.0 | Shipped: `weave-crypto-<name>` providers, capabilities, key versions |
-| AI plugin | v1.0 | Shipped: [`weave-ai`](https://github.com/prulloac/weave-ai) reference extension (Ollama, OpenAI, Gemini); split recorded in [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) |
-| Explainable search | v1.0 | Shipped: per-token/per-field `weave explain` |
-| Bundle audit | v1.0 | Shipped: stable finding codes, `--fail-on` gate, JSON and human reports |
-| Graph relate | v1.0 | Shipped: bounded depth/direction subgraphs |
-| MCP server | v1.0 | Tools, transport, auth, resources, watch reload and sensitive access shipped |
-| Release automation | v1.0 | Shipped: tag-driven verified builds and draft GitHub Releases |
-| User-level installers | v1.0 | Shipped: checksum-verifying `install.sh`/`install.ps1` for `weave` and `weave-ai`; no admin rights |
-| Bundle export | v1.0 | Shipped: raw plaintext (confirmed) and encrypted OKF export |
-| Multiple bundle sources | v1.0 | Shipped: repeatable `--source` aliases across CLI and MCP |
-| Generic blob assets | v1.0 | Shipped: native blob documents, `content_metadata`, generic retrieval |
-| Image knowledge extension | v1.0 | Shipped: `weave-image` OCR/EXIF/vision enrichment |
-| AI vision and embeddings | v1.0 | Shipped: `weave-ai` vision and embedding requests |
-| Semantic search | v1.0 | Shipped: durable embeddings and per-space `vec0` KNN |
+| Persistent SQLite storage | 0.7 | Shipped: pure-Go `modernc.org/sqlite`, bundle-scoped, WAL |
+| Incremental sync | 0.7 | Shipped: SHA-256 add/update/remove/skip with cascade |
+| Watch mode | 0.7 | Shipped: SHA-256 polling watcher, MCP live reload; `fsnotify` is a tracked post-1.0 follow-up (#40) |
+| Permissive ingestion | 0.7 | Shipped: synthetic Markdown documents with warnings |
+| BM25 lexical ranking | 0.7 | Shipped: SQLite FTS5 `--mode bm25` |
+| BM25 calibration | 0.7 | Shipped: BM25 + fuzzy hybrid corpus and baseline |
+| BM25 explain | 0.7 | Shipped: lexical raw/normalized scores, fields and term evidence |
+| Memory/body compression | 0.7 | Shipped: text-readable bodies raw; binary blobs zstd; LZ4/others via codec extensions |
+| Codec extensions | 0.7 | Shipped: raw-byte `weave-codec-<name>`; LZ4 is the first-party extension |
+| Privacy directives | 0.7 | Shipped: `encrypt`, `tokenize`, `hash`, key resolution, `show --decrypt` |
+| Extension runner | 0.7 | Shipped: subprocess IPC (`weave-<name>`) over `weave.cli/v1` stdio |
+| Enrichment extension | 0.7 | Shipped: `--with-enricher`, inferred keywords and metadata |
+| Rerank extension | 0.7 | Shipped: `--rerank`, 0.5/0.5 blend and fallback |
+| External crypto providers | 0.7 | Shipped: `weave-crypto-<name>` providers, capabilities, key versions |
+| AI plugin | 0.7 | Shipped: [`weave-ai`](https://github.com/prulloac/weave-ai) reference extension (Ollama, OpenAI, Gemini); split recorded in [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md) |
+| Explainable search | 0.7 | Shipped: per-token/per-field `weave explain` |
+| Bundle audit | 0.7 | Shipped: stable finding codes, `--fail-on` gate, JSON and human reports |
+| Graph relate | 0.7 | Shipped: bounded depth/direction subgraphs |
+| MCP server | 0.7 | Tools, transport, auth, resources, watch reload and sensitive access shipped |
+| Release automation | 0.7 | Shipped: tag-driven verified builds and draft GitHub Releases |
+| User-level installers | 0.7 | Shipped: checksum-verifying `install.sh`/`install.ps1` for `weave` and `weave-ai`; no admin rights |
+| Bundle export | 0.7 | Shipped: raw plaintext (confirmed) and encrypted OKF export |
+| Multiple bundle sources | 0.7 | Shipped: repeatable `--source` aliases across CLI and MCP |
+| Generic blob assets | 0.7 | Shipped: native blob documents, `content_metadata`, generic retrieval |
+| Image knowledge extension | 0.7 | Shipped: `weave-image` OCR/EXIF/vision enrichment |
+| AI vision and embeddings | 0.7 | Shipped: `weave-ai` vision and embedding requests |
+| Semantic search | 0.7 | Shipped: durable embeddings and per-space `vec0` KNN |
 | Optimization program | Stretch | Post-GA: benchmarks, budgets, maintainability and UX targets |
-| Global configuration | v1.0 | Shipped: YAML config, `WEAVE_*` variables and `weave config` |
-| Workspaces and sources | v1.0 | Shipped: manifest, persisted source registry, `--workspace` writes and MCP re-reconciliation |
+| Global configuration | 0.7 | Shipped: YAML config, `WEAVE_*` variables and `weave config` |
+| Workspaces and sources | 0.7 | Shipped: manifest, persisted source registry, `--workspace` writes and MCP re-reconciliation |
 
 ## 4. CLI Surface
 
@@ -245,8 +246,8 @@ is the completeness check: no feature is considered planned until it appears her
 | 28 | MCP multiple sources | [multi-bundle.md](specs/multi-bundle.md) | Tier 6 | multi-bundle CLI, MCP resources | 7 / P3 | shipped |
 | 29 | Performance and maintainability | [optimization.md](specs/optimization.md) | Tier 7 | all packages | Stretch | stretch |
 | 30 | Global configuration | [configuration.md](specs/configuration.md) | Tier 7 | CLI, contract, optimization | 8 / P2 | shipped |
-| 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | Post-GA | planned |
-| 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | Post-GA (delivered early) | shipped |
+| 31 | Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | Tier 7 | search, extension IPC, contract | 0.7 / P1 | shipped |
+| 32 | Extension data API | [extension-data.md](specs/extension-data.md) | Tier 7 | extension IPC, storage, contract | 0.7 / P1 | shipped |
 | 33 | User-level installers | [release-automation.md](specs/release-automation.md) | Tier 7 | release automation | 9 / P1 | shipped |
 | 34 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | Tier 7 | extension runner, contract | 9 / P1 | shipped |
 | 35 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | Tier 7 | parser, storage, contract, extension IPC | 9 / P1 | shipped |
@@ -254,7 +255,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 37 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | Tier 7 | AI embeddings, storage, search, contract | 9 / P1 | shipped |
 | 38 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | Tier 7 | compression, extension runner, storage | 9 / P1 | shipped |
 | 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
-| 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-GA | planned |
+| 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 
 Rules:
 
@@ -382,9 +383,9 @@ privacy directives ──┬── show --decrypt
 5. `weave-image` as the first blob consumer,
 6. semantic search, retrieval and release integration.
 
-Release order: `weave-ai v1.0.0` → `weave-codec-lz4 v1.0.0` → `weave v1.0.0` →
-`weave-image v1.0.0`. Specs and BDD approved 2026-11-03; all four releases are published, with the
-tag and verification record in [release-checklist.md](release-checklist.md).
+Release order: `weave-ai v0.7.0` → `weave-codec-lz4 v0.7.0` → `weave v0.7.0` →
+`weave-image v0.7.0` → `weave-skills v0.7.0`. Specs and BDD approved 2026-11-03; all five releases
+are published, with the tag and verification record in [release-checklist.md](release-checklist.md).
 
 **Wave 10 — workspaces and dynamic sources:**
 
@@ -395,7 +396,7 @@ tag and verification record in [release-checklist.md](release-checklist.md).
 
 Spec: [Workspace and Source Registry](specs/workspace.md); ADR
 [0007](architecture/adr/0007-workspace-and-source-registry.md). Status: accepted/stable; shipped in
-v1.0.0 (schema v8 registry, workspace/source CLI, `--workspace` writes, MCP re-reconciliation and
+v0.7.0 (schema v8 registry, workspace/source CLI, `--workspace` writes, MCP re-reconciliation and
 single-writer index ownership).
 
 **Critical path:**
@@ -425,16 +426,16 @@ tracks, not prerequisites for the critical path.
 Specs: [audit](specs/weave-audit.md), [relate](specs/weave-relate.md),
 [explain](specs/weave-explain.md), [permissive ingestion](specs/permissive-ingestion.md).
 
-### Phase 3 — Persistent storage and sync (v1.0)
+### Phase 3 — Persistent storage and sync (0.7)
 
 - Pure-Go SQLite (`modernc.org/sqlite`) in WAL mode.
 - Default bundle-scoped database at `~/.weave/index.db`.
 - `weave ingest`, `weave rebuild`, `weave sync` and `--mode bm25` shipped.
 - `sha256` content hashes, cascading graph updates and a polling watch loop shipped; `fsnotify`
-  event delivery is a tracked post-GA follow-up (register #40).
+  event delivery is a tracked post-1.0 follow-up (register #40).
 - Body compression: text-readable content is raw, binary blobs use zstd by default, and LZ4/other
-  codecs are extension-provided in v1.0; `weave sync --watch` and `weave mcp --watch` are wired;
-  posting compression is a post-GA stretch goal.
+  codecs are extension-provided in 0.7; `weave sync --watch` and `weave mcp --watch` are wired;
+  posting compression is a post-1.0 stretch goal.
 
 Specs: [Storage & Sync](specs/storage-and-sync.md),
 [Watch Mode](specs/watch-mode.md), [BM25 Ranking](specs/bm25-ranking.md),
@@ -464,14 +465,14 @@ Specs: [Extension Subprocess IPC](specs/extension-ipc.md),
 [Weave AI Extension](specs/weave-ai-plugin.md),
 [External Crypto Providers](specs/external-crypto-providers.md).
 
-### Phase 6 — MCP server (v1.0)
+### Phase 6 — MCP server (0.7)
 
 - TCP MCP server over operations.
 - Bind to persistent storage and support watch-based reload (shipped).
 - Tools: `weave_search`, `weave_explain`, `weave_relate`, `weave_audit`, `weave_show`,
   `weave_path`.
 - Strict sensitive-data boundary; encrypted fields require explicit opt-in (shipped).
-- M4 polish (request-rate limits, metrics/logging and service examples) is post-GA work and is not
+- M4 polish (request-rate limits, metrics/logging and service examples) is post-1.0 work and is not
   scheduled.
 
 Spec: [MCP Server](specs/mcp-server.md).
@@ -483,17 +484,18 @@ needed.
 
 ### Versioning Policy
 
-- **Product:** v1.0 is the single full-scope release. Every feature marked `shipped` in the register
-  gates v1.0; `stretch` and `deferred` items do not. Phases are internal delivery waves, not
-  separate releases.
-- **Contract:** `weave.contract/v1` is authoritative. v1.0.0 has shipped, so breaking changes now
-  require `contract/v2`; additive fields and enum values remain allowed.
+- **Product:** 0.7 is the current pre-1.0 release. Every feature marked `shipped` in the register
+  ships in 0.7; `stretch` and `deferred` items do not. Phases are internal delivery waves, not
+  separate releases. 1.0 is the stability milestone, not a separate feature set.
+- **Contract:** `weave.contract/v1` is authoritative. Until 1.0.0 it may still evolve in place;
+  after 1.0.0, breaking changes require `contract/v2`. Additive fields and enum values remain
+  allowed throughout.
 - **CLI and extensions:** `weave.cli/v1` is authoritative. Additive messages and fields are allowed
-  before and after GA; breaking changes after GA require `weave.cli/v2`.
+  before and after 1.0; breaking changes after 1.0 require `weave.cli/v2`.
 - **Storage:** the SQLite schema uses `PRAGMA user_version` with explicit migrations, independent of
   the product and contract versions.
 - **Feature status:** the roadmap uses `shipped`, `stretch`, `deferred` and `planned`; the backlog
-  uses pipeline states. There are no versioned feature labels beyond v1.0.
+  uses pipeline states. 1.0 is a stability claim, not a feature label.
 
 ### Quality gates
 
@@ -515,12 +517,11 @@ needed.
 
 ## 10. Limitations and Non-Goals
 
-- The shipped core is in-memory; v1.0 adds optional SQLite persistence. It is not an enterprise
-  search cluster.
-- Core semantic search ships in v1.0 through local embeddings and `vec0` KNN; no external vector
+- The core remains in-memory-first; 0.7 includes optional SQLite persistence. It is not an
+  enterprise search cluster.
+- Core semantic search ships in 0.7 through local embeddings and `vec0` KNN; no external vector
   database or ANN cluster.
-- No custom retrieval or index extensions. Post-GA pluggable scoring reorders a bounded core
-  candidate set.
+- No custom retrieval or index extensions. Pluggable scoring reorders a bounded core candidate set.
 - Core does not interpret media. It stores opaque blobs and generic metadata; extensions provide
   image, video, audio and PDF semantics.
 - No synonyms/stemming yet.

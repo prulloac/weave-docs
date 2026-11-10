@@ -2,68 +2,34 @@
 
 This checklist records the release state. Tag and publish steps are owner actions.
 
-# v1.0.0
+# v0.7.0 (current pre-1.0 release)
 
 ## Complete
 
-- [x] Feature register shipped, with optimization marked post-GA stretch.
-- [x] ADR 0004, 0005 and 0006 accepted; media and embedding specs/BDD approved.
-- [x] `weave-ai` vision and embedding requests, provider payloads, 32 MiB stdin and 20 MiB image cap
-  covered by tests.
-- [x] Core schema v7 body split: text bodies stay raw, binary bodies use `body_compressed` with zstd
-  by default.
-- [x] Blob ingestion and retrieval, MCP blob resources and raw export implemented and tested.
-- [x] Codec extension resolution, manifest validation and round-trip tests implemented.
-- [x] Durable embeddings with per-space `vec0`, semantic search, audit findings and re-embedding
-  implemented and tested.
-- [x] Enrichment persists title, description, text, metadata and warnings; extension warnings are
-  counted without discarding local metadata.
-- [x] `weave-image` repository with OCR, EXIF, dimensions, `weave-ai` vision, best-effort fallbacks,
-  installers, CI and tests.
-- [x] `weave-codec-lz4` repository with the raw codec protocol, manifest, installers, CI and tests.
-- [x] Version floors aligned: `weave-image` requires `weave >= 1.0.0` and `weave-ai >= 1.0.0`.
-- [x] Real vision validated with `weave-ai` and Ollama `qwen2.5vl:3b`; title and description stored
-  with zero warnings.
-- [x] Real embeddings validated with Ollama `embeddinggemma-2:latest`; semantic search returned the
-  expected document.
-- [x] Release dry run built six static targets and verified checksums for `weave-ai`,
-  `weave-codec-lz4`, `weave` and `weave-image` at `v1.0.0`.
-- [x] All four installers validated against the published v1.0.0 assets on Linux and Windows.
-- [x] `weave-image` automatic `weave-ai` installation validated against the published release.
-- [x] Repository gates pass locally: `weave`, `weave-image` and `weave-codec-lz4` `verify.sh`.
-- [x] CI on `main` passed after the version-floor alignment: `weave-ai` (`41957311395`),
-  `weave` (`41957310892`), `weave-image` (`41958502906`), `weave-codec-lz4` (`41955463584`).
-- [x] Release workflows created draft releases for all four repositories:
-  `weave-ai` (`41957649744`), `weave-codec-lz4` (`41957658011`), `weave` (`41957665269`),
-  `weave-image` (`41957671904`).
-- [x] Draft assets downloaded and checksums verified; Linux binaries report `v1.0.0`.
-- [x] Published v1.0.0 releases for `weave-ai`, `weave-codec-lz4`, `weave` and `weave-image` with
-  six archives each and checksums.
-
-## Release actions
-
-- [x] Remove the previous `weave` and `weave-ai` `v1.0.0` releases and tags.
-- [x] Tag the current `main` heads as `v1.0.0` and push: `weave-ai` (`55c48ec`),
-  `weave-codec-lz4` (`235bac9`), `weave` (`9c13315`), `weave-image` (`0b5e200`).
-- [x] Confirm the four workflows created draft releases with six archives each and verified
-  checksums.
-- [x] Review the four draft releases and publish in order: `weave-ai`, `weave-codec-lz4`,
-  `weave`, `weave-image`.
-- [x] After `weave-ai` was published, run the `weave-image` installer without `--no-ai`; the
-  automatic `weave-ai >= 1.0.0` dependency install succeeded.
-- [x] Verify all four installers against the published assets on Linux and Windows.
-- [x] Fixed the `weave-image` dependency installer to use bash and honor the requested bin
-  directory (`23d0299`).
+- [x] Product versioning moved to `0.7.0` for `weave`, `weave-ai`, `weave-codec-lz4`,
+  `weave-image` and `weave-skills`.
+- [x] Version floors aligned: `weave-image` requires `weave >= 0.7.0` and `weave-ai >= 0.7.0`;
+  `weave-ai` vision/embeddings require `weave >= 0.7.0`; the agent skill targets `weave >= 0.7.0`.
+- [x] Removed the published `v1.0.0` releases and tags from all four Go product repositories.
+- [x] Tagged `v0.7.0` and pushed: `weave-ai` (`5d41d58`), `weave-codec-lz4` (`185cc0b`),
+  `weave` (`a54f883`), `weave-image` (`a5bf00f`), `weave-skills` (`b18dcdb`).
+- [x] Release workflows built six static archives plus checksums for each Go product and created
+  draft releases; all four workflows passed.
+- [x] Published `v0.7.0` in order: `weave-ai`, `weave-codec-lz4`, `weave`, `weave-image`.
+- [x] Published the `weave-skills` `v0.7.0` tag and release.
+- [x] Downloaded and ran the Linux `amd64` binaries: `weave` reports `v0.7.0`,
+  `weave-ai`, `weave-codec-lz4` and `weave-image` report `v0.7.0`.
+- [x] The 0.7 feature set includes pluggable scoring, extension data, workspaces, blob assets,
+  codec extensions, embeddings and semantic search.
+- [x] Roadmap, backlog, specs, architecture, READMEs and installation docs describe 0.7 and no
+  longer claim a 1.0 GA.
 
 ## Notes
 
-- This release supersedes the earlier v1.0.0 artifacts. The previous `weave` and `weave-ai` releases
-  and tags are removed before re-tagging.
-- The `v1.0.0` tag was re-pointed again on 2026-11-06 for `weave` (workspaces and agent skills) and
-  `weave-image` (installer fix); both replacement releases were published.
-- Because the tag reuses `v1.0.0`, installs from the earlier artifacts do not auto-upgrade; users
-  must reinstall or download the new assets explicitly.
-- `weave-image` requires `weave >= 1.0.0` and `weave-ai >= 1.0.0`.
-- `weave-ai` was published first so the `weave-image` installer could resolve its dependency.
+- 0.7 is a **pre-1.0** release. `weave.contract/v1` and `weave.cli/v1` remain authoritative and may
+  still evolve in place until 1.0.0; after 1.0.0, breaking changes require a new contract major.
+- The removed `v1.0.0` releases are not part of the upgrade path; users must install `v0.7.0`
+  explicitly.
+- `weave-image` requires `weave >= 0.7.0` and `weave-ai >= 0.7.0`.
 - Publishing remains manual; a tag push only creates a draft release.
-- The performance optimization program is a post-GA stretch goal and does not block this tag.
+- The performance optimization program and watch event delivery are post-1.0 work.

@@ -121,7 +121,7 @@ Failure:
 
 ## Volume and One-Shot Behavior
 
-The shipped CLI uses one process per operation. Optional stdio mode remains outside v1.0. The
+The shipped CLI uses one process per operation. Optional stdio mode remains outside 0.7. The
 operations model is stable enough to add it without changing semantics.
 
 ## Error Codes

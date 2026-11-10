@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "External Crypto Providers Specification"
-description: "v1.0 crypto provider contract for external keys and extensions: Age, HashiCorp Vault, cloud KMS, key isolation and failure behavior."
+description: "0.7 crypto provider contract for external keys and extensions: Age, HashiCorp Vault, cloud KMS, key isolation and failure behavior."
 tags:
   - "specification"
   - "privacy"

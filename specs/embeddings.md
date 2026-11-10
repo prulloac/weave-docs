@@ -8,7 +8,7 @@ tags:
   - "semantic-search"
   - "sqlite"
   - "vec0"
-  - "v1.0"
+  - "0.7"
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"

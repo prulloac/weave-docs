@@ -45,7 +45,7 @@ The UI is out of scope. The Go CLI is the integration surface.
 - Browser UI, mount, renderer, lens or Astro.
 - Synonyms, stemming or embeddings in the core engine.
 - Cross-bundle federated search.
-- Persistent indexes in this in-memory engine; v1.0 persistence is specified separately.
+- Persistent indexes in this in-memory engine; 0.7 persistence is specified separately.
 - Natural-language question answering.
 - MCP transport in this milestone.
 
@@ -420,7 +420,7 @@ The store is immutable after load. Queries do not mutate indexes.
 
 ## Related Documents
 
-- [BM25 Ranking (v1.0)](bm25-ranking.md)
-- [Permissive Ingestion (v1.0)](permissive-ingestion.md)
+- [BM25 Ranking (0.7)](bm25-ranking.md)
+- [Permissive Ingestion (0.7)](permissive-ingestion.md)
 - [Weave Explain](weave-explain.md)
 - [ROADMAP](../ROADMAP.md)

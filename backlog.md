@@ -2,8 +2,8 @@
 
 Tracked work queue for the Weave vision: "To weave flat files into a living universe of knowledge."
 
-**v1.0 includes every tier below except rows marked `stretch`.** Persistence, privacy, extensions and
-MCP are v1.0 scope, not a later platform; the tiers and waves are internal delivery order.
+**0.7 includes every tier below except rows marked `stretch`.** Persistence, privacy, extensions and
+MCP are 0.7 scope, not a later platform; the tiers and waves are internal delivery order.
 
 Status legend:
 
@@ -13,7 +13,7 @@ Status legend:
 - `green` — tests passing
 - `review` — PR submitted, awaiting review/merge
 - `done` — merged
-- `stretch` — post-GA; tracked but not a v1.0 gate
+- `stretch` — post-1.0; tracked but not a 0.7 gate
 
 Pipeline phase legend (per SDD -> BDD -> TDD):
 
@@ -51,9 +51,9 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Go engine + CLI base | [architecture/index.md](architecture/index.md) | - | x | - | - | done |
-| Roadmap: current capabilities and v1.0 scope | [ROADMAP.md](ROADMAP.md) | - | x | - | - | done |
+| Roadmap: current capabilities and 0.7 scope | [ROADMAP.md](ROADMAP.md) | - | x | - | - | done |
 
-## Tier 5 — v1.0 Platform
+## Tier 5 — 0.7 Platform
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -96,8 +96,8 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Performance and maintainability | [optimization.md](specs/optimization.md) | - | x | x | x | stretch |
 | Global configuration | [configuration.md](specs/configuration.md) | - | x | x | x | green |
 | Release readiness (regression, smoke, docs) | [release-readiness.md](specs/release-readiness.md) | - | x | x | x | green |
-| Pluggable scoring (post-GA) | [extension-scoring.md](specs/extension-scoring.md) | [#17](https://github.com/prulloac/weave/pull/17) | x | x | x | review |
-| Extension data API (post-GA) | [extension-data.md](specs/extension-data.md) | [#15](https://github.com/prulloac/weave/pull/15) | x | x | x | green |
+| Pluggable scoring | [extension-scoring.md](specs/extension-scoring.md) | [#17](https://github.com/prulloac/weave/pull/17) | x | x | x | green |
+| Extension data API | [extension-data.md](specs/extension-data.md) | [#15](https://github.com/prulloac/weave/pull/15) | x | x | x | green |
 | weave-ai extraction and IPC conformance | [ADR 0003](architecture/adr/0003-extension-protocol-ownership-and-weave-ai-extraction.md), [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | AI vision and embeddings | [weave-ai-plugin.md](specs/weave-ai-plugin.md) | - | x | x | x | green |
 | Generic blob assets | [blob-assets.md](specs/blob-assets.md) | - | x | x | x | green |
@@ -105,25 +105,24 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 | Embeddings and semantic search | [embeddings.md](specs/embeddings.md) | - | x | x | x | green |
 | Codec extensions | [codec-extensions.md](specs/codec-extensions.md) | - | x | x | x | green |
 
-User-level installers: `v1.0.0` published for `weave` and `weave-ai`; Unix and PowerShell installers
-verified against the release assets.
+User-level installers: `v0.7.0` published for `weave`, `weave-ai`, `weave-codec-lz4`, `weave-image`
+and `weave-skills`; Unix and PowerShell installers verified against the release assets.
 
 ADR 0003 is accepted. `weave-ai` is standalone in `prulloac/weave-ai`; `cmd/weave-ai` is removed
-from `weave`, and conformance tests cover both sides. The `v1.0.0` release is published.
+from `weave`, and conformance tests cover both sides. The `v0.7.0` release is published.
 
 Media and embeddings: ADR 0004/0005/0006 are accepted and the specs/BDD are approved (2026-11-03).
 `weave-ai` vision/embeddings are green. Core schema v7, blob ingestion/retrieval, codec extensions
 and the embedding ingest/search/audit/list/rebuild/drop path are implemented and covered by tests.
 `weave-codec-lz4` and `weave-image` exist as standalone extension repositories with installers, CI
-and release workflows. `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image` v1.0.0 are
-published; see [release-checklist.md](release-checklist.md).
+and release workflows. `weave`, `weave-ai`, `weave-codec-lz4`, `weave-image` and `weave-skills`
+v0.7.0 are published; see [release-checklist.md](release-checklist.md).
 
-Post-GA pluggable scoring: spec and BDD approved; search and explain CLI slices are implemented and
-under review.
-Post-GA extension data: spec and BDD approved; E1 (manifest, schema v6 and
+0.7 pluggable scoring: spec and BDD approved; search and explain CLI slices merged in PR #17.
+0.7 extension data: spec and BDD approved; E1 (manifest, schema v6 and
 transactional import), E2 (CLI list/get/gc), E3 (show refs, MCP blob
 resources) and E4 (raw export, encrypted-export policy) are merged in PR #15 and released in
-v1.0.0.
+v0.7.0.
 
 ## Tier 8 — Workspace and sources
 
@@ -135,7 +134,7 @@ Workspace and sources: ADR 0007 and the
 [Workspace and Source Registry specification](specs/workspace.md) are accepted (2026-11-06). The
 schema v8 registry, `weave workspace`/`weave source` commands, `ingest|rebuild|sync --workspace`,
 `weave mcp --workspace` with the `weave_sources` tool, runtime re-reconciliation and the
-single-writer index lock are implemented, merged on `main` and released in v1.0.0.
+single-writer index lock are implemented, merged on `main` and released in v0.7.0.
 
 ## Cross-cutting
 
@@ -164,7 +163,7 @@ single-writer index lock are implemented, merged on `main` and released in v1.0.
 - [x] ADR 0001: keyword + fuzzy search
 - [x] Keyword + Fuzzy Search specification
 - [x] Search calibration corpus and baseline report
-- [x] v1.0 storage/sync and privacy/extension specifications placed under `specs/`
+- [x] 0.7 storage/sync and privacy/extension specifications placed under `specs/`
 - [x] Extended roadmap integrated into `ROADMAP.md`
 - [x] Audit contract, engine and CLI behavior suite (`weave audit`)
 - [x] Relate contract, engine and CLI behavior suite (`weave relate`)
@@ -190,7 +189,7 @@ single-writer index lock are implemented, merged on `main` and released in v1.0.
 - [x] Bundle export: raw plaintext with confirmation and re-ingestable encrypted export
 - [x] External crypto providers: `weave-crypto-<name>` selection, IPC, key versions and audit
 - [x] Global configuration: YAML file, `WEAVE_*` variables, `config show|path|init`
-- [x] Body compression: per-row codec and decode recovery; v1.0 uses text raw, binary zstd and
+- [x] Body compression: per-row codec and decode recovery; 0.7 uses text raw, binary zstd and
   extension-provided LZ4/other codecs
 
 ## Dependency Order
@@ -211,9 +210,9 @@ Execution waves:
 7. AI plugin (done), external crypto (done).
 8. Release automation (done), bundle export (done), multiple bundle sources (done).
 9. Release readiness: documentation integrity, regression hardening and the built-binary smoke suite.
-10. Stretch: maintainability and UX follow-ups, benchmarks, time and space.
-11. Post-GA: pluggable scoring extensions with document context and configurable blend weights.
-12. Post-GA: `fsnotify` watch event delivery with a polling fallback.
+10. 0.7: pluggable scoring extensions with document context and configurable blend weights (done).
+11. Stretch: maintainability and UX follow-ups, benchmarks, time and space.
+12. Post-1.0: `fsnotify` watch event delivery with a polling fallback.
 
 Critical path: `contract -> parser/graph/search -> storage -> sync -> BM25 -> privacy -> extension runner -> MCP sensitive`.
 

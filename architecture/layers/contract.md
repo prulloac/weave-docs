@@ -184,8 +184,9 @@ The operation catalogue contains `search`, not `find`.
 
 - `weave.contract/v1` is the shipped contract.
 - `weave.cli/v1` remains the envelope version.
-- v1.0.0 has shipped, so breaking changes now require `contract/v2`; additive fields and enum
-  values remain allowed. No compatibility mode for the old v1 is provided.
+- Until 1.0.0, `contract/v1` may evolve in place. After 1.0.0, breaking changes require
+  `contract/v2`; additive fields and enum values remain allowed. No compatibility mode for the old
+  v1 is provided.
 
 ## Related Documents
 

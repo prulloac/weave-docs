@@ -7,7 +7,7 @@ tags:
   - "compression"
   - "codecs"
   - "extensions"
-  - "v1.0"
+  - "0.7"
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
@@ -67,7 +67,7 @@ weave-codec-lz4 --describe --json
   "v": "weave.extension/v1",
   "name": "lz4",
   "kind": "codec",
-  "version": "1.0.0",
+  "version": "0.7.0",
   "directions": ["compress", "decompress"],
   "frame": true
 }

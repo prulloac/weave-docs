@@ -7,7 +7,7 @@ okf_version: "0.2"
 Weave is a **local-first related-document database**. It loads OKF bundles into memory or a
 persistent SQLite index, builds concept nodes and link edges, and answers keyword, BM25 and weighted
 fuzzy searches with top-K results. Privacy directives, subprocess extensions, watch reload and an
-MCP server are part of the shipped v1.0 surface.
+MCP server are part of the shipped 0.7 surface.
 
 **The UI is retired.** Browser visualization, renderer, mount, lens and Astro are cancelled by
 [ADR 0001](adr/0001-keyword-fuzzy-search-and-ui-retirement.md). The Go engine and CLI are the only
@@ -115,6 +115,7 @@ remains the compatibility promise.
 | Decision | Choice |
 | --- | --- |
 | Engine language | Go |
+| Product version | 0.7.0 across all products; 1.0.0 is the stability milestone (ADR 0009) |
 | Product surface | Go CLI; no UI |
 | Document identity | Bundle-relative path minus `.md` |
 | Required frontmatter | `type` and `keywords` |
@@ -122,23 +123,23 @@ remains the compatibility promise.
 | Fuzzy fields | Title 1.00, description 0.60, body 0.30 |
 | Fuzzy similarity | Normalized Levenshtein and trigram Dice, max |
 | Search output | Keyword, fuzzy and hybrid top-K lists |
-| Graph neighborhood | v1.0 `weave relate`, bounded BFS depth 0..5 across out/in/both |
-| Explainability | v1.0 `weave explain`, keyword/fuzzy/BM25 evidence and hybrid breakdown |
+| Graph neighborhood | 0.7 `weave relate`, bounded BFS depth 0..5 across out/in/both |
+| Explainability | 0.7 `weave explain`, keyword/fuzzy/BM25 evidence and hybrid breakdown |
 | Ingestion | Strict OKF for parse/graph/search; permissive mode for `ingest`/`rebuild`/`audit` |
 | Default mode | Hybrid |
 | Default top-K | 10; max 100 |
-| Contract version | v1 shipped in v1.0.0; additive changes only, breaking changes need v2 |
+| Contract version | v1 authoritative; may evolve in place until 1.0.0, then breaking changes need v2 |
 | CLI operation | `search` replaces `find` |
 | Calibration | Labeled corpus with NDCG@K and MRR@K baselines |
 | Storage | Bundle-scoped SQLite default at `~/.weave/index.db`; `--no-db` in-memory; XDG state migration deferred (ADR 0002) |
-| Config paths | Platform config dir (`os.UserConfigDir`), platform cache dir, `~/.weave/index.db` for v1.0 |
+| Config paths | Platform config dir (`os.UserConfigDir`), platform cache dir, `~/.weave/index.db` for 0.7 |
 | Machine output | Additive `weave.cli/v1` schemas, goldens and schema-diff gate |
 | Local-first | No telemetry or network by default; `config paths`; network only through opt-in extensions |
 | Ranking | Persistent hybrid BM25 + fuzzy; `--no-db` legacy keyword + fuzzy |
-| Privacy | v1.0 explicit encrypt/tokenize/hash directives |
-| Extensions | v1.0 subprocess IPC over `weave.cli/v1` |
-| Blob assets | v1.0 opaque blob documents with `content_metadata`; media semantics stay in extensions |
-| Workspaces | v1.0 manifest plus persisted `sources` registry (schema v8) and one index per workspace |
+| Privacy | 0.7 explicit encrypt/tokenize/hash directives |
+| Extensions | 0.7 subprocess IPC over `weave.cli/v1` |
+| Blob assets | 0.7 opaque blob documents with `content_metadata`; media semantics stay in extensions |
+| Workspaces | 0.7 manifest plus persisted `sources` registry (schema v8) and one index per workspace |
 | Scoring | Opt-in `--scorer` extensions reorder a bounded candidate set with a configurable blend; default ranking unchanged |
 | Integration | CLI first; Go package optional; MCP tools, transport, resources, multi-source and sensitive access shipped |
 | Presentation | Cancelled and removed |
@@ -155,6 +156,7 @@ remains the compatibility promise.
 | [ADR 0006](adr/0006-codec-extensions-and-zstd-only-core.md) | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
 | [ADR 0007](adr/0007-workspace-and-source-registry.md) | Workspace manifest, persisted source registry and single-writer index |
 | [ADR 0008](adr/0008-agent-skills-standalone-distribution.md) | Standalone distribution of the agent skills |
+| [ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md) | Product line is 0.7.0; 1.0.0 is the stability milestone |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |
@@ -226,11 +228,11 @@ Permissive ingestion synthesizes metadata for dirty Markdown, `weave sync` recon
 by SHA-256 hash, and persistent hybrid search combines normalized BM25 with fuzzy scores.
 Calibration passes its baseline. The UI and old TypeScript stack are removed.
 
-The v1.0 feature set is shipped and `weave`, `weave-ai`, `weave-codec-lz4` and `weave-image`
-v1.0.0 are published; see the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
+The 0.7 feature set ships in `weave`, `weave-ai`, `weave-codec-lz4`, `weave-image` and
+`weave-skills` v0.7.0; see the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
 transport, auth, resources and watch reload are available, privacy directives ship with encrypted,
-tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes and
-rerank searches, blob assets and codec extensions are in place, embeddings back semantic search, and
-the schema v8 workspace registry provides `weave workspace`, `weave source` and `weave mcp
---workspace`. The remaining work is post-GA: watch event delivery (register #40), pluggable scoring
-and the [optimization program](../specs/optimization.md).
+tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes,
+rerank and score searches, blob assets and codec extensions are in place, embeddings back semantic
+search, and the schema v8 workspace registry provides `weave workspace`, `weave source` and
+`weave mcp --workspace`. Work after 0.7 is watch event delivery (register #40), MCP polish and the
+[optimization program](../specs/optimization.md); 1.0 is the stability target.

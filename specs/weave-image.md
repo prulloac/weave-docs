@@ -8,7 +8,7 @@ tags:
   - "image"
   - "ocr"
   - "vision"
-  - "v1.0"
+  - "0.7"
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
@@ -35,7 +35,7 @@ In scope:
 - EXIF extraction and dimensions;
 - vision-based title, description, keywords and text fallback;
 - metadata precedence and failure fallback;
-- installer/runtime dependency on `weave-ai >= 1.0.0` and `weave >= 1.0.0`.
+- installer/runtime dependency on `weave-ai >= 0.7.0` and `weave >= 0.7.0`.
 
 Non-goals:
 
@@ -55,8 +55,8 @@ Non-goals:
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
   "requires": [
-    {"name": "weave", "min_version": "1.0.0"},
-    {"name": "weave-ai", "min_version": "1.0.0"}
+    {"name": "weave", "min_version": "0.7.0"},
+    {"name": "weave-ai", "min_version": "0.7.0"}
   ],
   "capabilities": ["vision", "ocr", "exif"]
 }
@@ -195,8 +195,8 @@ the local metadata. A non-zero exit keeps the previous document state and counts
 
 `weave-image` requires:
 
-- `weave >= 1.0.0` for generic blob assets;
-- `weave-ai >= 1.0.0` for vision.
+- `weave >= 0.7.0` for generic blob assets;
+- `weave-ai >= 0.7.0` for vision.
 
 The installer:
 

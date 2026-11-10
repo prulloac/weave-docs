@@ -138,7 +138,7 @@ The full contract is in [Keyword + Fuzzy Search](../../specs/keyword-fuzzy-searc
 ## Performance
 
 Go benchmark on 1,000 generated files (local x86_64): parse ~47 ms. Search and storage budgets are
-tracked by the post-GA optimization program; the current corpus, baselines and failing budgets are in
+tracked by the post-1.0 optimization program; the current corpus, baselines and failing budgets are in
 [Performance baseline](../performance.md).
 
 ## Testing

@@ -18,7 +18,7 @@ status: stable
 
 ## 1. Overview
 
-This is a **post-GA** feature. Weave does not gain native image, PDF, audio, video, code or binary
+This ships in **0.7**. Weave does not gain native image, PDF, audio, video, code or binary
 asset support.
 
 Instead, Weave exposes a generic **extension data API**:
@@ -61,7 +61,7 @@ Non-goals:
 | Export | Medium-high | Raw export must copy bytes and a manifest; encrypted export policy is explicit. |
 | Security | High | Opaque bytes, path validation, quotas, hash verification and trusted extensions. |
 | Testing | High | Binary fixtures, large files, corruption, sync lifecycle, export and MCP blobs. |
-| v1.0 | None | Deferred until after the v1.0 release. |
+| Release | None | Ships in the 0.7 release. |
 
 Alternatives considered:
 
@@ -380,7 +380,7 @@ Behavior scenarios: [extension-data.md](https://github.com/prulloac/weave/blob/m
 7. Raw export copies extension data and its manifest; encrypted export warns and excludes it.
 8. Invalid paths, symlinks, oversized files, duplicate keys and bad hashes fail safely.
 9. Default parser, graph, search, ranking, privacy and output are unchanged without extension data.
-10. The feature is not part of the v1.0 release gate.
+10. The feature ships in the 0.7 release.
 
 ## 10. Delivery Slices
 
@@ -409,6 +409,6 @@ Each slice is a separate stacked PR. E1 must not change default ingest or search
 - [Storage & Sync](storage-and-sync.md) — schema, transactions and lifecycle
 - [Bundle Export](bundle-export.md) — raw and encrypted export
 - [MCP Server](mcp-server.md) — resources and transport
-- [Pluggable Scoring](extension-scoring.md) — post-GA scorer contract
+- [Pluggable Scoring](extension-scoring.md) — scorer contract
 - [Privacy Directives](privacy-directives.md) — sensitive content rules
-- [Roadmap](../ROADMAP.md) — post-GA feature register
+- [Roadmap](../ROADMAP.md) — feature register

@@ -48,9 +48,9 @@ weave audit <path> [--fail-on error|warning|none] [--verify-keys] [--json] [--no
 ```
 
 - `--fail-on` defaults to `error`.
-- `--verify-keys` is a v1.0 privacy check: report unavailable keys for documents that use
+- `--verify-keys` is a 0.7 privacy check: report unavailable keys for documents that use
   encryption/tokenization/hashing. It is a no-op without privacy directives.
-- `--permissive` (v1.0 ingestion mode) downgrades missing frontmatter/keywords from errors to
+- `--permissive` (0.7 ingestion mode) downgrades missing frontmatter/keywords from errors to
   warnings so dirty Markdown trees can be audited without failing. It is delivered with
   [Permissive Ingestion](permissive-ingestion.md), not by the initial audit implementation.
 - `--json` emits one `weave.cli/v1` envelope.
@@ -119,10 +119,10 @@ uses a success envelope containing the report, even when the process exits `1`.
 | `UNSUPPORTED_OKF_VERSION` | warning | Root index declares an unsupported version |
 | `EMPTY_BUNDLE` | warning | No Markdown files |
 | `DANGLING_EXTERNAL` | info | External/dangling link; informational only |
-| `KEY_UNAVAILABLE` | warning | Privacy directive references a missing key (v1.0, `--verify-keys`) |
-| `CODEC_MISSING` | warning | A stored `body_codec` is not installed (v1.0) |
-| `EMBEDDING_STALE` | warning | Embedding `content_hash` differs from the document (v1.0) |
-| `EMBEDDING_INDEX_MISMATCH` | warning | Space registry and `vec0` table disagree (v1.0) |
+| `KEY_UNAVAILABLE` | warning | Privacy directive references a missing key (0.7, `--verify-keys`) |
+| `CODEC_MISSING` | warning | A stored `body_codec` is not installed (0.7) |
+| `EMBEDDING_STALE` | warning | Embedding `content_hash` differs from the document (0.7) |
+| `EMBEDDING_INDEX_MISMATCH` | warning | Space registry and `vec0` table disagree (0.7) |
 
 Severity ordering: `error` > `warning` > `info`.
 
@@ -145,8 +145,8 @@ The audit consumes the engine's existing structures:
 - `Bundle.index`
 - `Graph.Nodes`, `Graph.Edges`, `Graph.Dangling`
 - concept links and frontmatter
-- stored body codecs and the installed codec registry (v1.0)
-- `document_embeddings` and `embedding_indexes` (v1.0)
+- stored body codecs and the installed codec registry (0.7)
+- `document_embeddings` and `embedding_indexes` (0.7)
 
 No new parser behavior is required.
 

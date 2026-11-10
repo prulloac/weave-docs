@@ -16,7 +16,7 @@ status: draft
 
 # Specification: Performance and Maintainability Optimization
 
-This program is a **post-GA stretch goal**. The v1.0 release does not depend on closing the
+This program is a **post-1.0 stretch goal**. The 0.7 release does not depend on closing the
 remaining time and space budgets; measured work can continue after publishing.
 
 ## 1. Overview
@@ -141,7 +141,7 @@ commands and output the benchmarks exercise.
   JSON modes; make empty-result exits consistent.
 - Add `--dry-run` to write commands and `--no-input` for non-interactive confirmation failures.
 - Finish configuration UX (platform paths, DB location decision, typed `config show`; project
-  config deferred until after GA).
+  config deferred until after 1.0).
 - Pin machine-output schemas and add `quiet`/`verbose`/`NO_COLOR` feedback controls.
 - Improve onboarding, completion and local-first/privacy messaging.
 - Details and exit criteria: [Proposal: UX](../architecture/optimization/proposal-ux.md).

@@ -27,7 +27,7 @@ status: draft
 
 Weave is a local-first related-document database for Open Knowledge Format (OKF) bundles. The core
 loads flat Markdown and YAML files into memory, builds concept nodes and link edges, and answers
-keyword and weighted fuzzy searches with top-K results. v1.0 adds optional SQLite persistence, BM25
+keyword and weighted fuzzy searches with top-K results. 0.7 adds optional SQLite persistence, BM25
 ranking, privacy directives, extensions and MCP. It is CLI-first, local, and has no browser UI.
 
 ## Details & Contracts
@@ -52,7 +52,7 @@ Weave turns a static bundle into a queryable document store:
 | Default mode | Hybrid |
 | Default top-K | 10 |
 | Calibration | Labeled corpus with NDCG@K and MRR@K baselines |
-| Operational mode | Offline, deterministic; in-memory core with optional v1.0 SQLite persistence |
+| Operational mode | Offline, deterministic; in-memory core with optional 0.7 SQLite persistence |
 
 ### What Weave Is Not
 

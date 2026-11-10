@@ -68,8 +68,8 @@ An extension may expose a machine-readable capability manifest with
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
   "requires": [
-    {"name": "weave", "min_version": "1.0.0"},
-    {"name": "weave-ai", "min_version": "1.0.0"}
+    {"name": "weave", "min_version": "0.7.0"},
+    {"name": "weave-ai", "min_version": "0.7.0"}
   ]
 }
 ```
@@ -377,6 +377,6 @@ checked-in scripts with explicit shebangs.
 - [Storage & Sync](storage-and-sync.md)
 - [Keyword + Fuzzy Search](keyword-fuzzy-search.md)
 - [BM25 Ranking](bm25-ranking.md)
-- [Pluggable Scoring](extension-scoring.md) — post-GA custom scorer contract
-- [Extension Data](extension-data.md) — post-GA opaque artifact API
+- [Pluggable Scoring](extension-scoring.md) — custom scorer contract
+- [Extension Data](extension-data.md) — opaque artifact API
 - [ROADMAP](../ROADMAP.md)

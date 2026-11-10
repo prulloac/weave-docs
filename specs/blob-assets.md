@@ -8,7 +8,7 @@ tags:
   - "assets"
   - "storage"
   - "extensions"
-  - "v1.0"
+  - "0.7"
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-11-03T00:00:00Z"
@@ -164,8 +164,8 @@ weave-image --describe --json
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
   "requires": [
-    {"name": "weave", "min_version": "1.0.0"},
-    {"name": "weave-ai", "min_version": "1.0.0"}
+    {"name": "weave", "min_version": "0.7.0"},
+    {"name": "weave-ai", "min_version": "0.7.0"}
   ]
 }
 ```
