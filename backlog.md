@@ -152,8 +152,9 @@ Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no o
 | --- | --- | --- | --- | --- | --- | --- |
 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | x | - | in-progress |
 
-Specification is stable. Core contract: extension-provided graph relations from a project-wide
-analysis pass. Target: 0.8 / P1. Next: BDD scenarios, then core slice C1.
+Specification is stable. Core C1 and the first `weave-code` repository slice are implemented: Go and
+Python extraction, lexical fallback, project analysis, symbol documents and relations. Target:
+0.8 / P1. Next: remaining language parsers and incremental sync analysis.
 
 ## Cross-cutting
 
