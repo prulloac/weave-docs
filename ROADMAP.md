@@ -257,6 +257,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
+| 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | planned |
 
 Rules:
 
@@ -399,6 +400,16 @@ Spec: [Workspace and Source Registry](specs/workspace.md); ADR
 [0007](architecture/adr/0007-workspace-and-source-registry.md). Status: accepted/stable; shipped in
 v0.7.0 (schema v8 registry, workspace/source CLI, `--workspace` writes, MCP re-reconciliation and
 single-writer index ownership).
+
+**Wave 11 — code knowledge:**
+
+1. core media type preservation and extension-provided graph relations,
+2. project analysis protocol and `weave-code` file documents,
+3. Go and Python parsing with lexical fallback,
+4. remaining languages and cross-file relations,
+5. optional symbol documents, external dependency documents and export manifests.
+
+Spec: [Weave Code Extension](specs/weave-code.md). Status: draft design; registered as 0.8 / P1.
 
 **Critical path:**
 
@@ -577,6 +588,7 @@ started on **2026-11-10**; the earliest 1.0.0 date is **2026-12-10**.
 - [OKF Bundle Parser](specs/okf-bundle-parser.md)
 - [Release Readiness](specs/release-readiness.md)
 - [1.0 Stability Gate and Issue Policy](specs/stability-gate.md)
+- [Weave Code Extension](specs/weave-code.md)
 - [Privacy & Extensions](architecture/privacy-and-extensions.md)
 - [External Crypto Providers](specs/external-crypto-providers.md)
 - [Weave AI Extension](specs/weave-ai-plugin.md)

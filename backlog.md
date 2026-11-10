@@ -146,6 +146,16 @@ Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no o
 `confirmed-defect` issue in `prulloac/weave`. The current window started on 2026-11-10. Only
 `prulloac/weave` accepts issues; the other repositories are closed and link here.
 
+## Tier 10 — Code knowledge
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | - | - | - | in-progress |
+
+Design draft covers eleven languages, project-wide analysis, extension-provided graph relations,
+optional symbol documents and external dependency documents. Core changes: media type preservation,
+project analysis protocol and relation kinds. Target: 0.8 / P1.
+
 ## Cross-cutting
 
 - [x] Knowledge corpus: vision + related concepts (`knowledge/`)
@@ -224,6 +234,7 @@ Execution waves:
 11. Stretch: maintainability and UX follow-ups, benchmarks, time and space.
 12. Post-1.0: `fsnotify` watch event delivery with a polling fallback.
 13. 1.0 gate: 30 consecutive days without a declared defect; only `weave` accepts issues.
+14. 0.8 / P1: `weave-code` project analysis, code relations and optional symbol documents.
 
 Critical path: `contract -> parser/graph/search -> storage -> sync -> BM25 -> privacy -> extension runner -> MCP sensitive`.
 
