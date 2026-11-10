@@ -223,6 +223,7 @@ Execution waves:
 10. 0.7: pluggable scoring extensions with document context and configurable blend weights (done).
 11. Stretch: maintainability and UX follow-ups, benchmarks, time and space.
 12. Post-1.0: `fsnotify` watch event delivery with a polling fallback.
+13. 1.0 gate: 30 consecutive days without a declared defect; only `weave` accepts issues.
 
 Critical path: `contract -> parser/graph/search -> storage -> sync -> BM25 -> privacy -> extension runner -> MCP sensitive`.
 
