@@ -126,6 +126,11 @@ uses a success envelope containing the report, even when the process exits `1`.
 
 Severity ordering: `error` > `warning` > `info`.
 
+Code relations participate in edge counts, degree counts and `ORPHAN_CONCEPT` exactly like Markdown
+edges. Unresolved external dependencies with a single reference stay in metadata and do not create
+dangling links; external documents created after more than one reference have normal edges. The audit
+adds no code-specific finding.
+
 ### Summary
 
 - `concepts`: parsed concept count

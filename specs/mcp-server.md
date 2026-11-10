@@ -115,18 +115,19 @@ func (s *Server) Call(ctx context.Context, name string, arguments map[string]any
 | --- | --- | --- |
 | `weave_search` | `query`, `mode?`, `top_k?` | `SearchResponse` |
 | `weave_explain` | `query`, `id?`, `mode?`, `top_k?` | `ExplainResult` |
-| `weave_relate` | `id`, `depth?`, `direction?` | `RelateResult` |
+| `weave_relate` | `id`, `depth?`, `direction?`, `relations?` | `RelateResult` |
 | `weave_audit` | `fail_on?`, `verify_keys?` | `AuditReport` |
 | `weave_list` | `types?`, `tags?`, `status?`, `limit?` | `ListResults` |
 | `weave_show` | `id` | `ShowResult` |
 | `weave_backlinks` | `id` | `BacklinksResult` |
-| `weave_path` | `from`, `to` | `PathResult` |
+| `weave_path` | `from`, `to`, `relations?` | `PathResult` |
 | `weave_sources` | — | workspace source registry |
 | `weave_contract` | — | `ContractInfo` |
 
 Rules:
 
 - Inputs use the same names and semantics as the operations contract.
+- `relations` accepts the same kinds as the CLI `--relation` flag; omitted means the default set.
 - Every data tool accepts an optional `source` alias; omitted means all sources with the
   multi-bundle merge and ambiguity rules.
 - Results are the same payloads as the CLI JSON envelope `result`.

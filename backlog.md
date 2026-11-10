@@ -150,11 +150,10 @@ Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no o
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | - | - | - | in-progress |
+| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | - | - | in-progress |
 
-Design draft covers eleven languages, project-wide analysis, extension-provided graph relations,
-optional symbol documents and external dependency documents. Core changes: media type preservation,
-project analysis protocol and relation kinds. Target: 0.8 / P1.
+Specification is stable. Core contract: extension-provided graph relations from a project-wide
+analysis pass. Target: 0.8 / P1. Next: BDD scenarios, then core slice C1.
 
 ## Cross-cutting
 

@@ -42,7 +42,7 @@ formats use the same path by declaring different media types.
 Schema version 7 adds:
 
 ```sql
-content_kind TEXT NOT NULL DEFAULT 'document', -- document | blob
+content_kind TEXT NOT NULL DEFAULT 'document', -- document | blob | symbol
 media_type TEXT NOT NULL DEFAULT 'text/markdown',
 content_metadata TEXT NOT NULL DEFAULT '{}',
 body_raw TEXT,                    -- text-readable bodies, or NULL
@@ -65,8 +65,11 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
 - `content_hash` and `size` are over the original bytes, not the stored bytes; `stored_size` records
   the body column length.
 - For text rows `size` and `stored_size` are equal.
-- `doc_type` may carry an extension-provided label (`Image`, `Video`, `PDF`); core never branches on
-  it.
+- `doc_type` may carry an extension-provided label (`Image`, `Video`, `PDF`, `Code`, `CodeSymbol`,
+  `CodeExternal`); core never branches on it.
+- `content_kind='symbol'` marks synthetic symbol and external dependency documents. They use
+  `body_raw` for signatures or summaries, are not source files, and are excluded from the raw export
+  file tree. See [Weave Code Extension](weave-code.md).
 
 ### 3.2 `content_metadata` envelope
 
@@ -102,6 +105,8 @@ CHECK ((body_raw IS NOT NULL AND body_codec IS NULL)
 - FTS `body` is `body_raw` when present.
 - For binary blobs (`body_raw` NULL), FTS `body` is `content_metadata.text`.
 - A blob with no extracted text remains searchable by title, description and keywords.
+- Source file documents use `body_raw`; symbol and external dependency documents use `body_raw` for
+  their signature or summary.
 - `weave search` snippets come from `body_raw` or the extracted text.
 - `weave explain` reports the FTS field as `body`; the spec does not add a media-specific field.
 
@@ -150,7 +155,16 @@ weave sync ~/notes --no-assets
   `BLOBS_REQUIRE_DB`.
 - Files are matched by detected media type, not by hardcoded core extensions.
 
-### 4.2 Extension capability declaration
+### 4.2 Project analyzer discovery
+
+When `--with-enricher code` names an extension that declares `"analysis_modes": ["project"]`, core
+scans the extension's `source_extensions` automatically. This path does not require `--assets` or
+`--asset-types`; it discovers only the declared source extensions and stores the resolved filter like
+any other asset scan. A write without the code enricher remains Markdown-only.
+
+The source extension table and limits are defined in [Weave Code Extension](weave-code.md).
+
+### 4.3 Extension capability declaration
 
 An extension may expose a machine-readable description:
 
@@ -176,15 +190,19 @@ weave-image --describe --json
 - `requires` is informational for core and authoritative for the extension installer/runtime.
 - The human `--describe` output remains valid; `--json` is the machine contract.
 
-### 4.3 Media type detection
+### 4.4 Media type detection
 
 - Core maps known extensions and magic bytes to a MIME type.
+- Known source extensions keep their language media type (`text/x-go`, `text/x-python`,
+  `text/x-rust`, and so on) when the bytes are valid UTF-8 without NUL. Content sniffing must not
+  downgrade them to `text/plain`.
+- A mismatch warning is not emitted for a known text or source extension whose bytes are text.
 - Unknown binaries use `application/octet-stream`.
 - A mismatch between extension and magic bytes is a warning; the detected type is stored.
 - Core does not reject a type merely because it does not understand it; the asset filter and
   extension decide.
 
-### 4.4 Limits
+### 4.5 Limits
 
 | Limit | Value | Behavior |
 | --- | --- | --- |
@@ -197,7 +215,7 @@ weave-image --describe --json
 Symlinks that escape the bundle and non-regular files are rejected. `.git` and `node_modules` are
 ignored, as in the Markdown parser.
 
-### 4.5 Blob document shape
+### 4.6 Blob document shape
 
 - `id` and `file_path` are the bundle-relative path.
 - `title` starts empty; `weave list`/`show` fall back to the filename when empty.
@@ -205,6 +223,10 @@ ignored, as in the Markdown parser.
 - Blob documents are exempt from OKF `type`/`keywords` validation; they are not Markdown concepts.
 - `content_metadata` starts `{"v":1}`.
 - Text-readable blobs use `body_raw` and leave `body_codec` NULL.
+- Source code files use `content_kind='blob'`, `doc_type='Code'`, a language media type and
+  `body_raw`.
+- Symbol and external dependency documents use `content_kind='symbol'` and a synthetic path; their
+  `body_raw` is the signature or summary, never the whole source file.
 - Binary blobs use `body_compressed` and a non-null `body_codec`.
 - `doc_type` may be set by the extension.
 - The title/description/keywords precedence is defined in §5.
@@ -314,6 +336,9 @@ weave list ~/notes --type Image --json
 - Raw export writes `body_raw` directly or the decoded `body_compressed` at its original
   bundle-relative path and includes `content_kind`, `media_type`, body form, `body_codec`,
   `content_metadata`, hash and original/stored sizes in the manifest.
+- Synthetic `content_kind='symbol'` documents are not written as files. Raw export writes
+  `_code/symbols.json` and `_code/relations.json` and emits one warning per excluded synthetic
+  document.
 - Encrypted export excludes blob documents in the first slice and emits one warning per skipped
   blob; opaque blob encryption is deferred.
 - A missing blob is an export error; Weave never silently drops a blob.
@@ -334,7 +359,7 @@ weave list ~/notes --type Image --json
 
 | Type | Field | Meaning |
 | --- | --- | --- |
-| `OkfConcept` | `content_kind` | `document` or `blob` |
+| `OkfConcept` | `content_kind` | `document`, `blob` or `symbol` |
 | `OkfConcept` | `media_type` | Stored MIME type |
 | `OkfConcept` | `content_metadata` | Versioned JSON envelope |
 | `ShowResult` | `content_kind`, `media_type`, `content_metadata`, `body_form` (`raw`/`compressed`), `body_codec`, `size`, `stored_size`, `content_hash` | Blob metadata |
@@ -352,9 +377,13 @@ All schema changes are additive inside v1. Goldens and schema baselines update i
 
 - Content-kind migration and defaults.
 - `content_metadata` envelope validation, size limits and unknown attributes.
-- Media type detection, mismatch warnings and unknown binaries.
-- Opt-in discovery, `--asset-types`, extension `asset_types`, ignored directories and symlink escape.
+- Media type detection, mismatch warnings and unknown binaries; known source extensions keep their
+  language media type.
+- Opt-in discovery, `--asset-types`, extension `asset_types`, project analyzer source extensions,
+  ignored directories and symlink escape.
 - Blob ingest with image, PDF-like and arbitrary binary fixtures; no image-specific core behavior.
+- Source file documents, symbol documents and external dependency documents use the correct
+  `content_kind`, `doc_type` and `body_raw` rules.
 - FTS body from `body_raw` for text; from `content_metadata.text` for binary blobs; empty text
   remains searchable by metadata.
 - Enrichment precedence: declared wins, inferred fills empty, keywords append, OCR text wins.
@@ -364,6 +393,8 @@ All schema changes are additive inside v1. Goldens and schema baselines update i
 - Mixed codecs: text rows raw, binary rows zstd, an extension-codec blob round-trips; missing codecs
   fail with `CODEC_UNAVAILABLE`.
 - Search/list fields, raw export, encrypted-export warning.
+- Raw export excludes synthetic documents and writes `_code/symbols.json` and
+  `_code/relations.json`.
 - Asset filter persistence across `sync`/`rebuild`, filter replacement, `--no-assets` removal.
 - Delete/sync cascade and size quotas.
 - Full gate, race suite and calibration unchanged.

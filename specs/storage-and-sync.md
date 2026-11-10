@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS edges (
     bundle_root TEXT NOT NULL,
     source_id TEXT NOT NULL,
     target_id TEXT NOT NULL,
-    edge_type TEXT NOT NULL,             -- link | related
+    edge_type TEXT NOT NULL,             -- link | related | imports | declares | references | calls | inherits | implements
     dangling INTEGER DEFAULT 0,          -- 1 if target does not resolve
     PRIMARY KEY (bundle_root, source_id, target_id, edge_type),
     FOREIGN KEY (bundle_root, source_id)
@@ -201,6 +201,11 @@ Compute SHA-256 of file content
 2. **Update:**
    - If `Doc A` changes, its outgoing links are re-extracted. Old edges are deleted; new edges inserted.
    - Any edges where `Doc A` was previously marked as dangling are reconciled (`dangling = 0`).
+3. **Project analysis:**
+   - A successful project analysis replaces all code relation rows for the bundle in one transaction.
+   - Synthetic symbol and external documents use normal `documents` and `edges` rows with
+     `content_kind='symbol'`; deleting the source file cascades to its symbols and relations.
+   - A failed project analysis leaves the previous code rows intact.
 
 ---
 

@@ -19,8 +19,9 @@ status: stable
 ## 1. Overview
 
 Pure, offline Go package that turns a validated `contractv1.Bundle` into a bidirectional graph.
-Each concept becomes a node with keywords; edges come from resolved bundle-relative Markdown links
-and the frontmatter `related` array. The graph feeds backlinks, pathfinding and CLI navigation.
+Each concept becomes a node with keywords; edges come from resolved bundle-relative Markdown links,
+the frontmatter `related` array and validated extension-provided relations. The graph feeds
+backlinks, pathfinding and CLI navigation.
 
 There is no UI or graph serialization for a lens.
 
@@ -51,17 +52,27 @@ engine/graph/
 `contractv1.GraphEdge`:
 
 - `from`, `to`
-- `source`: `link` or `related`
+- `source`: one of the relation kinds below
 - `raw?`: original Markdown link text for `link` edges
 
-Edge sources:
+Relation kinds:
 
 - `link` — a Markdown link whose target resolves to an in-bundle concept
   (`resolves_in_bundle: true`).
 - `related` — an entry in the concept's frontmatter `related` array. Bundle-relative paths, ids
   and optional `.md`/leading `/` are accepted.
+- `imports` — a source file imports another file or external dependency.
+- `declares` — a source file declares a symbol document.
+- `references` — a document or symbol references another symbol.
+- `calls` — a symbol calls another symbol.
+- `inherits` — a type inherits another type.
+- `implements` — a type implements an interface or trait.
 
-Broken and external targets are **not** edges; they are stored in `dangling` per source concept.
+Extension relations are defined by [Weave Code Extension](weave-code.md) and
+[ADR 0010](../architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
+Broken Markdown and unresolved `related` targets are **not** edges; they are stored in `dangling` per
+source concept. Unresolved extension targets become metadata only, or an external document when the
+same dependency is referenced more than once.
 
 ### 3.3 Graph
 
@@ -87,12 +98,27 @@ func SortedEdges(graph *Graph) []contractv1.GraphEdge
 ### 3.5 Traversal API
 
 ```go
-func FindPath(graph *Graph, from, to string) []string
-func Neighbors(graph *Graph, id string) []string
+type TraversalOptions struct {
+    Relations []string // empty means the default relation set
+}
+
+func FindPath(graph *Graph, from, to string, options TraversalOptions) []string
+func Neighbors(graph *Graph, id string, options TraversalOptions) []string
 func OrphanNodes(graph *Graph) []string
 func NodeCount(graph *Graph) int
 func EdgeCount(graph *Graph) int
 ```
+
+Default relation set: `link`, `related`, `imports`, `declares`, `inherits`, `implements`. The
+`calls` and `references` kinds are excluded unless named explicitly. `OrphanNodes` and degree counts
+consider every stored edge, independent of traversal filtering.
+
+### 3.6 CLI Filtering
+
+`weave path`, `weave relate` and `weave graph` accept `--relation <kind,...>`. The flag replaces the
+default set and is validated against the complete relation list. An unknown kind is `INVALID_REQUEST`
+with exit `2`. `weave graph` filters its edge list; `weave path` and `weave relate` restrict
+traversal. Node counts, degree counts and orphan detection always use the full graph.
 
 ## 4. Data Flow
 
@@ -101,6 +127,8 @@ func EdgeCount(graph *Graph) int
 - For each concept link with `resolves_in_bundle` and an existing target, add a `link` edge.
 - For each `related` entry, resolve to a concept id and add a `related` edge.
 - Append non-resolving/external links and unresolved `related` entries to `dangling`.
+- Add validated extension relations after synthetic documents materialize; drop targets with fewer
+  than two external references.
 - Deduplicate edges by `(from, to, source)`.
 - Build `incoming` by inverting `outgoing`.
 - Compute in/out degrees.
@@ -115,6 +143,9 @@ func EdgeCount(graph *Graph) int
 - Self-links and cycles: allowed; traversal guards with a visited set.
 - Missing/invalid concepts: parser excludes or marks them; the graph includes parsed concepts.
 - Unresolved `related`: dangling, never an edge.
+- Extension target with one reference: metadata only, no dangling edge.
+- Extension target with two or more references: external document and edge.
+- Mixed relation sets: path and relate filter by `TraversalOptions`; degrees and orphans do not.
 - Determinism: nodes and serialized views sort by id; edges by `from`, `to`, `source`.
 
 ## 6. Performance
@@ -126,6 +157,7 @@ engine target.
 
 - Golden conformance in `engine/conformance_test.go`.
 - Unit tests for edges, degrees, dangling, BFS and cycles.
+- Extension relation kinds, filtering, deduplication and the external reference threshold.
 - Race suite.
 
 ## Related Concepts

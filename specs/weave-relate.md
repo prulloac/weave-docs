@@ -43,16 +43,19 @@ weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--json] [
 ## 3. Command Contract
 
 ```text
-weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--json] [--no-cache]
+weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--relation <kind,...>] [--json] [--no-cache]
 ```
 
 - `--depth` defaults to `1`; valid range `0..5`.
 - `--direction` defaults to `both`.
+- `--relation` accepts `link`, `related`, `imports`, `declares`, `references`, `calls`, `inherits`
+  and `implements`; it replaces the default set. The default set is `link`, `related`, `imports`,
+  `declares`, `inherits` and `implements`; `calls` and `references` require an explicit flag.
 - `--json` emits one `weave.cli/v1` envelope.
 - Exit codes:
   - `0` — root found and neighborhood returned.
   - `1` — root concept not found.
-  - `2` — usage/invalid root/invalid depth/direction.
+  - `2` — usage/invalid root/invalid depth/direction/relation.
   - `3` — permission denied.
 
 ## 4. Result Model
@@ -89,9 +92,12 @@ weave relate <path> <id|file> [--depth <n>] [--direction out|in|both] [--json] [
 - `nodes` includes the root and every reached node; sorted by id.
 - `edges` includes traversed edges; sorted by `from`, `to`, `source`, then depth.
 - `depth` on an edge is the hop distance from the root.
-- `source` is `link` or `related`.
+- `source` is one of the relation kinds: `link`, `related`, `imports`, `declares`, `references`,
+  `calls`, `inherits` or `implements`.
 - `raw` is present for link edges.
 - `direction` records the requested traversal direction.
+- The default relation set is defined in the command contract; `calls` and `references` are omitted
+  unless requested.
 
 ## 5. Traversal Semantics
 

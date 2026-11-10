@@ -409,7 +409,8 @@ single-writer index ownership).
 4. remaining languages and cross-file relations,
 5. optional symbol documents, external dependency documents and export manifests.
 
-Spec: [Weave Code Extension](specs/weave-code.md). Status: draft design; registered as 0.8 / P1.
+Spec: [Weave Code Extension](specs/weave-code.md). Status: stable specification; implementation not
+started. Core contract decision: [ADR 0010](architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
 
 **Critical path:**
 

@@ -14,6 +14,7 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0007](0007-workspace-and-source-registry.md) | accepted | Workspace and source registry; MCP becomes a read-only view with runtime source re-reconciliation |
 | [0008](0008-agent-skills-standalone-distribution.md) | accepted | Agent skills for CLI-only workflows live in a standalone `weave-skills` repository |
 | [0009](0009-product-versioning-0.7-pre-1.0.md) | accepted | Renumber the current product line to 0.7.0 and reserve 1.0.0 for the stability milestone |
+| [0010](0010-extension-provided-graph-relations-and-project-analysis.md) | accepted | Extensions contribute graph relations from a project-wide analysis pass; calls and references are opt-in traversal |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.

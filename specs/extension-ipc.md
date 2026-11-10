@@ -67,6 +67,7 @@ An extension may expose a machine-readable capability manifest with
   "v": "weave.extension/v1",
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
+  "analysis_modes": ["document"],
   "requires": [
     {"name": "weave", "min_version": "0.7.0"},
     {"name": "weave-ai", "min_version": "0.7.0"}
@@ -75,6 +76,10 @@ An extension may expose a machine-readable capability manifest with
 ```
 
 - `asset_types` and `requires` are optional.
+- `analysis_modes` is optional and defaults to `["document"]`. `"project"` declares that the
+  extension accepts a project-wide analysis request; see §2.4.
+- `source_extensions` is optional and used by a project analyzer to declare the source file
+  extensions it handles, for example `[".go", ".py"]`.
 - Core uses `asset_types` to filter blob discovery when `--asset-types` is absent.
 - `requires` is informational for core and authoritative for installers and runtime checks.
 - `capabilities` and other unknown manifest fields are informational and ignored by core.
@@ -89,9 +94,9 @@ An extension may expose a machine-readable capability manifest with
 - One response object on stdout, optionally followed by whitespace.
 - Stderr is captured as diagnostics and never parsed.
 - Requests and responses are bounded to 1 MiB; larger output is `EXTENSION_PROTOCOL`. Role-specific
-  specs may raise a bound: scoring requests use 8 MiB and enrichment responses use 4 MiB to carry
-  `content_metadata` up to 2 MiB. Direct extension-to-extension vision calls (`weave-image` →
-  `weave-ai`) are outside this transport and define their own larger bound.
+  specs may raise a bound: scoring requests use 8 MiB, enrichment responses use 4 MiB and project
+  analysis requests and responses use 64 MiB. Direct extension-to-extension vision calls
+  (`weave-image` → `weave-ai`) are outside this transport and define their own larger bound.
 - Every envelope carries `"v": "weave.cli/v1"`.
 - Unknown response fields are ignored; unknown `v` is `EXTENSION_PROTOCOL`.
 - Canonical request and response examples live in
@@ -172,7 +177,68 @@ Response:
 
 The blob-specific envelope and limits are defined in [Generic Blob Assets](blob-assets.md).
 
-### 2.4 Reranking
+### 2.4 Project Analysis
+
+A project analyzer resolves cross-document relationships in one pass. Core invokes it once per
+ingest, rebuild or sync when the named enricher declares `"analysis_modes": ["project"]`.
+
+Request:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "type": "project_analysis_request",
+  "bundle_root": "/home/user/repo",
+  "files": [
+    {"id": "src/main.go", "path": "src/main.go", "media_type": "text/x-go", "content_hash": "sha256:..."}
+  ],
+  "options": {
+    "symbol_documents": false,
+    "relations": ["imports", "declares", "references", "calls", "inherits", "implements"]
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "documents": [
+    {
+      "id": "src/main.go",
+      "title": "main package",
+      "description": "Command entrypoint.",
+      "keywords": ["go", "main"],
+      "content_metadata": {"v": 1, "language": "go", "package": "main"}
+    }
+  ],
+  "external_documents": [],
+  "relations": [
+    {"from": "src/main.go", "to": "src/server.go", "kind": "imports"}
+  ],
+  "warnings": []
+}
+```
+
+Rules:
+
+- `files` is ordered by ID and contains only files selected by `source_extensions`, the bundle
+  filter, or explicit asset types.
+- Core does not send file bytes; the analyzer reads `bundle_root`/`path`.
+- `content_hash` lets the analyzer reuse an extension-owned cache outside the bundle.
+- The response must contain every requested file once, unless the file failed; failures return a
+  warning and keep a file document.
+- Relations use the code relation kinds defined in [ADR 0010](../architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
+- One project invocation is allowed per write. The default timeout is 120 seconds and `--timeout`
+  overrides it.
+- Request and response bounds are 64 MiB.
+- Project analysis is not invoked for `--no-db` writes.
+- A missing or malformed response follows the normal extension failure rules.
+
+The code-specific document and relation contract is in [Weave Code Extension](weave-code.md).
+
+### 2.5 Reranking
 
 Request:
 
@@ -209,7 +275,7 @@ Response:
 - The response reuses the existing hit shapes and adds optional `rerank_score` per hit.
 - A failed, timed-out or malformed response returns the unchanged core results plus a stderr warning.
 
-### 2.5 Embeddings
+### 2.6 Embeddings
 
 An embedder is a `weave-<name>` extension selected with `--with-embedder <name>`.
 
@@ -244,7 +310,7 @@ Response:
 - Embedding spaces, `vec0` tables and semantic search are defined in
   [Embeddings](embeddings.md).
 
-### 2.6 CLI
+### 2.7 CLI
 
 ```sh
 weave extensions list [<path>] --json
@@ -258,6 +324,8 @@ weave codecs list [<path>] --json
 ```
 
 - `--with-enricher`, `--with-embedder`, `--embedder` and `--rerank` accept one extension name.
+- An enricher that declares `"analysis_modes": ["project"]` is invoked once for the write; others run
+  per document. See §2.4.
 - A missing or invalid name fails before any write with `EXTENSION_NOT_FOUND`, exit `2`.
 - `--timeout` requires a positive duration; invalid values exit `2`.
 - `--timeout` without an extension role is a usage error.

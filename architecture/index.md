@@ -157,6 +157,7 @@ remains the compatibility promise.
 | [ADR 0007](adr/0007-workspace-and-source-registry.md) | Workspace manifest, persisted source registry and single-writer index |
 | [ADR 0008](adr/0008-agent-skills-standalone-distribution.md) | Standalone distribution of the agent skills |
 | [ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md) | Product line is 0.7.0; 1.0.0 is the stability milestone |
+| [ADR 0010](adr/0010-extension-provided-graph-relations-and-project-analysis.md) | Extensions contribute graph relations from project-wide analysis; calls and references are opt-in |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |
