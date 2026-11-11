@@ -2,14 +2,14 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v0.7.0 is the current pre-1.0 release.** `weave`, `weave-ai`, `weave-codec-lz4`,
-`weave-image` and `weave-skills` v0.7.0 are published; the tag and publish record lives in
-[release-checklist.md](release-checklist.md). The core engine, introspection commands, SQLite
-storage, incremental sync, watch reload, BM25, permissive ingestion, privacy directives, body
+Status: **v0.8.0 is the current pre-1.0 release.** `weave`, `weave-ai`, `weave-code`,
+`weave-codec-lz4`, `weave-image` and `weave-skills` v0.8.0 are published; the tag and publish record
+lives in [release-checklist.md](release-checklist.md). The core engine, introspection commands,
+SQLite storage, incremental sync, watch reload, BM25, permissive ingestion, privacy directives, body
 compression, extension IPC with enrichment/rerank, workspaces, blob assets, codecs, embeddings,
-semantic search, pluggable scoring, release automation and the MCP server are shipped. Work after
-0.7 is watch event delivery, the optimization program and MCP polish; 1.0 remains the stability
-target.
+semantic search, pluggable scoring, code knowledge, release automation and the MCP server are
+shipped. Work after 0.8 is watch event delivery, the optimization program and MCP polish; 1.0 remains
+the stability target.
 
 ## 1. What Weave Is
 
@@ -28,7 +28,7 @@ Weave is a **local-first, related-document knowledge database**:
 
 It is **CLI-first**, local, offline-capable, and has **no UI**.
 
-## 2. Current Capabilities (shipped 0.7 core)
+## 2. Current Capabilities (shipped through 0.8)
 
 | Capability | Status | Notes |
 | --- | --- | --- |
@@ -58,6 +58,7 @@ It is **CLI-first**, local, offline-capable, and has **no UI**.
 | Blob assets | Shipped | Native blob documents with `content_metadata`, generic retrieval and export |
 | Embeddings and semantic search | Shipped | Durable embeddings with per-space `vec0` KNN |
 | Codec extensions | Shipped | `weave-codec-<name>` raw-byte codecs; LZ4 is the first-party extension |
+| Code knowledge | Shipped (0.8) | `weave-code` project analysis, eleven languages, code relations, optional symbols and `_code` export |
 | Workspaces and sources | Shipped | Manifest, persisted source registry, `--workspace` writes, MCP catalog |
 | Extension data API | Shipped | Extension-owned opaque artifacts with list/get/gc |
 
@@ -257,7 +258,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 39 | Workspace and source registry | [workspace.md](specs/workspace.md) | Tier 8 | multi-bundle, storage, MCP, watch | 10 / P1 | shipped |
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
-| 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | in progress |
+| 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
 
 Rules:
 
@@ -385,9 +386,9 @@ privacy directives ──┬── show --decrypt
 5. `weave-image` as the first blob consumer,
 6. semantic search, retrieval and release integration.
 
-Release order: `weave-ai v0.7.0` → `weave-codec-lz4 v0.7.0` → `weave v0.7.0` →
-`weave-image v0.7.0` → `weave-skills v0.7.0`. Specs and BDD approved 2026-11-03; all five releases
-are published, with the tag and verification record in [release-checklist.md](release-checklist.md).
+Release order: `weave-ai v0.8.0` → `weave-codec-lz4 v0.8.0` → `weave v0.8.0` →
+`weave-code v0.8.0` → `weave-image v0.8.0` → `weave-skills v0.8.0`. The tag and verification record
+lives in [release-checklist.md](release-checklist.md).
 
 **Wave 10 — workspaces and dynamic sources:**
 
@@ -409,8 +410,8 @@ single-writer index ownership).
 4. remaining languages and cross-file relations,
 5. optional symbol documents, external dependency documents and export manifests.
 
-Spec: [Weave Code Extension](specs/weave-code.md). Status: stable specification; slices C1-C5 are
-implemented and in review for 0.8.0. Core contract decision:
+Spec: [Weave Code Extension](specs/weave-code.md). Status: stable specification; shipped in v0.8.0.
+Core contract decision:
 [ADR 0010](architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
 
 **Critical path:**

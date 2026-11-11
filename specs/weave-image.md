@@ -35,7 +35,7 @@ In scope:
 - EXIF extraction and dimensions;
 - vision-based title, description, keywords and text fallback;
 - metadata precedence and failure fallback;
-- installer/runtime dependency on `weave-ai >= 0.7.0` and `weave >= 0.7.0`.
+- installer/runtime dependency on `weave-ai >= 0.8.0` and `weave >= 0.8.0`.
 
 Non-goals:
 
@@ -55,8 +55,8 @@ Non-goals:
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
   "requires": [
-    {"name": "weave", "min_version": "0.7.0"},
-    {"name": "weave-ai", "min_version": "0.7.0"}
+    {"name": "weave", "min_version": "0.8.0"},
+    {"name": "weave-ai", "min_version": "0.8.0"}
   ],
   "capabilities": ["vision", "ocr", "exif"]
 }
@@ -195,8 +195,8 @@ the local metadata. A non-zero exit keeps the previous document state and counts
 
 `weave-image` requires:
 
-- `weave >= 0.7.0` for generic blob assets;
-- `weave-ai >= 0.7.0` for vision.
+- `weave >= 0.8.0` for generic blob assets;
+- `weave-ai >= 0.8.0` for vision.
 
 The installer:
 

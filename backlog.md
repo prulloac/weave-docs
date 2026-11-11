@@ -118,6 +118,10 @@ and the embedding ingest/search/audit/list/rebuild/drop path are implemented and
 and release workflows. `weave`, `weave-ai`, `weave-codec-lz4`, `weave-image` and `weave-skills`
 v0.7.0 are published; see [release-checklist.md](release-checklist.md).
 
+`v0.8.0` is published for `weave`, `weave-ai`, `weave-code`, `weave-codec-lz4`, `weave-image` and
+`weave-skills`, including the code knowledge feature. See
+[release-checklist.md](release-checklist.md).
+
 0.7 pluggable scoring: spec and BDD approved; search and explain CLI slices merged in PR #17.
 0.7 extension data: spec and BDD approved; E1 (manifest, schema v6 and
 transactional import), E2 (CLI list/get/gc), E3 (show refs, MCP blob
@@ -152,10 +156,9 @@ Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no o
 | --- | --- | --- | --- | --- | --- | --- |
 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | x | x | review |
 
-Specification is stable. Slices C1-C5 are implemented: core protocol and graph relations,
-eleven-language parsing, cross-file relations, optional symbols and external documents, traversal,
-raw export manifests, ignore rules and resource limits. Target: 0.8 / P1. Remaining: the 0.8.0
-release.
+Specification is stable. Slices C1-C5 are implemented and released in v0.8.0: core protocol and
+graph relations, eleven-language parsing, cross-file relations, optional symbols and external
+documents, traversal, raw export manifests, ignore rules and resource limits. Target: 0.8 / P1.
 
 ## Cross-cutting
 

@@ -115,7 +115,7 @@ remains the compatibility promise.
 | Decision | Choice |
 | --- | --- |
 | Engine language | Go |
-| Product version | 0.7.0 across all products; 1.0.0 is the stability milestone (ADR 0009) |
+| Product version | 0.8.0 across all products; 1.0.0 is the stability milestone (ADR 0009) |
 | Product surface | Go CLI; no UI |
 | Document identity | Bundle-relative path minus `.md` |
 | Required frontmatter | `type` and `keywords` |
@@ -156,7 +156,7 @@ remains the compatibility promise.
 | [ADR 0006](adr/0006-codec-extensions-and-zstd-only-core.md) | zstd-only core, LZ4 as a codec extension and raw-byte codec extensions |
 | [ADR 0007](adr/0007-workspace-and-source-registry.md) | Workspace manifest, persisted source registry and single-writer index |
 | [ADR 0008](adr/0008-agent-skills-standalone-distribution.md) | Standalone distribution of the agent skills |
-| [ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md) | Product line is 0.7.0; 1.0.0 is the stability milestone |
+| [ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md) | Product versioning moved to 0.7.0 pre-1.0; 1.0.0 is the stability milestone |
 | [ADR 0010](adr/0010-extension-provided-graph-relations-and-project-analysis.md) | Extensions contribute graph relations from project-wide analysis; calls and references are opt-in |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
@@ -229,11 +229,12 @@ Permissive ingestion synthesizes metadata for dirty Markdown, `weave sync` recon
 by SHA-256 hash, and persistent hybrid search combines normalized BM25 with fuzzy scores.
 Calibration passes its baseline. The UI and old TypeScript stack are removed.
 
-The 0.7 feature set ships in `weave`, `weave-ai`, `weave-codec-lz4`, `weave-image` and
-`weave-skills` v0.7.0; see the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
+The 0.8 feature set ships in `weave`, `weave-ai`, `weave-code`, `weave-codec-lz4`, `weave-image`
+and `weave-skills` v0.8.0; see the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
 transport, auth, resources and watch reload are available, privacy directives ship with encrypted,
 tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes,
 rerank and score searches, blob assets and codec extensions are in place, embeddings back semantic
-search, and the schema v8 workspace registry provides `weave workspace`, `weave source` and
-`weave mcp --workspace`. Work after 0.7 is watch event delivery (register #40), MCP polish and the
-[optimization program](../specs/optimization.md); 1.0 is the stability target.
+search, code knowledge adds project analysis and code graph relations, and the schema v8 workspace
+registry provides `weave workspace`, `weave source` and `weave mcp --workspace`. Work after 0.8 is
+watch event delivery (register #40), MCP polish and the [optimization program](../specs/optimization.md);
+1.0 is the stability target.

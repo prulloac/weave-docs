@@ -178,8 +178,8 @@ weave-image --describe --json
   "name": "image",
   "asset_types": ["image/jpeg", "image/png", "image/webp", "image/gif"],
   "requires": [
-    {"name": "weave", "min_version": "0.7.0"},
-    {"name": "weave-ai", "min_version": "0.7.0"}
+    {"name": "weave", "min_version": "0.8.0"},
+    {"name": "weave-ai", "min_version": "0.8.0"}
   ]
 }
 ```

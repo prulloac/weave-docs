@@ -67,7 +67,7 @@ weave-codec-lz4 --describe --json
   "v": "weave.extension/v1",
   "name": "lz4",
   "kind": "codec",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "directions": ["compress", "decompress"],
   "frame": true
 }
