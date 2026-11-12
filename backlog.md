@@ -166,8 +166,9 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 | --- | --- | --- | --- | --- | --- | --- |
 | Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | in-progress |
 
-Stable specification. G1 contract work is in progress: `weave.source/v1`, manifest source-provider
-role, schema v9 source provenance and the local provider walking skeleton. Target: 0.9 / P1.
+Stable specification. G1 and the local repository-node slice are implemented: `weave.source/v1`,
+manifest source-provider role, schema v9 provenance, stable worktrees, `_repo` documents and
+`contains` edges. Next: remote fetch, workspace object sources and MCP provenance. Target: 0.9 / P1.
 
 ## Cross-cutting
 
