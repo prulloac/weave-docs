@@ -164,7 +164,7 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Git source provider | [weave-git.md](specs/weave-git.md) | - | x | - | - | backlog |
+| Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | - | backlog |
 
 Draft specification for source-provider extensions, commit-pinned git snapshots, repository nodes and
 provenance. Target: 0.9 / P1. Next: ADR review, BDD scenarios and the G1 contract slice.
