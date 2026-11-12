@@ -259,7 +259,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
-| 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | planned |
+| 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | in progress |
 
 Rules:
 

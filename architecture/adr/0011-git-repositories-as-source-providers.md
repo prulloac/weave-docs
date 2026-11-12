@@ -9,7 +9,7 @@ tags:
   - "source"
   - "repository"
   - "graph"
-status: proposed
+status: accepted
 generated:
   by: opencode/deepseek-v4.1-flash
 ---

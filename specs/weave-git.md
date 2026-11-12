@@ -9,7 +9,7 @@ tags:
   - "source-provider"
   - "repository"
   - "0.9"
-status: draft
+status: stable
 generated:
   by: opencode/deepseek-v4.1-flash
 ---
