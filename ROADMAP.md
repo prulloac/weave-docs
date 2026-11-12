@@ -259,6 +259,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
+| 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | planned |
 
 Rules:
 
@@ -413,6 +414,16 @@ single-writer index ownership).
 Spec: [Weave Code Extension](specs/weave-code.md). Status: stable specification; shipped in v0.8.0.
 Core contract decision:
 [ADR 0010](architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
+
+**Wave 12 — git sources:**
+
+1. source-provider extension contract and snapshot cache,
+2. local and remote git URI resolution with commit pinning,
+3. repository node with README body, description and provenance,
+4. workspace source provenance and read-only MCP resources.
+
+Spec: [Weave Git Source Extension](specs/weave-git.md). Status: draft specification; decision
+[ADR 0011](architecture/adr/0011-git-repositories-as-source-providers.md).
 
 **Critical path:**
 

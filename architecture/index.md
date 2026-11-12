@@ -142,6 +142,7 @@ remains the compatibility promise.
 | Workspaces | 0.7 manifest plus persisted `sources` registry (schema v8) and one index per workspace |
 | Scoring | Opt-in `--scorer` extensions reorder a bounded candidate set with a configurable blend; default ranking unchanged |
 | Integration | CLI first; Go package optional; MCP tools, transport, resources, multi-source and sensitive access shipped |
+| Source providers | Git and future source providers resolve URIs into snapshots before analysis; core stays local-first |
 | Presentation | Cancelled and removed |
 
 ## Documents
@@ -158,6 +159,7 @@ remains the compatibility promise.
 | [ADR 0008](adr/0008-agent-skills-standalone-distribution.md) | Standalone distribution of the agent skills |
 | [ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md) | Product versioning moved to 0.7.0 pre-1.0; 1.0.0 is the stability milestone |
 | [ADR 0010](adr/0010-extension-provided-graph-relations-and-project-analysis.md) | Extensions contribute graph relations from project-wide analysis; calls and references are opt-in |
+| [ADR 0011](adr/0011-git-repositories-as-source-providers.md) | Git repositories are source providers; commit-pinned snapshots become repository graph nodes |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |

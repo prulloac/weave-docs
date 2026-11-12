@@ -160,6 +160,15 @@ Specification is stable. Slices C1-C5 are implemented and released in v0.8.0: co
 graph relations, eleven-language parsing, cross-file relations, optional symbols and external
 documents, traversal, raw export manifests, ignore rules and resource limits. Target: 0.8 / P1.
 
+## Tier 11 — Git sources
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Git source provider | [weave-git.md](specs/weave-git.md) | - | x | - | - | backlog |
+
+Draft specification for source-provider extensions, commit-pinned git snapshots, repository nodes and
+provenance. Target: 0.9 / P1. Next: ADR review, BDD scenarios and the G1 contract slice.
+
 ## Cross-cutting
 
 - [x] Knowledge corpus: vision + related concepts (`knowledge/`)
