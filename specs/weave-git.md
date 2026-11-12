@@ -99,6 +99,7 @@ Rules:
 {
   "v": "weave.source/v1",
   "type": "source_request",
+  "source_id": "w8f3c2a1d4b5e6f7",
   "uri": "git+https://git.example.com/team/weave.git",
   "ref": "main",
   "cache_dir": "/home/user/.cache/weave",
@@ -113,6 +114,7 @@ Rules:
 
 | Field | Meaning |
 | --- | --- |
+| `source_id` | Stable source identity derived by core; excludes ref and commit |
 | `uri` | Canonical source URI or local path |
 | `ref` | Branch, tag, symbolic ref or commit; defaults to the remote/default branch |
 | `cache_dir` | Weave cache root from `WEAVE_CACHE_DIR`; never inside the bundle |
@@ -128,7 +130,8 @@ Rules:
   "v": "weave.source/v1",
   "type": "source_response",
   "snapshot": {
-    "path": "/home/user/.cache/weave/git/git.example.com/team/weave/8f3c2a1",
+    "path": "/home/user/.cache/weave/sources/w8f3c2a1d4b5e6f7/worktree",
+    "source_id": "w8f3c2a1d4b5e6f7",
     "commit": "8f3c2a1d4b5e6f708192a3b4c5d6e7f8091a2b3c",
     "ref": "main",
     "uri": "https://git.example.com/team/weave.git",
@@ -151,6 +154,9 @@ Rules:
 Rules:
 
 - `snapshot.path` is an absolute path readable by core; core never writes it.
+- `snapshot.path` is the stable bundle root for the source. It must not change when only the commit
+  changes.
+- `snapshot.source_id` must match the request.
 - `snapshot.commit` is a full commit SHA. A provider must not return a symbolic ref as the commit.
 - `repository.id` is `_repo` for the source. Core scopes it by bundle/source root.
 - `repository` fields are optional except `id` and `name`; absent values are omitted.
@@ -161,10 +167,11 @@ Rules:
 ### 5.3 Invocation order
 
 1. Core resolves a source URI to a provider.
-2. Core invokes the provider before asset discovery.
-3. Core validates the snapshot path, commit and limits.
-4. Core scans and analyzes the snapshot with the configured enrichers/analyzers.
-5. Core persists documents, edges, repository metadata and source provenance in one transaction.
+2. Core computes a stable `source_id` from the workspace/source identity and canonical URI.
+3. Core invokes the provider before asset discovery.
+4. Core validates the snapshot path, commit and limits.
+5. Core scans and analyzes the snapshot with the configured enrichers/analyzers.
+6. Core persists documents, edges, repository metadata and source provenance in one transaction.
 
 A provider failure fails the source write. In permissive mode the previous snapshot remains served
 and the source becomes `degraded`.
@@ -202,23 +209,65 @@ selects git via `--git`. This avoids treating ordinary URLs as filesystem paths.
 - Strict mode fails when the ref cannot be resolved.
 - No provider may silently fall back to a different branch.
 
-## 7. Snapshot Cache
+## 7. Snapshot Cache and Stable Identity
 
-Snapshots live under `WEAVE_CACHE_DIR`, never inside the bundle or index database:
+The stable unit is **source identity**, not commit identity. Core computes `source_id` from the
+workspace/source identity and the canonical URI. The ref and commit are mutable state.
+
+Cache layout:
 
 ```text
-$WEAVE_CACHE_DIR/git/<host>/<owner-or-path>/<repo>/<commit>/
+$WEAVE_CACHE_DIR/sources/<source_id>/worktree
+$WEAVE_CACHE_DIR/sources/<source_id>/state.json
+$WEAVE_CACHE_DIR/git/<host>/<owner-or-path>/<repo>.git
 ```
 
-Rules:
+`worktree` is a real directory and the stable bundle root. The bare mirror stores git objects.
 
-- The commit is the cache key. The same commit yields the same snapshot path.
-- Materialized snapshots are read-only.
-- Providers may keep a bare mirror and materialize trees from it.
-- Symlinks must not escape the snapshot root; unsafe entries are skipped with a warning.
-- A snapshot is safe to delete; core never treats it as durable source of truth.
-- Cache cleanup is explicit or LRU-based; it never runs during a read.
-- The provider returns the same path for the same commit so re-analysis can use the parse cache.
+### 7.1 Source identity
+
+- Workspace source: `source_id = hash(workspace root + alias + canonical URI)`.
+- Single-source ingest: `source_id = hash(canonical URI)`.
+- `source_id` excludes the ref and commit.
+- Changing a branch or tag reuses the same `worktree` and bundle root.
+- Changing the canonical URI under the same alias creates a new `source_id`; old rows are pruned
+  explicitly or by source removal.
+- Two aliases may target different refs because the alias is part of the workspace identity.
+
+### 7.2 Materialization
+
+1. Resolve the requested ref to a full commit.
+2. Fetch into the bare mirror when needed.
+3. Export the commit tree into `worktree.stage-<pid>`.
+4. Validate file count, size, symlinks and other limits in the staging tree.
+5. Under the provider lock, swap the staging tree into place:
+   `worktree -> worktree.old`, `worktree.stage-<pid> -> worktree`, then remove `worktree.old`.
+6. Write `state.json` atomically with the new commit, ref and timestamp.
+7. Return `snapshot.path = worktree` and `snapshot.commit`.
+
+Core scans only after the provider returns successfully. The single-writer lock prevents another
+writer from changing the tree during ingestion. A failure before the swap leaves the old worktree
+valid; a failure during the swap is repaired on the next provider run from the bare mirror and
+`state.json`.
+
+### 7.3 Why a real worktree, not a symlink
+
+A `current -> objects/<commit>` symlink would look cleaner, but Weave's asset scanner uses
+`filepath.WalkDir` on the bundle root, and `WalkDir` does not follow a symlink root. A symlink bundle
+root would be treated as a non-directory entry instead of being traversed.
+
+The provider therefore materializes a real `worktree` directory. This keeps existing scanning, sync,
+watchers and parse caching working without a core-wide symlink resolution rule.
+
+### 7.4 Rules
+
+- `worktree` is owned by the provider and read-only to core.
+- The worktree contains no `.git` metadata, hooks or submodule checkouts by default.
+- Re-ingesting the same commit is a no-op.
+- Changing ref or commit updates `state.json` and replaces the graph under the same bundle root.
+- Cache cleanup never deletes a worktree referenced by an active source.
+- Old git objects are pruned by an explicit GC pass, never during a read.
+- Metadata and state files never contain credentials or full command output.
 
 ## 8. Repository Document
 
@@ -430,7 +479,9 @@ Rules:
 - Branch, tag, full SHA and abbreviated SHA resolution.
 - Commit pinning, cache reuse and offline reuse.
 - Re-ingesting the same commit is a no-op.
-- Ref update produces a new snapshot and transactionally replaces the previous graph.
+- A ref or commit update replaces the graph under the same stable bundle root.
+- The worktree is a real directory and remains the same across commit updates.
+- Ref changes update `state.json` and provenance without changing the bundle root.
 - Repository node title and description from README frontmatter, first paragraph, manifest and
   fallback name.
 - Missing README, non-GitHub remote and self-hosted host metadata.
@@ -453,6 +504,7 @@ Rules:
 8. Remote git hosts other than GitHub work through generic git.
 9. Network, credentials, size and symlink policies are explicit and testable.
 10. MCP serves git-backed sources read-only and never fetches.
+11. Commit updates keep the same bundle root; no stale source roots accumulate.
 
 ## 15. Delivery Slices
 
@@ -470,6 +522,10 @@ Rules:
 - Git acquisition is a source-provider extension, not an enricher or project analyzer.
 - `weave-git` and `weave-code` are partner extensions orchestrated by core.
 - Commit-pinned snapshots are the default; worktree ingestion is explicit and local-only.
+- The stable unit is source identity, not commit identity: `source_id` excludes ref and commit.
+- The stable bundle root is a real `worktree` directory under `WEAVE_CACHE_DIR`; a symlink bundle
+  root is rejected because core scanning uses `filepath.WalkDir`.
+- Commit updates swap worktree contents under the same bundle root.
 - The repository node ID is `_repo` and its body is the root README.
 - Description extraction is deterministic: README frontmatter, first paragraph, manifest, empty.
 - Generic git is authoritative; hosting APIs are optional later enrichments.

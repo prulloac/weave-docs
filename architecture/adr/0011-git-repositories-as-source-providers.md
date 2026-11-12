@@ -38,25 +38,29 @@ Git ingestion must happen before asset discovery. It therefore needs a new exten
 
 ## Decision
 
-1. **Add a source-provider extension role.** A provider accepts a source URI and options, resolves
-   it to an immutable snapshot and returns the snapshot path plus repository metadata. The contract
-   is `weave.source/v1`; the manifest declares the role with `source_providers`.
+1. **Add a source-provider extension role.** A provider accepts a stable `source_id`, a source URI and
+   options, resolves the source to an immutable snapshot and returns the snapshot path plus
+   repository metadata. The contract is `weave.source/v1`; the manifest declares the role with
+   `source_providers`.
 2. **Implement `weave-git` as the first source provider.** It supports local repositories and
    remote git URIs, resolves a branch, tag or commit to a commit SHA and materializes a read-only
-   snapshot under `WEAVE_CACHE_DIR`.
-3. **Commit-pinned by default.** The canonical input is a commit tree. A local `--worktree` mode may
+   worktree under `WEAVE_CACHE_DIR`.
+3. **Keep source identity stable across commits.** Core derives `source_id` from the workspace/source
+   identity and canonical URI, excluding ref and commit. The provider materializes into a real
+   `worktree` directory whose path remains the bundle root as commits and refs change.
+4. **Commit-pinned by default.** The canonical input is a commit tree. A local `--worktree` mode may
    ingest uncommitted changes explicitly, but the default is reproducible committed state.
-4. **Core orchestrates; extensions stay partners.** Core resolves the source, invokes the provider,
+5. **Core orchestrates; extensions stay partners.** Core resolves the source, invokes the provider,
    then runs the existing Markdown and project analyzers on the snapshot. `weave-git` does not embed
    or import `weave-code`, and `weave-code` does not know about git.
-5. **Create a repository node.** Each ingested repository gets one synthetic graph hub with
+6. **Create a repository node.** Each ingested repository gets one synthetic graph hub with
    `doc_type: Repository`, ID `_repo`, a Markdown body taken from the root README, and provenance
    metadata.
-6. **Use generic git, not hosting APIs.** Basic ingestion uses the git protocol and local files.
+7. **Use generic git, not hosting APIs.** Basic ingestion uses the git protocol and local files.
    Host-specific APIs for issues, releases or merge requests are optional later enrichments.
-7. **Keep history out of the first slice.** Ingest the selected commit as the current snapshot.
+8. **Keep history out of the first slice.** Ingest the selected commit as the current snapshot.
    Commit-history graphs and historical snapshots are deferred.
-8. **Make network access explicit.** Core never clones implicitly. Remote URIs are opt-in source
+9. **Make network access explicit.** Core never clones implicitly. Remote URIs are opt-in source
    specifications handled by the trusted provider, with bounded time, size and credential rules.
 
 ## Alternatives Considered
@@ -68,6 +72,8 @@ Git ingestion must happen before asset discovery. It therefore needs a new exten
 | Clone directly in core | Rejected: breaks local-first defaults and adds network/credential surface to core |
 | Use GitHub/GitLab APIs for basic ingestion | Rejected: not generic and unnecessary; git already exposes refs, trees and blobs |
 | Ingest the mutable worktree by default | Rejected: results would not be reproducible or commit-addressable |
+| Use a `current` symlink as the bundle root | Rejected: `filepath.WalkDir` does not follow a symlink root; a real worktree keeps scanning and watchers unchanged |
+| Key the bundle root by commit | Rejected: every update would create a new source and leave stale graph rows |
 | Store materialized snapshots inside the bundle | Rejected: writes into the source bundle and mixes cache with knowledge data |
 | Graph every commit immediately | Rejected for the first slice: graph size and query value do not justify it |
 | A standalone CLI that only calls `weave ingest` | Accepted as an MVP fallback, but not the long-term architecture |
@@ -81,6 +87,8 @@ Git ingestion must happen before asset discovery. It therefore needs a new exten
 - The source registry gains schema v9 with an explicit `provider` column and versioned
   `metadata_json` for `uri`, `ref_name`, `commit_sha` and provider-specific fields.
 - Core source resolution runs the provider before asset scanning; analyzers remain unchanged.
+- The source bundle root is stable across commits and refs, so updates replace the graph
+  transactionally instead of creating new roots.
 - `weave-git` becomes a standalone repository and release artifact, independently testable.
 - Remote ingestion introduces explicit network, credential, size, submodule, LFS and symlink
   policy. Defaults are conservative.
