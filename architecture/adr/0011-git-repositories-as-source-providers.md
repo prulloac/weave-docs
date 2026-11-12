@@ -78,8 +78,8 @@ Git ingestion must happen before asset discovery. It therefore needs a new exten
   type, source provenance metadata and a `contains` relation from repository to files.
 - The workspace manifest source value gains an object form for providers and refs while retaining
   the existing string path form.
-- The source registry gains schema v9 with explicit `provider`, `uri` and `ref_name` columns plus
-  versioned `metadata_json` for `commit_sha` and provider-specific fields.
+- The source registry gains schema v9 with an explicit `provider` column and versioned
+  `metadata_json` for `uri`, `ref_name`, `commit_sha` and provider-specific fields.
 - Core source resolution runs the provider before asset scanning; analyzers remain unchanged.
 - `weave-git` becomes a standalone repository and release artifact, independently testable.
 - Remote ingestion introduces explicit network, credential, size, submodule, LFS and symlink

@@ -358,18 +358,18 @@ The workspace source registry is extended in schema v9:
 
 ```sql
 provider TEXT NOT NULL DEFAULT 'path',
-uri TEXT NOT NULL DEFAULT '',
-ref_name TEXT NOT NULL DEFAULT '',
 metadata_json TEXT NOT NULL DEFAULT '{}'
 ```
 
-`provider`, `uri` and `ref_name` are explicit because core uses them for source resolution, listing
-and diagnostics. The resolved commit and provider-specific values live in versioned
+`path` remains the stable local snapshot root used as the bundle root. `provider` is the source
+resolution router (`path`, `git`, future providers). Provider-specific provenance lives in versioned
 `metadata_json`:
 
 ```json
 {
   "v": 1,
+  "uri": "git+https://git.example.com/team/weave.git",
+  "ref_name": "main",
   "commit_sha": "8f3c2a1d4b5e6f708192a3b4c5d6e7f8091a2b3c",
   "host": "git.example.com",
   "owner": "team",
@@ -381,13 +381,16 @@ and diagnostics. The resolved commit and provider-specific values live in versio
 
 Rules:
 
-- `path` remains the stable local snapshot root used as the bundle root.
+- `path` is the only explicit source locator; do not store a duplicate `uri` column.
+- For path sources, `uri` is derived from `path`; `metadata_json` may be empty.
 - `metadata_json.commit_sha` is required for git sources and empty for path sources.
+- `weave source list` and `weave source show` decode or derive `provider`, `uri`, `ref` and `commit`
+  for their output.
 - Unknown metadata keys are preserved.
-- Git sources validate `commit_sha` in Go; the database does not require a separate commit column.
+- Git sources validate `commit_sha`, `uri` and `ref_name` in Go; the database does not require
+  separate columns.
 - Metadata never contains credentials, tokens or full command output.
-- Existing path sources backfill to `provider='path'`, `uri=<path>`, `ref_name=''` and
-  `metadata_json='{}'`.
+- Existing path sources backfill to `provider='path'` and `metadata_json='{}'`.
 - Older binaries cannot open a v9 database; upgrading is one-way for the local index.
 
 ## 11. Security, Privacy and Limits
@@ -470,8 +473,8 @@ Rules:
 - The repository node ID is `_repo` and its body is the root README.
 - Description extraction is deterministic: README frontmatter, first paragraph, manifest, empty.
 - Generic git is authoritative; hosting APIs are optional later enrichments.
-- The source registry keeps `provider`, `uri` and `ref_name` as explicit columns; `commit_sha` and
-  provider-specific fields live in versioned `metadata_json`.
+- The source registry keeps only `provider` as the explicit provenance column; `uri`, `ref_name`,
+  `commit_sha` and provider-specific fields live in versioned `metadata_json`.
 - The first slice ingests one snapshot per source and does not graph commit history.
 
 ## Related Documents
