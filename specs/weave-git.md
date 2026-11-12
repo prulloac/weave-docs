@@ -352,6 +352,44 @@ Rules:
 - `--watch` watches the manifest and cached snapshots; it does not poll remotes. A remote refresh is
   an explicit `weave sync`.
 
+### 10.4 Source registry schema
+
+The workspace source registry is extended in schema v9:
+
+```sql
+provider TEXT NOT NULL DEFAULT 'path',
+uri TEXT NOT NULL DEFAULT '',
+ref_name TEXT NOT NULL DEFAULT '',
+metadata_json TEXT NOT NULL DEFAULT '{}'
+```
+
+`provider`, `uri` and `ref_name` are explicit because core uses them for source resolution, listing
+and diagnostics. The resolved commit and provider-specific values live in versioned
+`metadata_json`:
+
+```json
+{
+  "v": 1,
+  "commit_sha": "8f3c2a1d4b5e6f708192a3b4c5d6e7f8091a2b3c",
+  "host": "git.example.com",
+  "owner": "team",
+  "name": "weave",
+  "worktree": false,
+  "default_branch": "main"
+}
+```
+
+Rules:
+
+- `path` remains the stable local snapshot root used as the bundle root.
+- `metadata_json.commit_sha` is required for git sources and empty for path sources.
+- Unknown metadata keys are preserved.
+- Git sources validate `commit_sha` in Go; the database does not require a separate commit column.
+- Metadata never contains credentials, tokens or full command output.
+- Existing path sources backfill to `provider='path'`, `uri=<path>`, `ref_name=''` and
+  `metadata_json='{}'`.
+- Older binaries cannot open a v9 database; upgrading is one-way for the local index.
+
 ## 11. Security, Privacy and Limits
 
 - Remote fetch is opt-in per source; core and MCP never fetch implicitly.
@@ -432,6 +470,8 @@ Rules:
 - The repository node ID is `_repo` and its body is the root README.
 - Description extraction is deterministic: README frontmatter, first paragraph, manifest, empty.
 - Generic git is authoritative; hosting APIs are optional later enrichments.
+- The source registry keeps `provider`, `uri` and `ref_name` as explicit columns; `commit_sha` and
+  provider-specific fields live in versioned `metadata_json`.
 - The first slice ingests one snapshot per source and does not graph commit history.
 
 ## Related Documents
