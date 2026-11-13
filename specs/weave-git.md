@@ -265,6 +265,11 @@ writer from changing the tree during ingestion. A failure before the swap leaves
 valid; a failure during the swap is repaired on the next provider run from the bare mirror and
 `state.json`.
 
+The default path uses `git archive`, so hooks, smudge filters, submodule recursion and network LFS
+are inert. When `options.submodules` or `options.lfs` is enabled, the provider clones the resolved
+commit into a temporary checkout under the cache, disables hooks, runs submodule update or
+`git lfs pull`, validates the same limits, strips every `.git` entry and only then swaps the tree.
+
 ### 7.3 Why a real worktree, not a symlink
 
 A `current -> objects/<commit>` symlink would look cleaner, but Weave's asset scanner uses
@@ -476,7 +481,11 @@ Rules:
 - Remote fetch is opt-in per source; core and MCP never fetch implicitly.
 - Providers must not execute repository code, build tools, package managers or hooks.
 - Providers must disable or ignore hooks, smudge/clean filters and submodule recursion by default.
-- Submodules and Git LFS are opt-in.
+- Submodules and Git LFS are opt-in. Submodules are skipped by default and are only materialized
+  with `options.submodules`; LFS pointers are only expanded with `options.lfs` and `git-lfs`
+  installed. Missing `git-lfs` produces a warning, not a partial failure.
+- Opt-in checkout mode clones under the provider cache, disables hooks, then removes all git
+  metadata before the snapshot becomes visible to core.
 - Credentials come from the operator's git configuration, SSH agent or provider environment; they
   are never written to the index, logs, warnings or envelopes.
 - Providers must not log repository contents, tokens or full command output.
@@ -544,6 +553,7 @@ Rules:
 | G1 | `weave.source/v1` contract, manifest role and local snapshot provider |
 | G2 | Remote git fetch, commit resolution and cache |
 | G2b | Snapshot limits and explicit cache garbage collection |
+| G2c | Submodule and Git LFS opt-ins |
 | G3 | Repository node, README extraction, `contains` edges and provenance |
 | G4 | Workspace object sources, source registry provenance and MCP resources |
 | G5 | Incremental commit updates, dependency manifests and monorepo projects |

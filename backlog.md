@@ -168,8 +168,8 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 
 Stable specification. G1–G4 are implemented: `weave.source/v1`, manifest source-provider role,
 schema v9 provenance, stable worktrees, remote fetch with bare mirrors and offline cache reuse,
-`_repo` documents, `contains` edges, read-only MCP provenance, snapshot limits and explicit cache
-GC. Next: submodule and LFS opt-ins, then G5 incremental updates. Target: 0.9 / P1.
+`_repo` documents, `contains` edges, read-only MCP provenance, snapshot limits, explicit cache GC
+and submodule/LFS opt-ins. Next: G5 incremental updates and the P2 release surface. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -182,7 +182,7 @@ All local P0 items are complete.
 
 **P1 — next feature slices**
 
-- [ ] Add submodule and Git LFS opt-ins with safe defaults.
+All P1 feature slices are complete.
 
 **P2 — release and coverage**
 
@@ -214,6 +214,7 @@ All local P0 items are complete.
   ref and commit provenance without fetching.
 - [x] Snapshot size, file, project and file-count limits with safe failure before the worktree swap.
 - [x] Explicit `weave-git gc` for stale staging trees, incomplete source caches and mirror pruning.
+- [x] Submodule and Git LFS opt-ins with archive-safe defaults and `.git` stripping.
 
 ## Cross-cutting
 
