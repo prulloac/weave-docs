@@ -169,7 +169,8 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 Stable specification. G1–G4 are implemented: `weave.source/v1`, manifest source-provider role,
 schema v9 provenance, stable worktrees, remote fetch with bare mirrors and offline cache reuse,
 `_repo` documents, `contains` edges, read-only MCP provenance, snapshot limits, explicit cache GC
-and submodule/LFS opt-ins. Next: G5 incremental updates and the P2 release surface. Target: 0.9 / P1.
+and submodule/LFS opt-ins. Next: cross-repository integration CI and the remaining P2 documentation
+and coverage items. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -186,7 +187,6 @@ All P1 feature slices are complete.
 
 **P2 — release and coverage**
 
-- [ ] Add `weave-git` release workflow, installers, archives, checksums and draft release.
 - [ ] Add cross-repository integration CI using real `weave` and `weave-git` binaries.
 - [ ] Complete BDD coverage for remote, workspace, MCP, degraded, auth and security scenarios.
 - [ ] Document `contains` consistently in graph specifications and ADRs.
@@ -215,6 +215,8 @@ All P1 feature slices are complete.
 - [x] Snapshot size, file, project and file-count limits with safe failure before the worktree swap.
 - [x] Explicit `weave-git gc` for stale staging trees, incomplete source caches and mirror pruning.
 - [x] Submodule and Git LFS opt-ins with archive-safe defaults and `.git` stripping.
+- [x] `weave-git` tag-driven release workflow, six static archives, checksums, draft release and
+  user-level installers.
 
 ## Cross-cutting
 
