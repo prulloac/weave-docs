@@ -187,7 +187,6 @@ All P1 feature slices are complete.
 
 **P2 — release and coverage**
 
-- [ ] Complete BDD coverage for remote, workspace, MCP, degraded, auth and security scenarios.
 - [ ] Document `contains` consistently in graph specifications and ADRs.
 - [ ] Update workspace and storage docs for schema v9.
 
@@ -218,6 +217,8 @@ All P1 feature slices are complete.
   user-level installers.
 - [x] Cross-repository integration CI that builds real `weave` and `weave-git` binaries and ingests a
   git source through the workspace flow.
+- [x] BDD coverage for remote, workspace, MCP, degraded, auth, security, tags, unknown refs, no-op
+  reuse and unsafe paths.
 
 ## Cross-cutting
 
