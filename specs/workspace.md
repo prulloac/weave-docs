@@ -170,10 +170,12 @@ weave mcp --workspace <dir|file> [--db <file>] [--watch] [--stdio|--listen <addr
 
 | Tool | Input | Result |
 | --- | --- | --- |
-| `weave_sources` | — | Registry entries with `alias`, `path`, `status`, `concepts`, `edges`, `index_entries` and `valid` |
+| `weave_sources` | — | Registry entries with `alias`, `path`, `status`, `concepts`, `edges`, `index_entries` and `valid`; git sources add `provider`, `uri`, `ref`, `commit`, `host`, `owner` and `name` |
 
+- For git sources, `path` is the materialized snapshot root served to the analyzer; `uri` is the
+  original source URI. MCP never fetches.
 - Resources add:
-  - `weave://workspace/sources` — registry entries with counts;
+  - `weave://workspace/sources` — registry entries with counts and git provenance;
   - `weave://workspace/concepts` — concept catalog across active sources;
   - `weave://workspace/stats` — aggregate and per-source counts.
 - `weave://source/<alias>/...` templates remain and resolve from persisted aliases.

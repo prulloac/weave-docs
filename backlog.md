@@ -166,9 +166,10 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 | --- | --- | --- | --- | --- | --- | --- |
 | Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | in-progress |
 
-Stable specification. G1 and the local repository-node slice are implemented: `weave.source/v1`,
-manifest source-provider role, schema v9 provenance, stable worktrees, `_repo` documents and
-`contains` edges. Next: remote fetch, workspace object sources and MCP provenance. Target: 0.9 / P1.
+Stable specification. G1–G4 are implemented: `weave.source/v1`, manifest source-provider role,
+schema v9 provenance, stable worktrees, remote fetch with bare mirrors and offline cache reuse,
+`_repo` documents, `contains` edges and read-only MCP provenance. Next: source limits and cache GC.
+Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -181,11 +182,7 @@ All local P0 items are complete.
 
 **P1 — next feature slices**
 
-- [ ] Remote git fetch: HTTPS, SSH, SCP-like and `file://` URIs, auth, shallow fetch and offline
-  cache reuse.
-- [ ] MCP `weave_sources` and `weave://workspace/sources` provider, URI, ref and commit provenance.
 - [ ] Enforce source limits and add cache garbage collection.
-- [ ] Decide and implement the git backend: pure-Go `go-git`, system git, or a documented hybrid.
 - [ ] Add submodule and Git LFS opt-ins with safe defaults.
 
 **P2 — release and coverage**
@@ -211,6 +208,11 @@ All local P0 items are complete.
 - [x] Workspace `git:` / `ref:` object sources, `source add --git` and workspace-scoped source IDs.
 - [x] Git provenance persistence and `source list/show` provider, URI, ref and commit output.
 - [x] Permissive provider failures degrade only the failed source and preserve its previous snapshot.
+- [x] Remote git fetch for HTTPS, SSH, SCP-like and `file://` URIs, shallow depth hints and offline
+  cached-commit reuse.
+- [x] Documented the system `git` backend; pure-Go `go-git` remains deferred.
+- [x] MCP `weave_sources` and `weave://workspace/sources` serve snapshot paths plus provider, URI,
+  ref and commit provenance without fetching.
 
 ## Cross-cutting
 

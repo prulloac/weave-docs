@@ -122,6 +122,7 @@ Rules:
 | `options.submodules` | Follow submodules; default `false` |
 | `options.lfs` | Fetch Git LFS objects; default `false` |
 | `options.depth` | Fetch depth hint; `0` means provider default |
+| `options.permissive` | Allow cached-commit reuse when a remote ref cannot be resolved |
 
 ### 5.2 Response
 
@@ -189,7 +190,9 @@ and the source becomes `degraded`.
 | Local path | `/home/user/src/weave` |
 
 Plain `https://` or `ssh://` without `git+` remains a local path error unless the command explicitly
-selects git via `--git`. This avoids treating ordinary URLs as filesystem paths.
+selects git via `--git`. This avoids treating ordinary URLs as filesystem paths. Once the git
+provider is explicitly selected, plain remote URLs are accepted. Password and token userinfo is
+stripped before the URI is returned or persisted.
 
 ### 6.2 Ref rules
 
@@ -209,6 +212,17 @@ selects git via `--git`. This avoids treating ordinary URLs as filesystem paths.
 - Strict mode fails when the ref cannot be resolved.
 - No provider may silently fall back to a different branch.
 
+### 6.4 Git backend
+
+`weave-git` uses the operator's system `git` as its backend. The provider starts a bare mirror with
+`git init --bare`, fetches with `git fetch`, resolves commits with `git rev-parse` and exports trees
+with `git archive`. Authentication therefore follows the operator's git configuration, credential
+helpers and SSH agent; `GIT_TERMINAL_PROMPT=0` prevents interactive prompts from hanging ingestion.
+
+A pure-Go `go-git` backend remains deferred. It would avoid the external binary, but it would change
+credential-helper, transport and protocol support. A hybrid backend may be revisited only through a
+new decision; the `weave.source/v1` contract is backend-neutral.
+
 ## 7. Snapshot Cache and Stable Identity
 
 The stable unit is **source identity**, not commit identity. Core computes `source_id` from the
@@ -222,7 +236,8 @@ $WEAVE_CACHE_DIR/sources/<source_id>/state.json
 $WEAVE_CACHE_DIR/git/<host>/<owner-or-path>/<repo>.git
 ```
 
-`worktree` is a real directory and the stable bundle root. The bare mirror stores git objects.
+`worktree` is a real directory and the stable bundle root. The bare mirror stores git objects. File
+URIs use `_` as the host and owner segment when the URI has no host or owner.
 
 ### 7.1 Source identity
 
