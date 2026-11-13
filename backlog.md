@@ -187,7 +187,6 @@ All P1 feature slices are complete.
 
 **P2 — release and coverage**
 
-- [ ] Add cross-repository integration CI using real `weave` and `weave-git` binaries.
 - [ ] Complete BDD coverage for remote, workspace, MCP, degraded, auth and security scenarios.
 - [ ] Document `contains` consistently in graph specifications and ADRs.
 - [ ] Update workspace and storage docs for schema v9.
@@ -217,6 +216,8 @@ All P1 feature slices are complete.
 - [x] Submodule and Git LFS opt-ins with archive-safe defaults and `.git` stripping.
 - [x] `weave-git` tag-driven release workflow, six static archives, checksums, draft release and
   user-level installers.
+- [x] Cross-repository integration CI that builds real `weave` and `weave-git` binaries and ingests a
+  git source through the workspace flow.
 
 ## Cross-cutting
 
