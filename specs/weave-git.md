@@ -361,8 +361,8 @@ Provenance is metadata, not a substitute for stable graph identity.
 | `Repository` | The repository hub document |
 | `File` | Source or documentation file |
 | `Symbol` | Function, type, class, method or other declaration |
+| `Project` | Nested package in a monorepo |
 | `ExternalPackage` | Dependency referenced by a manifest or import |
-| `Project` | Nested package in a monorepo (later slice) |
 
 ### 9.2 Edges
 
@@ -375,7 +375,7 @@ Provenance is metadata, not a substitute for stable graph identity.
 | `calls` | symbol | symbol or external package | Existing call edge |
 | `inherits` | symbol | symbol or external package | Existing inheritance edge |
 | `implements` | symbol | symbol or external package | Existing implementation edge |
-| `depends_on` | project or repository | external package | Manifest dependency (later slice) |
+| `depends_on` | project | external package | Manifest dependency |
 
 Rules:
 
@@ -383,8 +383,45 @@ Rules:
 - Repository-to-file `contains` edges make the repository a navigation hub without changing the
   existing file and symbol relations.
 - Duplicate edges collapse by `from`, `to` and kind.
-- Single-reference external targets remain metadata; repeated external targets become documents.
+- Single-reference analyzer-imported external targets remain metadata; repeated external targets
+  become documents. Declared manifest dependencies are always materialized (§9.3).
 - Cross-repository traversal remains out of scope for the first slice.
+
+### 9.3 Projects and dependencies
+
+The source provider discovers project manifests in the materialized snapshot. Supported manifests:
+
+| Manifest | Ecosystem | Declared dependencies |
+| --- | --- | --- |
+| `go.mod` | `go` | `require` directives, including `// indirect` |
+| `package.json` | `npm` | `dependencies`, `devDependencies`, `peerDependencies`, `optionalDependencies` |
+| `Cargo.toml` | `cargo` | `dependencies`, `dev-dependencies`, `build-dependencies` |
+| `pyproject.toml` | `python` | `project.dependencies`, `project.optional-dependencies` |
+
+Rules:
+
+- A project root is a directory containing one supported manifest. If several are present, the
+  provider selects one by the order in the table and reports a warning.
+- The repository root project uses ID `_project`; a nested project uses
+  `_project/<bundle-relative directory>`.
+- Project documents have type `Project`, content kind `symbol`, a title and name from the manifest,
+  a description when declared, and `content_metadata` with `manifest`, `path`, `ecosystem`,
+  `name` and dependency counts.
+- The repository contains every project. A project contains the files under its directory; when
+  projects nest, the deepest project owns the file. The repository retains its existing file
+  `contains` edges for compatibility.
+- Every declared dependency becomes an `ExternalPackage` document with ID
+  `_package/<ecosystem>/<slug>`. Slug is the lowercased dependency name with non-alphanumeric
+  characters collapsed to `-`. Versions and scopes (`runtime`, `development`, `build`, `peer`,
+  `optional`, `indirect`) are aggregated in `content_metadata`.
+- A `depends_on` edge links each project to each declared dependency. `depends_on` is additive to
+  `weave.contract/v1` and traversable by default.
+- Discovery skips `.git`, `node_modules`, `vendor`, `target`, `dist`, `build` and `.venv`.
+- Discovery is bounded: 1 MiB per manifest, 128 projects and 2,000 dependencies per source.
+- Repository description falls back to the root manifest description when the README has none.
+
+Provider responses carry the discovered projects and dependencies. Core validates and materializes
+the synthetic `Project` and `ExternalPackage` documents; analyzers are unchanged.
 
 ## 10. CLI and Workspace
 
@@ -527,6 +564,9 @@ Rules:
 - Missing README, non-GitHub remote and self-hosted host metadata.
 - README body is searchable; source code is not parsed by the git provider.
 - `contains` edges from repository to files are present and traversable.
+- Root manifest descriptions feed the repository description fallback.
+- Manifest projects and dependencies produce stable `Project`, `ExternalPackage` and `depends_on`
+  graph data.
 - Workspace manifest object form, source registry provenance and MCP source resources.
 - Submodules, LFS, symlink escape, size limits and credential redaction.
 - Existing Markdown-only and local project behavior unchanged without a git source.
@@ -545,6 +585,7 @@ Rules:
 9. Network, credentials, size and symlink policies are explicit and testable.
 10. MCP serves git-backed sources read-only and never fetches.
 11. Commit updates keep the same bundle root; no stale source roots accumulate.
+12. Manifests produce deterministic `Project` and `ExternalPackage` nodes with `depends_on` edges.
 
 ## 15. Delivery Slices
 
@@ -557,6 +598,7 @@ Rules:
 | G3 | Repository node, README extraction, `contains` edges and provenance |
 | G4 | Workspace object sources, source registry provenance and MCP resources |
 | G5 | Incremental commit updates, dependency manifests and monorepo projects |
+| G5a | Manifest discovery, `Project` nodes, `ExternalPackage` nodes and `depends_on` edges |
 | G6 | Optional commit history and host-specific enrichments |
 
 ## 16. Resolved Decisions

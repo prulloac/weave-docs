@@ -166,11 +166,12 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 | --- | --- | --- | --- | --- | --- | --- |
 | Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | in-progress |
 
-Stable specification. G1–G4 and the G2b/G2c follow-ups are implemented: `weave.source/v1`,
+Stable specification. G1–G4, G5 and the G2b/G2c follow-ups are implemented: `weave.source/v1`,
 manifest source-provider role, schema v9 provenance, stable worktrees, remote fetch with bare
 mirrors and offline cache reuse, `_repo` documents, `contains` edges, read-only MCP provenance,
-snapshot limits, explicit cache GC and submodule/LFS opt-ins. The P2 release, integration CI, BDD
-coverage and schema/`contains` documentation items are also complete. Target: 0.9 / P1.
+snapshot limits, explicit cache GC, submodule/LFS opt-ins and manifest-backed `Project` /
+`ExternalPackage` nodes with `depends_on` edges. The P2 release, integration CI, BDD coverage and
+schema/`contains` documentation items are also complete. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -207,6 +208,10 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
   reuse and unsafe paths.
 - [x] `contains` documented consistently in the graph specification, architecture layers and ADRs.
 - [x] Workspace and storage documentation updated for schema v9 and git provenance.
+- [x] G5 manifest discovery: `go.mod`, `package.json`, `Cargo.toml` and `pyproject.toml`.
+- [x] `_project` / `_project/<path>` monorepo nodes, `_package/<ecosystem>/<slug>` external package
+  nodes and `depends_on` edges with aggregated versions and scopes.
+- [x] Manifest description fallback for repositories without a README description.
 
 ## Cross-cutting
 

@@ -420,11 +420,13 @@ Core contract decision:
 1. source-provider extension contract and snapshot cache,
 2. local and remote git URI resolution with commit pinning,
 3. repository node with README body, description and provenance,
-4. workspace source provenance and read-only MCP resources.
+4. workspace source provenance and read-only MCP resources,
+5. manifest-backed monorepo `Project` and `ExternalPackage` nodes with `depends_on` edges.
 
 Spec: [Weave Git Source Extension](specs/weave-git.md). Status: stable specification; decision
 [ADR 0011](architecture/adr/0011-git-repositories-as-source-providers.md). Local and remote
-acquisition, commit pinning, repository nodes and offline cache reuse are implemented.
+acquisition, commit pinning, repository nodes, manifest projects/dependencies and offline cache
+reuse are implemented.
 
 **Critical path:**
 

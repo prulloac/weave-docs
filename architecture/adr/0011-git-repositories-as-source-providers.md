@@ -83,6 +83,8 @@ Git ingestion must happen before asset discovery. It therefore needs a new exten
 - `weave.contract/v1` gains an additive source-provider request/response pair, a repository document
   type, source provenance metadata and a `contains` relation from repository to files. `contains`
   joins the default traversal set; `calls` and `references` remain opt-in.
+- Manifest discovery adds `Project` and `ExternalPackage` documents plus `depends_on` edges, also
+  traversable by default.
 - The workspace manifest source value gains an object form for providers and refs while retaining
   the existing string path form.
 - The source registry gains schema v9 with an explicit `provider` column and versioned

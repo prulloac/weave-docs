@@ -63,6 +63,8 @@ Relation kinds:
   and optional `.md`/leading `/` are accepted.
 - `contains` — structural containment from a repository or project to its files or projects. It is
   additive to the existing graph vocabulary and available to source providers.
+- `depends_on` — a project depends on an external package declared by a manifest. It is available to
+  source providers and traversable by default.
 - `imports` — a source file imports another file or external dependency.
 - `declares` — a source file declares a symbol document.
 - `references` — a document or symbol references another symbol.
@@ -113,9 +115,9 @@ func NodeCount(graph *Graph) int
 func EdgeCount(graph *Graph) int
 ```
 
-Default relation set: `link`, `related`, `imports`, `declares`, `inherits`, `implements`, `contains`.
-The `calls` and `references` kinds are excluded unless named explicitly. `OrphanNodes` and degree
-counts consider every stored edge, independent of traversal filtering.
+Default relation set: `link`, `related`, `imports`, `declares`, `inherits`, `implements`, `contains`,
+`depends_on`. The `calls` and `references` kinds are excluded unless named explicitly. `OrphanNodes`
+and degree counts consider every stored edge, independent of traversal filtering.
 
 ### 3.6 CLI Filtering
 
