@@ -124,26 +124,31 @@ Rules:
 
 ## 6. Source registry and storage
 
-The index database persists a registry in a `sources` table (schema v8):
+The index database persists a registry in a `sources` table (schema v9):
 
 | Column | Meaning |
 | --- | --- |
 | `alias` | Stable source alias (primary key) |
-| `path` | Absolute, normalized bundle root |
+| `path` | Absolute, normalized bundle root; the materialized snapshot for git sources |
 | `status` | `active`, `indexing`, `degraded` or `removed` |
 | `generation` | Incremented on each manifest change |
 | `last_synced` | Unix time of the last successful sync |
-| `content_hash` | Hash of the manifest sources section |
+| `content_hash` | Hash of the manifest sources section, or the resolved git commit |
+| `provider` | `path`, `git` or another registered source provider |
+| `metadata_json` | Versioned provider metadata; for git: `uri`, `ref_name`, `commit_sha`, `host`, `owner`, `name` and `worktree` |
 
 Documents, edges, embeddings and other rows remain keyed by `bundle_root` (absolute path). The
-registry maps `alias` to `bundle_root`; it does not duplicate document data.
+registry maps `alias` to `bundle_root`; it does not duplicate document data or store a second source
+URI column. For git sources the stable identity lives in the graph while `path` points at the
+provider-owned snapshot.
 
-Migration from v7:
+Migration from v8:
 
-1. Create `sources`.
-2. Backfill from `bundles.bundle_root` using the sanitized directory base name as the alias, with
-   `-2`, `-3` suffixes on collisions, and status `active`.
-3. Existing documents are untouched.
+1. Add `provider` with default `path`.
+2. Add `metadata_json` with default `{}`.
+3. Existing path sources keep their rows and backfill to `provider='path'`.
+
+Migration from v7 still creates `sources` and backfills aliases first, then applies the v9 columns.
 
 ## 7. Source lifecycle
 

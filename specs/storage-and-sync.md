@@ -170,8 +170,9 @@ Each embedding space also has a dynamically created `vec0` virtual table. Its sc
 search contract live in [Embeddings](embeddings.md); it is derived from `document_embeddings` and
 can be rebuilt.
 
-The workspace source registry (`sources`, schema v8) is specified in
-[Workspace and Source Registry](workspace.md).
+The workspace source registry (`sources`, schema v9) is specified in
+[Workspace and Source Registry](workspace.md). Schema v9 adds the explicit `provider` column and
+versioned `metadata_json` for git provenance; older schemas cannot be reopened after migration.
 
 ---
 

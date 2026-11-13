@@ -169,8 +169,8 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 Stable specification. G1–G4 are implemented: `weave.source/v1`, manifest source-provider role,
 schema v9 provenance, stable worktrees, remote fetch with bare mirrors and offline cache reuse,
 `_repo` documents, `contains` edges, read-only MCP provenance, snapshot limits, explicit cache GC
-and submodule/LFS opt-ins. Next: cross-repository integration CI and the remaining P2 documentation
-and coverage items. Target: 0.9 / P1.
+and submodule/LFS opt-ins. The P2 release, integration CI, BDD coverage and schema/`contains`
+documentation items are also complete. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -187,8 +187,7 @@ All P1 feature slices are complete.
 
 **P2 — release and coverage**
 
-- [ ] Document `contains` consistently in graph specifications and ADRs.
-- [ ] Update workspace and storage docs for schema v9.
+All P2 items are complete.
 
 **Done**
 
@@ -219,6 +218,8 @@ All P1 feature slices are complete.
   git source through the workspace flow.
 - [x] BDD coverage for remote, workspace, MCP, degraded, auth, security, tags, unknown refs, no-op
   reuse and unsafe paths.
+- [x] `contains` documented consistently in the graph specification, architecture layers and ADRs.
+- [x] Workspace and storage documentation updated for schema v9 and git provenance.
 
 ## Cross-cutting
 

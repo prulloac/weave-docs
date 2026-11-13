@@ -61,6 +61,8 @@ Relation kinds:
   (`resolves_in_bundle: true`).
 - `related` — an entry in the concept's frontmatter `related` array. Bundle-relative paths, ids
   and optional `.md`/leading `/` are accepted.
+- `contains` — structural containment from a repository or project to its files or projects. It is
+  additive to the existing graph vocabulary and available to source providers.
 - `imports` — a source file imports another file or external dependency.
 - `declares` — a source file declares a symbol document.
 - `references` — a document or symbol references another symbol.
@@ -69,10 +71,12 @@ Relation kinds:
 - `implements` — a type implements an interface or trait.
 
 Extension relations are defined by [Weave Code Extension](weave-code.md) and
-[ADR 0010](../architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md).
-Broken Markdown and unresolved `related` targets are **not** edges; they are stored in `dangling` per
-source concept. Unresolved extension targets become metadata only, or an external document when the
-same dependency is referenced more than once.
+[Weave Git Source Extension](weave-git.md) under
+[ADR 0010](../architecture/adr/0010-extension-provided-graph-relations-and-project-analysis.md) and
+[ADR 0011](../architecture/adr/0011-git-repositories-as-source-providers.md). Broken Markdown and
+unresolved `related` targets are **not** edges; they are stored in `dangling` per source concept.
+Unresolved extension targets become metadata only, or an external document when the same dependency
+is referenced more than once.
 
 ### 3.3 Graph
 
@@ -109,9 +113,9 @@ func NodeCount(graph *Graph) int
 func EdgeCount(graph *Graph) int
 ```
 
-Default relation set: `link`, `related`, `imports`, `declares`, `inherits`, `implements`. The
-`calls` and `references` kinds are excluded unless named explicitly. `OrphanNodes` and degree counts
-consider every stored edge, independent of traversal filtering.
+Default relation set: `link`, `related`, `imports`, `declares`, `inherits`, `implements`, `contains`.
+The `calls` and `references` kinds are excluded unless named explicitly. `OrphanNodes` and degree
+counts consider every stored edge, independent of traversal filtering.
 
 ### 3.6 CLI Filtering
 

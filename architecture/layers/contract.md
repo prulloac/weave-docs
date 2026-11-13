@@ -112,8 +112,9 @@ Bundle `valid` requires frontmatter, type and keywords for every concept.
 
 ### Graph
 
-Nodes carry `keywords` plus type, title, status, tags and in/out degree. Edges remain `link` or
-`related`, with optional raw link text. `dangling` maps source ids to unresolved links.
+Nodes carry `keywords` plus type, title, status, tags and in/out degree. Edges are `link`, `related`
+or an extension-provided kind such as `contains`, `imports` or `declares`, with optional raw link
+text. `dangling` maps source ids to unresolved links.
 
 ## Search Model
 
