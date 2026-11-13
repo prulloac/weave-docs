@@ -177,14 +177,12 @@ this section until every item is checked.
 
 **P0 — local usability and correctness**
 
-- [ ] Persist git provenance for workspace sources and expose it through `source list/show`.
 - [ ] Keep the previous snapshot and mark the source `degraded` on permissive provider failure.
 
 **P1 — next feature slices**
 
 - [ ] Remote git fetch: HTTPS, SSH, SCP-like and `file://` URIs, auth, shallow fetch and offline
   cache reuse.
-- [ ] Workspace object sources: `git:` plus `ref:`, with workspace-scoped source IDs.
 - [ ] MCP `weave_sources` and `weave://workspace/sources` provider, URI, ref and commit provenance.
 - [ ] Enforce source limits and add cache garbage collection.
 - [ ] Decide and implement the git backend: pure-Go `go-git`, system git, or a documented hybrid.
@@ -210,6 +208,8 @@ this section until every item is checked.
 - [x] README frontmatter description extraction.
 - [x] `weave.source/v1` request and provider capability validation.
 - [x] Synthetic `_repo` export under `_sources/repositories.json`.
+- [x] Workspace `git:` / `ref:` object sources, `source add --git` and workspace-scoped source IDs.
+- [x] Git provenance persistence and `source list/show` provider, URI, ref and commit output.
 
 ## Cross-cutting
 
