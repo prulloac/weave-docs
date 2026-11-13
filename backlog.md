@@ -177,7 +177,7 @@ this section until every item is checked.
 
 **P0 — local usability and correctness**
 
-- [ ] Keep the previous snapshot and mark the source `degraded` on permissive provider failure.
+All local P0 items are complete.
 
 **P1 — next feature slices**
 
@@ -210,6 +210,7 @@ this section until every item is checked.
 - [x] Synthetic `_repo` export under `_sources/repositories.json`.
 - [x] Workspace `git:` / `ref:` object sources, `source add --git` and workspace-scoped source IDs.
 - [x] Git provenance persistence and `source list/show` provider, URI, ref and commit output.
+- [x] Permissive provider failures degrade only the failed source and preserve its previous snapshot.
 
 ## Cross-cutting
 
