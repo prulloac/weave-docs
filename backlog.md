@@ -170,6 +170,48 @@ Stable specification. G1 and the local repository-node slice are implemented: `w
 manifest source-provider role, schema v9 provenance, stable worktrees, `_repo` documents and
 `contains` edges. Next: remote fetch, workspace object sources and MCP provenance. Target: 0.9 / P1.
 
+### Git source follow-ups
+
+Living checklist. Add new git-source items here, re-prioritize them, and mark `[x]` when merged. Keep
+this section until every item is checked.
+
+**P0 — local usability and correctness**
+
+- [ ] Map the original git path or URI to the stable snapshot for `list`, `show`, `graph`, `search`
+  and other reads.
+- [ ] Propagate `weave.source/v1` warnings into ingest and sync reports.
+- [ ] Parse README frontmatter `description` before the first paragraph.
+- [ ] Validate the `weave.source/v1` request envelope and the provider manifest capability.
+- [ ] Export `_repo` synthetically, never as a file; write repository metadata under `_sources/`.
+- [ ] Persist git provenance for single-source and workspace sources in `sources.metadata_json`.
+- [ ] Keep the previous snapshot and mark the source `degraded` on permissive provider failure.
+
+**P1 — next feature slices**
+
+- [ ] Remote git fetch: HTTPS, SSH, SCP-like and `file://` URIs, auth, shallow fetch and offline
+  cache reuse.
+- [ ] Workspace object sources: `git:` plus `ref:`, with workspace-scoped source IDs.
+- [ ] MCP `weave_sources` and `weave://workspace/sources` provider, URI, ref and commit provenance.
+- [ ] Enforce source limits and add cache garbage collection.
+- [ ] Decide and implement the git backend: pure-Go `go-git`, system git, or a documented hybrid.
+- [ ] Add submodule and Git LFS opt-ins with safe defaults.
+
+**P2 — release and coverage**
+
+- [ ] Add `weave-git` release workflow, installers, archives, checksums and draft release.
+- [ ] Add cross-repository integration CI using real `weave` and `weave-git` binaries.
+- [ ] Complete BDD coverage for remote, workspace, MCP, degraded, auth and security scenarios.
+- [ ] Document `contains` consistently in graph specifications and ADRs.
+- [ ] Update workspace and storage docs for schema v9.
+
+**Done**
+
+- [x] Source-provider contract, manifest role and stable source IDs.
+- [x] Local `weave-git` provider with stable worktrees and commit pinning.
+- [x] CLI `--git`, `--ref` and `--worktree` local ingestion.
+- [x] `_repo` repository document and `contains` edges.
+- [x] Schema v9 source registry columns.
+
 ## Cross-cutting
 
 - [x] Knowledge corpus: vision + related concepts (`knowledge/`)
