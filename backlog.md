@@ -177,13 +177,6 @@ this section until every item is checked.
 
 **P0 — local usability and correctness**
 
-- [x] Map the original git path or URI to the stable snapshot for `list`, `show`, `graph`, `search`
-  and other reads.
-- [x] Propagate `weave.source/v1` warnings into ingest and sync reports.
-- [x] Parse README frontmatter `description` before the first paragraph.
-- [x] Validate the `weave.source/v1` request envelope.
-- [x] Validate the provider manifest declares the `source_providers` capability.
-- [x] Export `_repo` synthetically, never as a file; write repository metadata under `_sources/`.
 - [ ] Persist git provenance for workspace sources and expose it through `source list/show`.
 - [ ] Keep the previous snapshot and mark the source `degraded` on permissive provider failure.
 
@@ -212,6 +205,11 @@ this section until every item is checked.
 - [x] CLI `--git`, `--ref` and `--worktree` local ingestion.
 - [x] `_repo` repository document and `contains` edges.
 - [x] Schema v9 source registry columns.
+- [x] Original path/URI to snapshot read mapping.
+- [x] Source-provider warning propagation into ingest and sync reports.
+- [x] README frontmatter description extraction.
+- [x] `weave.source/v1` request and provider capability validation.
+- [x] Synthetic `_repo` export under `_sources/repositories.json`.
 
 ## Cross-cutting
 
