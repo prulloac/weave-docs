@@ -166,28 +166,15 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 | --- | --- | --- | --- | --- | --- | --- |
 | Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | in-progress |
 
-Stable specification. G1–G4 are implemented: `weave.source/v1`, manifest source-provider role,
-schema v9 provenance, stable worktrees, remote fetch with bare mirrors and offline cache reuse,
-`_repo` documents, `contains` edges, read-only MCP provenance, snapshot limits, explicit cache GC
-and submodule/LFS opt-ins. The P2 release, integration CI, BDD coverage and schema/`contains`
-documentation items are also complete. Target: 0.9 / P1.
+Stable specification. G1–G4 and the G2b/G2c follow-ups are implemented: `weave.source/v1`,
+manifest source-provider role, schema v9 provenance, stable worktrees, remote fetch with bare
+mirrors and offline cache reuse, `_repo` documents, `contains` edges, read-only MCP provenance,
+snapshot limits, explicit cache GC and submodule/LFS opt-ins. The P2 release, integration CI, BDD
+coverage and schema/`contains` documentation items are also complete. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
-Living checklist. Add new git-source items here, re-prioritize them, and mark `[x]` when merged. Keep
-this section until every item is checked.
-
-**P0 — local usability and correctness**
-
-All local P0 items are complete.
-
-**P1 — next feature slices**
-
-All P1 feature slices are complete.
-
-**P2 — release and coverage**
-
-All P2 items are complete.
+Completed. Add new items above the Done list and re-prioritize them when needed.
 
 **Done**
 
