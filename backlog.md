@@ -177,13 +177,14 @@ this section until every item is checked.
 
 **P0 — local usability and correctness**
 
-- [ ] Map the original git path or URI to the stable snapshot for `list`, `show`, `graph`, `search`
+- [x] Map the original git path or URI to the stable snapshot for `list`, `show`, `graph`, `search`
   and other reads.
-- [ ] Propagate `weave.source/v1` warnings into ingest and sync reports.
-- [ ] Parse README frontmatter `description` before the first paragraph.
-- [ ] Validate the `weave.source/v1` request envelope and the provider manifest capability.
-- [ ] Export `_repo` synthetically, never as a file; write repository metadata under `_sources/`.
-- [ ] Persist git provenance for single-source and workspace sources in `sources.metadata_json`.
+- [x] Propagate `weave.source/v1` warnings into ingest and sync reports.
+- [x] Parse README frontmatter `description` before the first paragraph.
+- [x] Validate the `weave.source/v1` request envelope.
+- [x] Validate the provider manifest declares the `source_providers` capability.
+- [x] Export `_repo` synthetically, never as a file; write repository metadata under `_sources/`.
+- [ ] Persist git provenance for workspace sources and expose it through `source list/show`.
 - [ ] Keep the previous snapshot and mark the source `degraded` on permissive provider failure.
 
 **P1 — next feature slices**
