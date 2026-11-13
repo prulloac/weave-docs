@@ -168,8 +168,8 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 
 Stable specification. G1–G4 are implemented: `weave.source/v1`, manifest source-provider role,
 schema v9 provenance, stable worktrees, remote fetch with bare mirrors and offline cache reuse,
-`_repo` documents, `contains` edges and read-only MCP provenance. Next: source limits and cache GC.
-Target: 0.9 / P1.
+`_repo` documents, `contains` edges, read-only MCP provenance, snapshot limits and explicit cache
+GC. Next: submodule and LFS opt-ins, then G5 incremental updates. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -182,7 +182,6 @@ All local P0 items are complete.
 
 **P1 — next feature slices**
 
-- [ ] Enforce source limits and add cache garbage collection.
 - [ ] Add submodule and Git LFS opt-ins with safe defaults.
 
 **P2 — release and coverage**
@@ -213,6 +212,8 @@ All local P0 items are complete.
 - [x] Documented the system `git` backend; pure-Go `go-git` remains deferred.
 - [x] MCP `weave_sources` and `weave://workspace/sources` serve snapshot paths plus provider, URI,
   ref and commit provenance without fetching.
+- [x] Snapshot size, file, project and file-count limits with safe failure before the worktree swap.
+- [x] Explicit `weave-git gc` for stale staging trees, incomplete source caches and mirror pruning.
 
 ## Cross-cutting
 

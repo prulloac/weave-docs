@@ -284,6 +284,20 @@ watchers and parse caching working without a core-wide symlink resolution rule.
 - Old git objects are pruned by an explicit GC pass, never during a read.
 - Metadata and state files never contain credentials or full command output.
 
+### 7.5 Cache maintenance
+
+`weave-git gc` performs explicit cache maintenance:
+
+- remove `worktree.stage-*` and `worktree.old` leftovers;
+- remove source directories without a valid `state.json` or `worktree`;
+- with one or more `--keep <source_id>`, treat that set as authoritative and remove other source
+  directories;
+- run `git gc --prune=now` on bare mirrors and retain the mirror itself;
+- support `--dry-run` and `--json` for orchestration.
+
+Active worktrees are identified by `state.json` and are never removed unless the `--keep` set
+excludes them. The command never touches the bundle or index database.
+
 ## 8. Repository Document
 
 ### 8.1 Identity and fields
@@ -470,6 +484,8 @@ Rules:
 - Reject symlinks that escape the snapshot root.
 - Bound clone size, file count, individual file size, fetch time and snapshot depth.
 - Default limits mirror the code-extension limits: 4 MiB per file, 512 MiB per project, 10,000 files.
+  The provider enforces them while extracting the archive, before the worktree swap.
+- Cache maintenance is explicit through `weave-git gc`; it never runs during a read or ingest.
 - Binary files are recorded as metadata or skipped; they are not parsed as source.
 
 ## 12. Failure Handling
@@ -527,6 +543,7 @@ Rules:
 | --- | --- |
 | G1 | `weave.source/v1` contract, manifest role and local snapshot provider |
 | G2 | Remote git fetch, commit resolution and cache |
+| G2b | Snapshot limits and explicit cache garbage collection |
 | G3 | Repository node, README extraction, `contains` edges and provenance |
 | G4 | Workspace object sources, source registry provenance and MCP resources |
 | G5 | Incremental commit updates, dependency manifests and monorepo projects |
