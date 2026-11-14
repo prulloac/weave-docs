@@ -52,7 +52,7 @@ weave codecs list [<path>] [--json]
 weave export <path> --out <dir> --format raw|encrypted [--key-id <id>] [--yes] [--force] [--json]
 weave workspace init|show|path [--workspace <dir>] [--json]
 weave source add|remove|list|show [--workspace <dir>] [--prune] [--json]
-weave extensions list [<path>] [--json]
+weave extensions list [<path>] [--short] [--json]
 weave extensions data list|get|gc <path> [--extension <name>] [--doc <id>] [--out <file>] [--force] [--dry-run] [--json]
 weave config show|get|paths|path|init [--json]
 weave completion bash|zsh|fish

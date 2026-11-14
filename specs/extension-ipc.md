@@ -58,6 +58,14 @@ Non-goals:
 
 - Sorted by name, then source (`bundle` before `path`).
 - `path` is optional; without it only `$PATH` is scanned.
+- Human output prints `name`, `source` and `path` columns, followed by a `searched:` line.
+- `--short` prints only extension names, one per line, in the same deterministic order. It omits the
+  `source` and `path` columns and the `searched:` line so scripts and shell completion can consume
+  the list directly.
+- `--short` is a presentation flag: with `--json` the envelope is unchanged and `--short` has no
+  effect.
+- When discovery finds nothing, stdout stays empty, the installation hint goes to stderr, and the
+  exit status remains `0` in both human modes.
 
 An extension may expose a machine-readable capability manifest with
 `weave-<name> --describe --json`:
@@ -313,7 +321,7 @@ Response:
 ### 2.7 CLI
 
 ```sh
-weave extensions list [<path>] --json
+weave extensions list [<path>] [--short] [--json]
 weave ingest  <path> --with-enricher <name> [--with-embedder <name>] [--timeout 5s] --json
 weave rebuild <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
 weave sync    <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
@@ -324,6 +332,8 @@ weave codecs list [<path>] --json
 ```
 
 - `--with-enricher`, `--with-embedder`, `--embedder` and `--rerank` accept one extension name.
+- `--short` is only valid for `weave extensions list`; other commands reject it with
+  `INVALID_REQUEST` (exit `2`). `--help` still takes precedence.
 - An enricher that declares `"analysis_modes": ["project"]` is invoked once for the write; others run
   per document. See §2.4.
 - A missing or invalid name fails before any write with `EXTENSION_NOT_FOUND`, exit `2`.
@@ -412,6 +422,7 @@ CLI search --rerank
 
 - Discovery order: bundle-local wins over PATH; non-executable skipped; invalid names rejected.
 - `weave extensions list` output and ordering.
+- `weave extensions list --short` prints names only and keeps `--json` output unchanged.
 - Enrichment merges keywords, dedupes, caps at 32 and persists metadata.
 - Enrichment failure/timeout/malformed response keeps previous data and adds one warning.
 - Rerank reorders, blends at 0.5/0.5, sets `rerank_score` and preserves hit shapes.
@@ -428,6 +439,7 @@ checked-in scripts with explicit shebangs.
 ## 7. Acceptance Criteria
 
 - Extensions resolve from `.weave/bin/` before `$PATH` and are listed deterministically.
+- `weave extensions list --short` prints one name per line with no paths or search summary.
 - Enrichment adds searchable inferred keywords and persists custom metadata.
 - Reranking blends core and extension scores deterministically and annotates hits.
 - Missing extensions fail fast; runtime extension failures degrade to core behavior with warnings.

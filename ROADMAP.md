@@ -2,14 +2,14 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v0.9.0 is the current pre-1.0 release for `weave` and `weave-git`.** Both are published; the
-tag and publish record lives in [release-checklist.md](release-checklist.md). Other first-party
-members remain at v0.8.0 and are compatible with `weave v0.9.0`. The core engine, introspection
-commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion, privacy
-directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets, codecs,
-embeddings, semantic search, pluggable scoring, code knowledge, git sources, release automation and
-the MCP server are shipped. Work after 0.9 is watch event delivery, the optimization program and MCP
-polish; 1.0 remains the stability target.
+Status: **v0.10.0 is the current pre-1.0 release for `weave`; `weave-git` remains at v0.9.0.** Both
+are published; the tag and publish record lives in [release-checklist.md](release-checklist.md).
+Other first-party members remain at v0.8.0 and are compatible with `weave v0.10.0`. The core engine,
+introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion,
+privacy directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets,
+codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
+automation and the MCP server are shipped. Work after 0.10 is watch event delivery, the optimization
+program and MCP polish; 1.0 remains the stability target.
 
 ## 1. What Weave Is
 
@@ -125,7 +125,7 @@ weave export <path> --out <dir> --format raw|encrypted [--key-id <id>] [--yes] [
 weave workspace init|show|path [--workspace <dir>] --json
 weave source add|remove|list|show [--workspace <dir>] [--prune] --json
 weave config show|get|paths|path|init [--json]
-weave extensions list [<path>] --json
+weave extensions list [<path>] [--short] --json
 weave extensions data list|get|gc <path> [--extension <name>] [--doc <id>] [--out <file>] [--dry-run] --json
 weave completion bash|zsh|fish
 weave mcp --bundle <path>|--workspace <dir> [--stdio|--listen <addr>] [--token <t>] [--db <file>] [--watch] [--allow-sensitive]
@@ -517,8 +517,8 @@ needed.
 
 ### Versioning Policy
 
-- **Product:** 0.7 is the current pre-1.0 release. Every feature marked `shipped` in the register
-  ships in 0.7; `stretch` and `deferred` items do not. Phases are internal delivery waves, not
+- **Product:** 0.10 is the current pre-1.0 release. Every feature marked `shipped` in the register
+  ships in 0.10; `stretch` and `deferred` items do not. Phases are internal delivery waves, not
   separate releases. 1.0 is the stability milestone, not a separate feature set.
 - **Contract:** `weave.contract/v1` is authoritative. Until 1.0.0 it may still evolve in place;
   after 1.0.0, breaking changes require `contract/v2`. Additive fields and enum values remain
