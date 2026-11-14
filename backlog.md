@@ -227,8 +227,9 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 
 ADR 0012 is accepted and the spec is stable. BDD scenarios are approved. The core descriptor path,
 artifact persistence/export, default relation policy, opaque provider options, generic source
-metadata and a non-git fixture are implemented. Producer migration and removal of legacy branches
-remain. Target: 0.11 / P1.
+metadata and a non-git fixture are implemented. `weave-git` now emits descriptors and the real
+cross-repository integration exercises that path. Remaining: project-analyzer artifacts,
+`weave-code` migration and removal of legacy branches. Target: 0.11 / P1.
 
 ### Extension boundary follow-ups
 
@@ -249,7 +250,8 @@ remain. Target: 0.11 / P1.
 - [x] Move default relation policy into persisted active-extension declarations; reads append them to
   core defaults.
 - [ ] Remove the hardcoded `_code`/`_sources` writers after extension producers migrate.
-- [ ] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
+- [x] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
+- [ ] Collect project-analyzer artifacts through the generic storage path.
 - [ ] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
 - [ ] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
 - [ ] Remove legacy adapters after every first-party conformance and parity suite passes.
