@@ -16,6 +16,7 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0009](0009-product-versioning-0.7-pre-1.0.md) | accepted | Renumber the current product line to 0.7.0 and reserve 1.0.0 for the stability milestone |
 | [0010](0010-extension-provided-graph-relations-and-project-analysis.md) | accepted | Extensions contribute graph relations from a project-wide analysis pass; calls and references are opt-in traversal |
 | [0011](0011-git-repositories-as-source-providers.md) | accepted | Git repositories are source-provider extensions that produce commit-pinned snapshots and repository graph nodes |
+| [0012](0012-extension-owned-documents-and-opaque-options.md) | proposed | Extension output moves to generic synthetic documents, relations, artifacts, namespaces, relation registries and opaque provider options |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.

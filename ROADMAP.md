@@ -8,8 +8,8 @@ Other first-party members remain at v0.8.0 and are compatible with `weave v0.10.
 introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion,
 privacy directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets,
 codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
-automation and the MCP server are shipped. Work after 0.10 is watch event delivery, the optimization
-program and MCP polish; 1.0 remains the stability target.
+automation and the MCP server are shipped. Work after 0.10 is the generic extension output boundary,
+watch event delivery, the optimization program and MCP polish; 1.0 remains the stability target.
 
 ## 1. What Weave Is
 
@@ -260,6 +260,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
 | 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | shipped |
+| 44 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | Tier 12 | extension IPC, graph, contract, storage | 0.11 / P1 | planned |
 
 Rules:
 
@@ -431,6 +432,20 @@ offline cache reuse are implemented and released in `weave v0.9.0` and `weave-gi
 
 Release order: `weave v0.9.0` → `weave-git v0.9.0`. The tag and verification record lives in
 [release-checklist.md](release-checklist.md).
+
+**Wave 13 — generic extension output boundary:**
+
+1. manifest-declared document and artifact namespaces,
+2. generic synthetic documents, relations and scope containment,
+3. extension relation-kind registry and default traversal policy,
+4. opaque provider options and source metadata,
+5. generic artifact export and MCP provenance,
+6. legacy adapters, producer migration and removal.
+
+Spec: [Generic Extension Output Boundary](specs/extension-output-boundary.md). Status: draft
+specification; decision
+[ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md). No implementation
+starts until the draft is approved.
 
 **Critical path:**
 

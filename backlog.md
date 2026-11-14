@@ -219,6 +219,32 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
   Bitbucket and generic remotes without hosting API calls.
 - [x] Tagged and published `weave v0.9.0` and `weave-git v0.9.0` with verified archives and checksums.
 
+## Tier 12 — Extension boundaries
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | draft | - | - | backlog |
+
+ADR 0012 is proposed. The spec is draft; implementation starts only after both are accepted.
+Target: 0.11 / P1.
+
+### Extension boundary follow-ups
+
+- [ ] Accept ADR 0012 and approve the generic extension output boundary spec.
+- [ ] Add manifest declarations for document namespaces, artifact namespaces and relation kinds.
+- [ ] Add generic synthetic document, relation, artifact and source-metadata types.
+- [ ] Add namespace, relation-kind, path, size and duplicate validation.
+- [ ] Replace `engine/operations` source/project/commit/code appliers with a generic applier.
+- [ ] Move `contains`/`depends_on`/`parent_of` defaults out of `engine/graph` into active-extension
+  policy.
+- [ ] Replace typed source options with opaque `provider_options`; keep CLI flags as sugar.
+- [ ] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
+- [ ] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
+- [ ] Make MCP source provenance `provider` plus metadata.
+- [ ] Keep one-release legacy adapters for old source/project responses and typed options.
+- [ ] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
+- [ ] Add conformance fixtures proving a new provider and analyzer need no core changes.
+
 ## Cross-cutting
 
 - [x] Knowledge corpus: vision + related concepts (`knowledge/`)
