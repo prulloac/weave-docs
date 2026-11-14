@@ -2,7 +2,30 @@
 
 This checklist records the release state. Tag and publish steps are owner actions.
 
-# v0.10.0 (current pre-1.0 release)
+# v0.10.1 (current pre-1.0 release)
+
+## Complete
+
+- [x] Tagged and pushed `v0.10.1`: `weave` (`8a555f4`).
+- [x] Release workflow built six static archives plus checksums and created the draft release
+  ([run 43544435209](https://github.com/prulloac/weave/actions/runs/43544435209)).
+- [x] Downloaded and verified all six assets against `weave_0.10.1_checksums.txt`; the Linux `amd64`
+  binary reports `weave v0.10.1 (contract 1)` and advertises `inputSchema` on `tools/list`.
+- [x] Published `v0.10.1`, installed it with `scripts/install.sh --version v0.10.1`, and reconnected
+  the OpenCode MCP server with 10 tools.
+- [x] `fix(mcp)` corrects tool descriptors to the MCP wire name `inputSchema`; includes the
+  `weave extensions list --short` addition from v0.10.0.
+
+## Notes
+
+- 0.10 is a **pre-1.0** release for `weave`. `weave.contract/v1` and `weave.cli/v1` remain
+  authoritative and may still evolve in place until 1.0.0.
+- `weave-git` remains at v0.9.0; other first-party members remain at v0.8.0. All are compatible with
+  `weave v0.10.1`.
+- Publishing remains manual; a tag push only creates a draft release.
+- The performance optimization program and watch event delivery are post-1.0 work.
+
+# v0.10.0 (previous pre-1.0 release)
 
 ## Complete
 
