@@ -8,7 +8,7 @@ tags:
   - "contract"
   - "graph"
   - "source"
-status: draft
+status: stable
 generated:
   by: opencode/deepseek-v4.1-flash
 ---
@@ -304,6 +304,35 @@ The request uses opaque provider options:
 - Credentials and full provider option values never appear in warnings or errors unless the provider
   explicitly returns them.
 
+### 10.1 Behavioral Preservation
+
+The boundary change is internal. Existing extension functionality must remain observable and
+equivalent throughout the migration:
+
+| Surface | Preserved behavior |
+| --- | --- |
+| Git sources | Same repository, project, dependency, commit, provenance and MCP results |
+| Code analysis | Same `Code`, `CodeSymbol` and `CodeExternal` documents, relations and `_code` exports |
+| Enrichment | Same inferred keywords, metadata and warnings |
+| Reranking and scoring | Same candidate selection, blend behavior and scores |
+| Codecs | Same codec selection, compression and recovery |
+| Crypto providers | Same key resolution, encryption, tokenization and audit behavior |
+| AI and image | Same requests, redaction, outputs and fallbacks |
+| Extension data | Same list/get/gc and export behavior |
+| Multi-source and MCP | Same source scoping, resources, redaction and provenance |
+
+Extensions may change their implementation and wire representation, including moving from legacy
+fields to descriptors. They must not change user-visible outcomes.
+
+Migration gate:
+
+1. Generic descriptors and legacy adapters coexist.
+2. Every first-party extension publishes descriptor output and passes its existing conformance suite
+   plus boundary fixtures.
+3. Core regression tests prove legacy and descriptor paths produce equivalent graphs, search results,
+   exports, provenance and MCP responses.
+4. Only then is the legacy adapter removed in a later minor release.
+
 ## 11. Compatibility and Migration
 
 1. **Additive release:** protocol fields, manifest declarations and validation are added.
@@ -328,6 +357,8 @@ The request uses opaque provider options:
 7. MCP source provenance is provider plus metadata, not git-shaped fields.
 8. Legacy responses produce identical graphs and exports during the migration release.
 9. Full gate, race suite and calibration remain unchanged.
+10. Every first-party extension preserves its observable functionality across the migration; the
+    legacy adapter is removed only after all conformance and parity tests pass.
 
 ## 13. Testing
 
@@ -338,6 +369,8 @@ The request uses opaque provider options:
 - Artifact path safety, duplicate paths, size limits and deterministic serialization.
 - Opaque provider options pass-through and provider-side validation.
 - Legacy source response and project response adapters.
+- Legacy vs descriptor parity for graph nodes, edges, search, export, provenance and MCP.
+- Enrichment, rerank, scoring, codec, crypto, AI, image, code and extension-data regression suites.
 - MCP provenance metadata and source registry round-trip.
 - A fixture provider that adds a new document type and relation kind without core edits.
 

@@ -34,7 +34,7 @@ maturity only.
 | [1.0 Stability Gate and Issue Policy](stability-gate.md) | stable | — | 41 |
 | [Weave Code Extension](weave-code.md) | stable | [Weave code](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-code.md) | 42 |
 | [Weave Git Source Extension](weave-git.md) | stable | [Weave git source](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-git.md) | 43 |
-| [Generic Extension Output Boundary](extension-output-boundary.md) | draft | — | 44 |
+| [Generic Extension Output Boundary](extension-output-boundary.md) | stable | [Extension boundary](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-output-boundary.md) | 44 |
 | [Pluggable Scoring](extension-scoring.md) | stable | [Scoring](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-scoring.md) | 31 (0.7) |
 | [Extension Data API](extension-data.md) | stable | [Extension data](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-data.md) | 32 (0.7) |
 | [Generic Blob Assets](blob-assets.md) | stable | [Blob assets](https://github.com/prulloac/weave/blob/main/docs/bdd/blob-assets.md) | 35 |

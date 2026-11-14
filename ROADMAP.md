@@ -260,7 +260,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
 | 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | shipped |
-| 44 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | Tier 12 | extension IPC, graph, contract, storage | 0.11 / P1 | planned |
+| 44 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | Tier 12 | extension IPC, graph, contract, storage | 0.11 / P1 | in progress |
 
 Rules:
 
@@ -442,10 +442,10 @@ Release order: `weave v0.9.0` → `weave-git v0.9.0`. The tag and verification r
 5. generic artifact export and MCP provenance,
 6. legacy adapters, producer migration and removal.
 
-Spec: [Generic Extension Output Boundary](specs/extension-output-boundary.md). Status: draft
+Spec: [Generic Extension Output Boundary](specs/extension-output-boundary.md). Status: stable
 specification; decision
-[ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md). No implementation
-starts until the draft is approved.
+[ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md). BDD scenarios are
+written and await approval before TDD.
 
 **Critical path:**
 

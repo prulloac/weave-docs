@@ -9,7 +9,7 @@ tags:
   - "graph"
   - "source"
   - "generic"
-status: proposed
+status: accepted
 generated:
   by: opencode/deepseek-v4.1-flash
 ---
@@ -69,6 +69,12 @@ project-analysis contract is likewise shaped around `weave-code`.
    typed option fields remain readable during a migration release. After first-party extensions move
    to descriptors and the minimum supported extension version rises, the legacy path is removed.
 
+9. **Behavior preservation is a release gate.** First-party extensions may change their wire output
+   and implementation, but their user-visible behavior must remain identical: enrichment, reranking,
+   scoring, codecs, crypto, AI, image analysis, code analysis, git ingestion, extension data, export
+   and MCP surfaces. Generic descriptors are adopted only when their conformance tests pass; the
+   legacy path is not removed before that gate.
+
 ## Alternatives Considered
 
 | Alternative | Decision |
@@ -94,6 +100,8 @@ project-analysis contract is likewise shaped around `weave-code`.
   independent of filtering.
 - New conformance tests are needed for namespaces, relation registration, descriptor validation,
   artifact safety and legacy adapters.
+- The migration gates on behavioral equivalence across core and every first-party extension. Existing
+  extension functionality is allowed to change implementation, but not observable outcomes.
 - The first-party git and code extensions must ship compatible descriptors before core removes the
   legacy path.
 

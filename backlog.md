@@ -223,14 +223,16 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | draft | - | - | backlog |
+| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | - | in-progress |
 
-ADR 0012 is proposed. The spec is draft; implementation starts only after both are accepted.
-Target: 0.11 / P1.
+ADR 0012 is accepted and the spec is stable. BDD scenarios are written and await approval before
+TDD. Target: 0.11 / P1.
 
 ### Extension boundary follow-ups
 
-- [ ] Accept ADR 0012 and approve the generic extension output boundary spec.
+- [x] Accept ADR 0012 and approve the generic extension output boundary spec.
+- [x] Write BDD scenarios and link the planned executable coverage.
+- [ ] Approve the BDD scenarios before writing failing tests.
 - [ ] Add manifest declarations for document namespaces, artifact namespaces and relation kinds.
 - [ ] Add generic synthetic document, relation, artifact and source-metadata types.
 - [ ] Add namespace, relation-kind, path, size and duplicate validation.
