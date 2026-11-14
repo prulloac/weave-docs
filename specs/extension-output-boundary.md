@@ -175,8 +175,10 @@ Default traversal for an invocation is:
 core defaults + default relation kinds of active extensions
 ```
 
-`weave graph`, `weave relate` and `weave path` accept any core or active extension relation kind.
-Degree and orphan calculations continue to use every stored edge.
+Declared defaults are persisted with the bundle when its source is indexed and applied when a read
+does not pass an explicit `--relation` filter. `weave graph`, `weave relate` and `weave path` accept
+any core or active extension relation kind. Degree and orphan calculations continue to use every
+stored edge.
 
 ## 7. Artifacts
 
@@ -200,6 +202,8 @@ Rules:
 - Duplicate artifact paths across active extensions are a protocol error.
 - Core serializes `content` deterministically as JSON.
 - Artifact total count, path length, per-artifact size and total size are bounded.
+- Artifacts replace the stored artifact set on ingest, rebuild or sync; raw export writes them.
+- Artifacts are JSON documents and are omitted from encrypted export.
 - Artifacts replace hardcoded export branches such as `_code/...` and `_sources/...`.
 
 ## 8. Source Provider Changes

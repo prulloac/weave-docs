@@ -124,7 +124,7 @@ Rules:
 
 ## 6. Source registry and storage
 
-The index database persists a registry in a `sources` table (schema v9):
+The index database persists a registry in a `sources` table (schema v10):
 
 | Column | Meaning |
 | --- | --- |
@@ -148,7 +148,16 @@ Migration from v8:
 2. Add `metadata_json` with default `{}`.
 3. Existing path sources keep their rows and backfill to `provider='path'`.
 
-Migration from v7 still creates `sources` and backfills aliases first, then applies the v9 columns.
+Migration from v9 adds `extension_artifacts` and `extension_relations`, both keyed by
+`bundle_root`. Existing rows are untouched. Migration from v7 still creates `sources` and backfills
+aliases first, then applies the later columns and extension tables.
+
+Extension-owned data:
+
+| Table | Meaning |
+| --- | --- |
+| `extension_artifacts` | JSON artifacts keyed by bundle root and export path |
+| `extension_relations` | Registered relation kinds and whether they join default traversal |
 
 ## 7. Source lifecycle
 

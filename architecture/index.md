@@ -190,7 +190,7 @@ remains the compatibility promise.
 | Privacy | 0.7 explicit encrypt/tokenize/hash directives |
 | Extensions | 0.7 subprocess IPC over `weave.cli/v1` |
 | Blob assets | 0.7 opaque blob documents with `content_metadata`; media semantics stay in extensions |
-| Workspaces | 0.7 manifest plus persisted `sources` registry (schema v9) and one index per workspace |
+| Workspaces | 0.7 manifest plus persisted `sources` registry (schema v10) and one index per workspace |
 | Scoring | Opt-in `--scorer` extensions reorder a bounded candidate set with a configurable blend; default ranking unchanged |
 | Integration | CLI first; Go package optional; MCP tools, transport, resources, multi-source and sensitive access shipped |
 | Source providers | Git and future source providers resolve URIs into snapshots before analysis; core stays local-first |
@@ -288,7 +288,7 @@ The 0.9 feature set ships in `weave` and `weave-git` v0.9.0; `weave-ai`, `weave-
 transport, auth, resources and watch reload are available, privacy directives ship with encrypted,
 tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes,
 rerank and score searches, blob assets and codec extensions are in place, embeddings back semantic
-search, code knowledge adds project analysis and code graph relations, and the schema v9 workspace
+search, code knowledge adds project analysis and code graph relations, and the schema v10 workspace
 registry provides `weave workspace`, `weave source`, `weave mcp --workspace` and git source
 provenance. Work after 0.9 is watch event delivery (register #40), MCP polish and the
 [optimization program](../specs/optimization.md); 1.0 is the stability target.

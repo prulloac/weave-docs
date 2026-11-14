@@ -226,9 +226,9 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | - | in-progress |
 
 ADR 0012 is accepted and the spec is stable. BDD scenarios are approved. The core descriptor path,
-validation, opaque provider options, generic source metadata and a non-git fixture are implemented;
-fine-grained migration of artifacts, default relation policy and first-party producers remains.
-Target: 0.11 / P1.
+artifact persistence/export, default relation policy, opaque provider options, generic source
+metadata and a non-git fixture are implemented. Producer migration and removal of legacy branches
+remain. Target: 0.11 / P1.
 
 ### Extension boundary follow-ups
 
@@ -244,9 +244,11 @@ Target: 0.11 / P1.
 - [x] Make MCP source provenance expose the generic metadata map.
 - [x] Add conformance fixtures proving a non-git provider can add documents and relation kinds.
 - [x] Let project analyzers declare document types and content kinds.
-- [ ] Persist and export generic artifacts; remove the hardcoded `_code`/`_sources` writers.
-- [ ] Move `contains`/`depends_on`/`parent_of` default policy out of `engine/graph` into
-  active-extension declarations.
+- [x] Persist and export generic artifacts; keep the hardcoded `_code`/`_sources` writers during
+  migration.
+- [x] Move default relation policy into persisted active-extension declarations; reads append them to
+  core defaults.
+- [ ] Remove the hardcoded `_code`/`_sources` writers after extension producers migrate.
 - [ ] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
 - [ ] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
 - [ ] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
