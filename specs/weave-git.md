@@ -122,6 +122,8 @@ Rules:
 | `options.submodules` | Follow submodules; default `false` |
 | `options.lfs` | Fetch Git LFS objects; default `false` |
 | `options.depth` | Fetch depth hint; `0` means provider default |
+| `options.history` | Return recent commit metadata; default `false` |
+| `options.history_limit` | Maximum commits returned when history is enabled; default `20`, max `100` |
 | `options.permissive` | Allow cached-commit reuse when a remote ref cannot be resolved |
 
 ### 5.2 Response
@@ -318,7 +320,7 @@ Each git source produces one repository document:
 | `description` | §8.2 |
 | `body` | Root README Markdown |
 | `keywords` | repository name, README headings, topics, license, bounded to 64 |
-| `content_metadata` | provider, URI, host, owner, name, ref, commit, readme path, license, worktree |
+| `content_metadata` | provider, URI, host, host kind, owner, name, web URL, commit URL, ref, commit, readme path, license, worktree |
 
 The repository node is synthetic and is not written back into the snapshot or bundle.
 
@@ -359,6 +361,7 @@ Provenance is metadata, not a substitute for stable graph identity.
 | Node | Meaning |
 | --- | --- |
 | `Repository` | The repository hub document |
+| `Commit` | One commit in the opt-in history window |
 | `File` | Source or documentation file |
 | `Symbol` | Function, type, class, method or other declaration |
 | `Project` | Nested package in a monorepo |
@@ -376,6 +379,7 @@ Provenance is metadata, not a substitute for stable graph identity.
 | `inherits` | symbol | symbol or external package | Existing inheritance edge |
 | `implements` | symbol | symbol or external package | Existing implementation edge |
 | `depends_on` | project | external package | Manifest dependency |
+| `parent_of` | commit | commit | Commit parent in the opt-in history window |
 
 Rules:
 
@@ -422,6 +426,33 @@ Rules:
 
 Provider responses carry the discovered projects and dependencies. Core validates and materializes
 the synthetic `Project` and `ExternalPackage` documents; analyzers are unchanged.
+
+### 9.4 Commit history and host enrichment
+
+Commit history is opt-in. With `options.history`, the provider returns at most
+`options.history_limit` commits reachable from the resolved commit, newest first. Each entry carries:
+
+- full commit SHA and parent SHAs;
+- author name and author timestamp;
+- one-line subject.
+
+Core creates a `Commit` document with ID `_commit/<sha>`, type `Commit`, content kind `symbol`, the
+subject as title and the SHA, parents, author and timestamp in `content_metadata`. The repository
+contains each commit. A `parent_of` edge links a commit to each parent that is also inside the
+returned window; parents outside the window stay metadata. `parent_of` is additive and traversable
+by default. History is bounded to 100 commits and never fetches extra objects beyond the snapshot.
+
+Host enrichment is local and deterministic, with no hosting API call:
+
+| Host | `host_kind` | Web URL | Commit URL |
+| --- | --- | --- | --- |
+| GitHub | `github` | `https://host/owner/name` | `/commit/<sha>` |
+| GitLab | `gitlab` | `https://host/owner/name` | `/-/commit/<sha>` |
+| Bitbucket | `bitbucket` | `https://host/owner/name` | `/commits/<sha>` |
+| Other remote | `generic` | `https://host/owner/name` | `/commit/<sha>` |
+
+The repository document records `host_kind`, `web_url` and `commit_url`. Local and `file://` sources
+without a host omit them.
 
 ## 10. CLI and Workspace
 
@@ -586,6 +617,8 @@ Rules:
 10. MCP serves git-backed sources read-only and never fetches.
 11. Commit updates keep the same bundle root; no stale source roots accumulate.
 12. Manifests produce deterministic `Project` and `ExternalPackage` nodes with `depends_on` edges.
+13. Opt-in history produces bounded `Commit` nodes with `parent_of` edges and host URLs without a
+    hosting API call.
 
 ## 15. Delivery Slices
 
@@ -600,6 +633,7 @@ Rules:
 | G5 | Incremental commit updates, dependency manifests and monorepo projects |
 | G5a | Manifest discovery, `Project` nodes, `ExternalPackage` nodes and `depends_on` edges |
 | G6 | Optional commit history and host-specific enrichments |
+| G6a | Opt-in commit window, `Commit` nodes, `parent_of` edges and deterministic host URLs |
 
 ## 16. Resolved Decisions
 

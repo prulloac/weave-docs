@@ -123,9 +123,10 @@ The full contract is in [Keyword + Fuzzy Search](../../specs/keyword-fuzzy-searc
 
 - One node per concept, keyed by id, with keywords, type, title, status and tags.
 - Edges from resolved Markdown links (`link`) and frontmatter `related` (`related`).
-- Extension-provided relation kinds: `contains`, `depends_on`, `imports`, `declares`, `references`,
-  `calls`, `inherits`, `implements`. `contains` links repository and project nodes to their
-  structural children; `depends_on` links projects to declared manifest dependencies.
+- Extension-provided relation kinds: `contains`, `depends_on`, `parent_of`, `imports`, `declares`,
+  `references`, `calls`, `inherits`, `implements`. `contains` links repository and project nodes to
+  their structural children; `depends_on` links projects to declared manifest dependencies;
+  `parent_of` links commits inside an opt-in history window.
 - Deduplicate identical edges and compute in/out degree.
 - Keep dangling/external targets per source concept.
 - BFS shortest path, neighbors and orphan detection.

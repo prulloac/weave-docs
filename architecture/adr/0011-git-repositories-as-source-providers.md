@@ -85,6 +85,8 @@ Git ingestion must happen before asset discovery. It therefore needs a new exten
   joins the default traversal set; `calls` and `references` remain opt-in.
 - Manifest discovery adds `Project` and `ExternalPackage` documents plus `depends_on` edges, also
   traversable by default.
+- Opt-in history adds bounded `Commit` documents with `parent_of` edges, and local host enrichment
+  adds `host_kind`, `web_url` and `commit_url` without a hosting API call.
 - The workspace manifest source value gains an object form for providers and refs while retaining
   the existing string path form.
 - The source registry gains schema v9 with an explicit `provider` column and versioned

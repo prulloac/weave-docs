@@ -166,12 +166,13 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 | --- | --- | --- | --- | --- | --- | --- |
 | Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | in-progress |
 
-Stable specification. G1–G4, G5 and the G2b/G2c follow-ups are implemented: `weave.source/v1`,
+Stable specification. G1–G6 and the G2b/G2c/G5a/G6a follow-ups are implemented: `weave.source/v1`,
 manifest source-provider role, schema v9 provenance, stable worktrees, remote fetch with bare
 mirrors and offline cache reuse, `_repo` documents, `contains` edges, read-only MCP provenance,
-snapshot limits, explicit cache GC, submodule/LFS opt-ins and manifest-backed `Project` /
-`ExternalPackage` nodes with `depends_on` edges. The P2 release, integration CI, BDD coverage and
-schema/`contains` documentation items are also complete. Target: 0.9 / P1.
+snapshot limits, explicit cache GC, submodule/LFS opt-ins, manifest-backed `Project` /
+`ExternalPackage` nodes with `depends_on` edges, opt-in `Commit` history with `parent_of` edges and
+deterministic host URLs. The P2 release, integration CI, BDD coverage and schema/`contains`
+documentation items are also complete. Target: 0.9 / P1.
 
 ### Git source follow-ups
 
@@ -212,6 +213,9 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 - [x] `_project` / `_project/<path>` monorepo nodes, `_package/<ecosystem>/<slug>` external package
   nodes and `depends_on` edges with aggregated versions and scopes.
 - [x] Manifest description fallback for repositories without a README description.
+- [x] G6 opt-in bounded commit history with `Commit` nodes and `parent_of` edges.
+- [x] Deterministic `host_kind`, `web_url` and `commit_url` enrichment for GitHub, GitLab,
+  Bitbucket and generic remotes without hosting API calls.
 
 ## Cross-cutting
 

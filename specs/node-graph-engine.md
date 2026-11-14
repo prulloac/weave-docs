@@ -65,6 +65,8 @@ Relation kinds:
   additive to the existing graph vocabulary and available to source providers.
 - `depends_on` — a project depends on an external package declared by a manifest. It is available to
   source providers and traversable by default.
+- `parent_of` — a commit points at a parent commit inside an opt-in history window. It is available
+  to source providers and traversable by default.
 - `imports` — a source file imports another file or external dependency.
 - `declares` — a source file declares a symbol document.
 - `references` — a document or symbol references another symbol.
@@ -116,8 +118,8 @@ func EdgeCount(graph *Graph) int
 ```
 
 Default relation set: `link`, `related`, `imports`, `declares`, `inherits`, `implements`, `contains`,
-`depends_on`. The `calls` and `references` kinds are excluded unless named explicitly. `OrphanNodes`
-and degree counts consider every stored edge, independent of traversal filtering.
+`depends_on`, `parent_of`. The `calls` and `references` kinds are excluded unless named explicitly.
+`OrphanNodes` and degree counts consider every stored edge, independent of traversal filtering.
 
 ### 3.6 CLI Filtering
 
