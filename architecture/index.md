@@ -115,7 +115,7 @@ remains the compatibility promise.
 | Decision | Choice |
 | --- | --- |
 | Engine language | Go |
-| Product version | 0.8.0 across all products; 1.0.0 is the stability milestone (ADR 0009) |
+| Product version | `weave` and `weave-git` 0.9.0; other products 0.8.0; 1.0.0 is the stability milestone (ADR 0009) |
 | Product surface | Go CLI; no UI |
 | Document identity | Bundle-relative path minus `.md` |
 | Required frontmatter | `type` and `keywords` |
@@ -231,12 +231,13 @@ Permissive ingestion synthesizes metadata for dirty Markdown, `weave sync` recon
 by SHA-256 hash, and persistent hybrid search combines normalized BM25 with fuzzy scores.
 Calibration passes its baseline. The UI and old TypeScript stack are removed.
 
-The 0.8 feature set ships in `weave`, `weave-ai`, `weave-code`, `weave-codec-lz4`, `weave-image`
-and `weave-skills` v0.8.0; see the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
+The 0.9 feature set ships in `weave` and `weave-git` v0.9.0; `weave-ai`, `weave-code`,
+`weave-codec-lz4`, `weave-image` and `weave-skills` remain at v0.8.0 and are compatible with
+`weave v0.9.0`. See the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
 transport, auth, resources and watch reload are available, privacy directives ship with encrypted,
 tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes,
 rerank and score searches, blob assets and codec extensions are in place, embeddings back semantic
 search, code knowledge adds project analysis and code graph relations, and the schema v9 workspace
 registry provides `weave workspace`, `weave source`, `weave mcp --workspace` and git source
-provenance. Work after 0.8 is watch event delivery (register #40), MCP polish and the
+provenance. Work after 0.9 is watch event delivery (register #40), MCP polish and the
 [optimization program](../specs/optimization.md); 1.0 is the stability target.

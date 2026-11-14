@@ -2,7 +2,43 @@
 
 This checklist records the release state. Tag and publish steps are owner actions.
 
-# v0.8.0 (current pre-1.0 release)
+# v0.9.0 (current pre-1.0 release)
+
+## Complete
+
+- [x] Tagged and pushed `v0.9.0`: `weave` (`6e7b0f9`) and `weave-git` (`d2d62e3`).
+- [x] Release workflows built six static archives plus checksums for both products and created draft
+  releases.
+- [x] Downloaded and verified the Linux `amd64` assets and checksums: `weave v0.9.0 (contract 1)` and
+  `weave-git v0.9.0 (weave.extension/v1)`.
+- [x] Published in order: `weave`, then `weave-git`.
+- [x] The 0.9 feature set adds git sources: `weave.source/v1`, stable commit-pinned snapshots, remote
+  fetch with offline reuse, repository nodes, workspace/MCP provenance, limits and cache GC,
+  submodule/LFS opt-ins, manifest projects/dependencies and opt-in commit history.
+- [x] `weave`, `weave-git`, specs, roadmap and backlog describe the 0.9 git source set.
+- [x] Other first-party members remain at v0.8.0; their `weave >= 0.8.0` floors are satisfied by
+  `weave v0.9.0`.
+
+## 1.0 stability window
+
+- [x] Window still started on **2026-11-10**, the date `v0.7.0` was published.
+- [x] Earliest possible `v1.0.0`: **2026-12-10**.
+- [x] Confirmed defects declared since the window started: **none**.
+- [ ] No `confirmed-defect` issue remains open on the evaluation date.
+- [ ] 30 consecutive days completed without a defect reset.
+
+The rule and triage procedure are in
+[1.0 Stability Gate and Issue Policy](specs/stability-gate.md).
+
+## Notes
+
+- 0.9 is a **pre-1.0** release for `weave` and `weave-git`. `weave.contract/v1` and `weave.cli/v1`
+  remain authoritative and may still evolve in place until 1.0.0.
+- `weave-git` is the first source-provider extension and works with `weave v0.9.0`.
+- Publishing remains manual; a tag push only creates a draft release.
+- The performance optimization program and watch event delivery are post-1.0 work.
+
+# v0.8.0 (previous pre-1.0 release)
 
 ## Complete
 
@@ -23,17 +59,6 @@ This checklist records the release state. Tag and publish steps are owner action
   optional symbols, external documents, `_code` raw export, ignore rules and resource limits.
 - [x] Roadmap, backlog, specs, architecture, READMEs and compatibility metadata describe 0.8 and no
   longer present 0.7 as the current release.
-
-## 1.0 stability window
-
-- [x] Window still started on **2026-11-10**, the date `v0.7.0` was published.
-- [x] Earliest possible `v1.0.0`: **2026-12-10**.
-- [x] Confirmed defects declared since the window started: **none**.
-- [ ] No `confirmed-defect` issue remains open on the evaluation date.
-- [ ] 30 consecutive days completed without a defect reset.
-
-The rule and triage procedure are in
-[1.0 Stability Gate and Issue Policy](specs/stability-gate.md).
 
 ## Notes
 

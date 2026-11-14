@@ -2,14 +2,14 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v0.8.0 is the current pre-1.0 release.** `weave`, `weave-ai`, `weave-code`,
-`weave-codec-lz4`, `weave-image` and `weave-skills` v0.8.0 are published; the tag and publish record
-lives in [release-checklist.md](release-checklist.md). The core engine, introspection commands,
-SQLite storage, incremental sync, watch reload, BM25, permissive ingestion, privacy directives, body
-compression, extension IPC with enrichment/rerank, workspaces, blob assets, codecs, embeddings,
-semantic search, pluggable scoring, code knowledge, release automation and the MCP server are
-shipped. Work after 0.8 is watch event delivery, the optimization program and MCP polish; 1.0 remains
-the stability target.
+Status: **v0.9.0 is the current pre-1.0 release for `weave` and `weave-git`.** Both are published; the
+tag and publish record lives in [release-checklist.md](release-checklist.md). Other first-party
+members remain at v0.8.0 and are compatible with `weave v0.9.0`. The core engine, introspection
+commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion, privacy
+directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets, codecs,
+embeddings, semantic search, pluggable scoring, code knowledge, git sources, release automation and
+the MCP server are shipped. Work after 0.9 is watch event delivery, the optimization program and MCP
+polish; 1.0 remains the stability target.
 
 ## 1. What Weave Is
 
@@ -259,7 +259,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 40 | Watch event delivery (`fsnotify`) | [watch-mode.md](specs/watch-mode.md) | Tier 5 | watch mode, incremental sync | Post-1.0 | planned |
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
-| 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | in progress |
+| 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | shipped |
 
 Rules:
 
@@ -427,7 +427,10 @@ Core contract decision:
 Spec: [Weave Git Source Extension](specs/weave-git.md). Status: stable specification; decision
 [ADR 0011](architecture/adr/0011-git-repositories-as-source-providers.md). Local and remote
 acquisition, commit pinning, repository nodes, manifest projects/dependencies, opt-in history and
-offline cache reuse are implemented.
+offline cache reuse are implemented and released in `weave v0.9.0` and `weave-git v0.9.0`.
+
+Release order: `weave v0.9.0` → `weave-git v0.9.0`. The tag and verification record lives in
+[release-checklist.md](release-checklist.md).
 
 **Critical path:**
 

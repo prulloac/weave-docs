@@ -172,7 +172,7 @@ mirrors and offline cache reuse, `_repo` documents, `contains` edges, read-only 
 snapshot limits, explicit cache GC, submodule/LFS opt-ins, manifest-backed `Project` /
 `ExternalPackage` nodes with `depends_on` edges, opt-in `Commit` history with `parent_of` edges and
 deterministic host URLs. The P2 release, integration CI, BDD coverage and schema/`contains`
-documentation items are also complete. Target: 0.9 / P1.
+documentation items are also complete. Released in `weave v0.9.0` and `weave-git v0.9.0`.
 
 ### Git source follow-ups
 
@@ -216,6 +216,7 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 - [x] G6 opt-in bounded commit history with `Commit` nodes and `parent_of` edges.
 - [x] Deterministic `host_kind`, `web_url` and `commit_url` enrichment for GitHub, GitLab,
   Bitbucket and generic remotes without hosting API calls.
+- [x] Tagged and published `weave v0.9.0` and `weave-git v0.9.0` with verified archives and checksums.
 
 ## Cross-cutting
 
