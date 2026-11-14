@@ -82,6 +82,41 @@ unresolved `related` targets are **not** edges; they are stored in `dangling` pe
 Unresolved extension targets become metadata only, or an external document when the same dependency
 is referenced more than once.
 
+**Graph model at a glance:**
+
+```text
+                         ┌───────────────────────────┐
+                         │ Repository  (_repo)       │
+                         │ provider · snapshot · URL │
+                         └───────┬───────────┬───────┘
+              contains           │           │        contains
+                 ┌───────────────┘           └──────────────┐
+                 ▼                                          ▼
+        ┌──────────────────┐                       ┌──────────────────┐
+        │ Project          │                       │ Commit           │
+        │ _project[/path]  │                       │ _commit/<sha>    │
+        └────┬────────┬────┘                       └────────┬─────────┘
+             │        │                                     │
+     contains│        │depends_on                   parent_of│
+             ▼        ▼                                     ▼
+      ┌───────────┐ ┌──────────────────┐             ┌──────────────┐
+      │ File/Doc  │ │ ExternalPackage  │             │ Commit       │
+      │ path id   │ │ _package/...     │             │ _commit/...  │
+      └─────┬─────┘ └──────────────────┘             └──────────────┘
+            │ declares · imports · references · calls · inherits · implements
+            ▼
+      ┌───────────┐
+      │ Symbol    │
+      └───────────┘
+```
+
+- `Repository` contains every `Project`, every `Commit` in the opt-in window, and every file/document
+  directly.
+- `Project` contains the files under its path; the deepest project owns a file when projects nest.
+- `File` declares `Symbol`; analyzer relations connect files, symbols and external targets.
+- `link` and `related` connect documents from Markdown links and frontmatter.
+- `dangling` stores unresolved Markdown targets; they are not edges.
+
 ### 3.3 Graph
 
 The in-memory graph:

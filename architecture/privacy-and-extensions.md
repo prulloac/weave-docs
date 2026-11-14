@@ -95,7 +95,61 @@ Subprocess: weave-my-ai (Ollama / Python / Rust / Go)
 Host: Blends scores and prints final Top-K
 ```
 
-### 2.1 Standard Extension Protocol (`weave.cli/v1`)
+### 2.1 Discovery, Selection and Trust
+
+The operator explicitly selects a role and name. Core resolves the executable, reads its manifest and
+only then invokes the role-specific protocol.
+
+```text
+                 requested role + name
+       --with-enricher · --rerank · --scorer
+       --git provider · codec · crypto · MCP read
+                        │
+                        ▼
+              ┌────────────────────┐
+              │ resolve name       │
+              └─────────┬──────────┘
+                        │
+          ┌─────────────┴──────────────┐
+          ▼                            ▼
+┌───────────────────────────┐  ┌───────────────────────────┐
+│ <bundle>/.weave/bin/...   │  │ $PATH/weave-<name>        │
+│ checked first             │  │ checked second            │
+└─────────────┬─────────────┘  └─────────────┬─────────────┘
+              └───────────────┬──────────────┘
+                              ▼
+              weave-<name> --describe --json
+                              │
+                              ▼
+              ┌────────────────────────────┐
+              │ core validates manifest    │
+              │ weave.extension/v1 + name  │
+              │ declared roles/capabilities│
+              └─────────────┬──────────────┘
+                            ▼
+              role-specific bounded subprocess IPC
+              weave.cli/v1 or weave.source/v1
+                            │
+                            ▼
+              validate response · timeout · size limits
+```
+
+| Boundary | Rule |
+| --- | --- |
+| Bundle-local vs `PATH` | `.weave/bin` wins. Bundle contents are repository-controlled, so an untrusted bundle is untrusted code. |
+| Manifest identity | `--describe --json` must return `weave.extension/v1` with the resolved name. |
+| Role selection | Core invokes only a declared role; a missing or unsupported role is an error. |
+| Process | The extension is a local executable with operator privileges; core never uses shell interpolation. |
+| IO | JSON over stdin/stdout is bounded by time, response size and stderr caps. Malformed output fails the operation. |
+| Network | Core performs no implicit network call for an extension. Any hosted API use is the extension's explicit opt-in. |
+| Secrets | Keys and credentials stay operator-managed and are not written into envelopes, logs or the registry. |
+| Failure | Errors are bounded and reported; no partial graph write is committed. |
+
+Bundle-local override is useful for development and project-specific tooling, but it is deliberately a
+trust boundary: installing or opening an untrusted bundle can select bundle-local code when an
+extension role is requested.
+
+### 2.2 Standard Extension Protocol (`weave.cli/v1`)
 
 #### Ingestion Enrichment Request (`stdin`)
 
@@ -152,13 +206,13 @@ Fired during `weave search <query> --rerank <name>`:
 }
 ```
 
-### 2.2 Extension Guarantees & Fallbacks
+### 2.3 Extension Guarantees & Fallbacks
 
 - Extensions must time out after 5 seconds by default unless `--timeout` is set.
 - If an extension fails or exits non-zero, Weave falls back to the deterministic core search score and logs a diagnostic warning to `stderr`.
 - Extensions do not have write access to `.weave/index.db`; all persistence is mediated strictly by Weave core transactions.
 
-### 2.3 External Crypto Providers
+### 2.4 External Crypto Providers
 
 Privacy directives are executed by a crypto provider. The built-in `local` provider resolves keys
 from environment variables and `.weave/security.yaml` (see §1.3). Age, HashiCorp Vault and cloud KMS

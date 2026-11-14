@@ -50,6 +50,57 @@ The detailed contract and algorithms are in
 └───────────────────────────────────────────────────────────────┘
 ```
 
+## Source Lifecycle
+
+A source is either a local bundle path or a provider-backed snapshot. The provider runs before core
+scans documents; MCP and search read the persisted result and never acquire a source.
+
+```text
+operator request
+  workspace manifest / CLI                path source
+              │                                │
+              ▼                                ▼
+      source spec (git)                local bundle root
+      URI + ref + options                      │
+              │                                │
+              ▼                                │
+      weave-git acquisition                    │
+      resolve ref → full commit                │
+      fetch mirror or cached commit            │
+      materialize stable worktree              │
+      discover manifests + history             │
+              │                                │
+              └───────────────┬────────────────┘
+                              ▼
+                    ┌──────────────────┐
+                    │ core validation  │
+                    │ source_id·limits │
+                    └────────┬─────────┘
+                             ▼
+          parse Markdown/assets → analyzers → synthetic nodes
+                             │
+                             ▼
+          persist documents · edges · source registry
+                             │
+                             ├── search · relate · audit · export
+                             └── MCP read-only resource/tool surface
+```
+
+Failure and update behavior:
+
+```text
+strict write failure       -> source write fails; no partial graph
+permissive write failure   -> previous snapshot, when present, stays served;
+                              source status becomes degraded
+commit or ref update       -> same source_id and worktree path; graph replaced
+                              transactionally under that root
+cache GC                   -> remove stale staging and inactive source caches,
+                              compact mirrors; never delete an active worktree
+```
+
+MCP reads only persisted snapshots and never fetches. `WEAVE_CACHE_DIR` is provider-owned; host
+enrichment is derived locally from the source URI, not from a hosting API.
+
 ## Layers
 
 | Layer | Language | Package | Responsibility |
