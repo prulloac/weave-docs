@@ -446,9 +446,8 @@ Spec: [Generic Extension Output Boundary](specs/extension-output-boundary.md). S
 specification; decision
 [ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md). Core descriptor
 application, artifact persistence/export, relation-default policy, opaque provider options, generic
-source metadata and a non-git fixture are implemented. `weave-git` emits descriptors, `weave-code`
-emits declared types and `_code` artifacts, and the real integration path passes. Remaining:
-removal of hardcoded core branches and legacy adapters.
+source metadata and a non-git fixture are implemented and the legacy adapters are removed.
+Descriptor-capable `weave-git >= 0.11.0` and `weave-code >= 0.11.0` are required.
 
 **Critical path:**
 

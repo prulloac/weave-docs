@@ -223,13 +223,11 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | - | in-progress |
+| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | x | green |
 
-ADR 0012 is accepted and the spec is stable. BDD scenarios are approved. The core descriptor path,
-artifact persistence/export, default relation policy, opaque provider options, generic source
-metadata and a non-git fixture are implemented. `weave-git` emits descriptors, `weave-code` emits
-declared types and `_code` artifacts, and the real integration path passes. Remaining: remove
-hardcoded core branches and legacy adapters. Target: 0.11 / P1.
+ADR 0012 is accepted and the spec is stable. The generic boundary is implemented end to end;
+descriptor-capable `weave-git` and `weave-code` are required. Minimum supported line:
+`weave >= 0.11.0`, `weave-git >= 0.11.0`, `weave-code >= 0.11.0`.
 
 ### Extension boundary follow-ups
 
@@ -254,8 +252,9 @@ hardcoded core branches and legacy adapters. Target: 0.11 / P1.
 - [x] Collect project-analyzer artifacts through the generic storage path.
 - [x] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
 - [x] Add cross-repository `weave-code` integration for declared types and `_code` artifacts.
-- [ ] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
-- [ ] Remove legacy adapters after every first-party conformance and parity suite passes.
+- [x] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
+- [x] Remove legacy adapters after every first-party conformance and parity suite passes.
+- [x] Require descriptor-capable `weave-git`/`weave-code` and record the minimum extension line.
 
 ## Cross-cutting
 

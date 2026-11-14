@@ -342,15 +342,26 @@ Migration gate:
 
 ## 11. Compatibility and Migration
 
-1. **Additive release:** protocol fields, manifest declarations and validation are added.
-2. **Dual read:** core translates legacy `repository`/`projects`/`commits` and typed options into
-   generic descriptors inside one deprecated adapter.
+1. **Additive release:** protocol fields, manifest declarations and validation were added.
+2. **Dual read:** core translated legacy `repository`/`projects`/`commits` and typed options into
+   generic descriptors inside a deprecated adapter.
 3. **Producer migration:** `weave-git` emits descriptors, namespaces, artifacts, `source_metadata`
    and provider options; `weave-code` emits typed project documents and artifacts.
-4. **Core simplification:** `engine/operations` deletes provider/analyzer-specific appliers; graph
-   defaults and MCP provenance become policy/data.
-5. **Legacy removal:** after the next minor release and a raised extension floor, delete the adapter
-   and typed fields.
+4. **Core simplification:** `engine/operations` no longer interprets source or analyzer domain
+   models; graph defaults and MCP provenance are policy/data.
+5. **Legacy removal:** the adapter and typed source response fields are removed. Core requires
+   descriptor-capable extensions.
+
+Minimum supported extension line for this core:
+
+```text
+weave >= 0.11.0
+weave-git >= 0.11.0
+weave-code >= 0.11.0
+```
+
+Older extension releases must be upgraded before use. The protocol version remains
+`weave.source/v1` and `weave.cli/v1`; the required fields are now the generic descriptors.
 
 ## 12. Acceptance Criteria
 

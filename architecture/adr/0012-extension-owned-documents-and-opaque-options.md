@@ -104,6 +104,8 @@ project-analysis contract is likewise shaped around `weave-code`.
   extension functionality is allowed to change implementation, but not observable outcomes.
 - The first-party git and code extensions must ship compatible descriptors before core removes the
   legacy path.
+- The legacy path is removed in the 0.11 line: core requires descriptor-capable `weave-git` and
+  `weave-code` builds.
 
 ## Related Documents
 
