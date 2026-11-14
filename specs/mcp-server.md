@@ -231,7 +231,8 @@ ping
 ```
 
 - `notifications/initialized` emits no response.
-- `tools/list` returns `{"tools": [...]}`.
+- `tools/list` returns `{"tools": [...]}`. Each descriptor uses the MCP wire names `name`,
+  `description` and `inputSchema` (camelCase) for its JSON Schema.
 - `tools/call` takes `{"name": "<tool>", "arguments": {...}}`.
 - Success result:
 

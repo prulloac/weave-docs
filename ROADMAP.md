@@ -2,9 +2,9 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v0.10.0 is the current pre-1.0 release for `weave`; `weave-git` remains at v0.9.0.** Both
+Status: **v0.10.1 is the current pre-1.0 release for `weave`; `weave-git` remains at v0.9.0.** Both
 are published; the tag and publish record lives in [release-checklist.md](release-checklist.md).
-Other first-party members remain at v0.8.0 and are compatible with `weave v0.10.0`. The core engine,
+Other first-party members remain at v0.8.0 and are compatible with `weave v0.10.1`. The core engine,
 introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion,
 privacy directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets,
 codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
