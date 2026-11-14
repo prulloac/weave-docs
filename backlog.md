@@ -253,6 +253,7 @@ hardcoded core branches and legacy adapters. Target: 0.11 / P1.
 - [x] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
 - [x] Collect project-analyzer artifacts through the generic storage path.
 - [x] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
+- [x] Add cross-repository `weave-code` integration for declared types and `_code` artifacts.
 - [ ] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
 - [ ] Remove legacy adapters after every first-party conformance and parity suite passes.
 
