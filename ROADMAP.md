@@ -444,8 +444,9 @@ Release order: `weave v0.9.0` → `weave-git v0.9.0`. The tag and verification r
 
 Spec: [Generic Extension Output Boundary](specs/extension-output-boundary.md). Status: stable
 specification; decision
-[ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md). BDD scenarios are
-written and await approval before TDD.
+[ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md). Core descriptor
+application, validation, opaque provider options, generic source metadata and a non-git fixture are
+implemented. Artifacts, relation-default policy and first-party producer migration remain.
 
 **Critical path:**
 

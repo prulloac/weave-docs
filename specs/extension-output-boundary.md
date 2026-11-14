@@ -116,6 +116,7 @@ Unknown response fields are ignored by core.
 | `body` | Optional body text, bounded by the role response limit |
 | `metadata` | Extension-owned versioned metadata |
 | `scope` | Optional bundle-relative path prefix; omitted means no containment |
+| `consumes` | Optional bundle-relative file paths replaced by this synthetic document |
 
 Rules:
 
@@ -123,6 +124,8 @@ Rules:
 - IDs are unique after all documents are assembled.
 - A document may not overwrite a parsed file document.
 - `scope` with `""` means the bundle root; an omitted `scope` means no automatic containment.
+- `consumes` removes the named parsed file documents because the synthetic document carries their
+  content, as a repository document does with the root README.
 - For each document with `scope`, core adds generic `contains` edges to every file document under
   that path. The deepest scope owns nested files; the repository/root scope still contains all files.
 - Synthetic documents are excluded from the raw file tree but are written to artifact-backed export

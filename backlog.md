@@ -225,27 +225,32 @@ Completed. Add new items above the Done list and re-prioritize them when needed.
 | --- | --- | --- | --- | --- | --- | --- |
 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | - | in-progress |
 
-ADR 0012 is accepted and the spec is stable. BDD scenarios are written and await approval before
-TDD. Target: 0.11 / P1.
+ADR 0012 is accepted and the spec is stable. BDD scenarios are approved. The core descriptor path,
+validation, opaque provider options, generic source metadata and a non-git fixture are implemented;
+fine-grained migration of artifacts, default relation policy and first-party producers remains.
+Target: 0.11 / P1.
 
 ### Extension boundary follow-ups
 
 - [x] Accept ADR 0012 and approve the generic extension output boundary spec.
 - [x] Write BDD scenarios and link the planned executable coverage.
-- [ ] Approve the BDD scenarios before writing failing tests.
-- [ ] Add manifest declarations for document namespaces, artifact namespaces and relation kinds.
-- [ ] Add generic synthetic document, relation, artifact and source-metadata types.
-- [ ] Add namespace, relation-kind, path, size and duplicate validation.
-- [ ] Replace `engine/operations` source/project/commit/code appliers with a generic applier.
-- [ ] Move `contains`/`depends_on`/`parent_of` defaults out of `engine/graph` into active-extension
-  policy.
-- [ ] Replace typed source options with opaque `provider_options`; keep CLI flags as sugar.
+- [x] Approve the BDD scenarios before writing failing tests.
+- [x] Add manifest declarations for document namespaces, artifact namespaces and relation kinds.
+- [x] Add generic synthetic document, relation, artifact and source-metadata types.
+- [x] Add namespace, relation-kind, path, size and duplicate validation.
+- [x] Add the generic source output path and keep the legacy source/project adapters.
+- [x] Replace typed source options with opaque `provider_options`; keep CLI flags and typed fields
+  as migration sugar.
+- [x] Make MCP source provenance expose the generic metadata map.
+- [x] Add conformance fixtures proving a non-git provider can add documents and relation kinds.
+- [x] Let project analyzers declare document types and content kinds.
+- [ ] Persist and export generic artifacts; remove the hardcoded `_code`/`_sources` writers.
+- [ ] Move `contains`/`depends_on`/`parent_of` default policy out of `engine/graph` into
+  active-extension declarations.
 - [ ] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
 - [ ] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
-- [ ] Make MCP source provenance `provider` plus metadata.
-- [ ] Keep one-release legacy adapters for old source/project responses and typed options.
 - [ ] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
-- [ ] Add conformance fixtures proving a new provider and analyzer need no core changes.
+- [ ] Remove legacy adapters after every first-party conformance and parity suite passes.
 
 ## Cross-cutting
 
