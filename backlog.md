@@ -177,7 +177,13 @@ documentation items are also complete. Released in `weave v0.9.0` and `weave-git
 
 ### Git source follow-ups
 
-Completed. Add new items above the Done list and re-prioritize them when needed.
+Open items are listed first; completed items follow under **Done**. Add new items above the Done list
+and re-prioritize them when needed.
+
+- [ ] Snapshot diff: `weave-git` compares two revisions (refs or commit-pinned snapshots) and reports
+  added, removed and changed documents, with changed relations and frontmatter fields. Core only
+  renders the declared output and contains no git logic. Open decision: how a source provider exposes
+  a diff request on `weave.source/v1`, since extensions currently expose roles, not subcommands.
 
 **Done**
 
@@ -247,7 +253,8 @@ descriptor-capable `weave-git` and `weave-code` are required. Minimum supported 
   migration.
 - [x] Move default relation policy into persisted active-extension declarations; reads append them to
   core defaults.
-- [ ] Remove the hardcoded `_code`/`_sources` writers after extension producers migrate.
+- [ ] Remove the hardcoded `_code`/`_sources` writers after extension producers migrate. Code check
+  (2026-11-15): no non-test writer literals remain; the owner should verify and close this item.
 - [x] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
 - [x] Collect project-analyzer artifacts through the generic storage path.
 - [x] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
@@ -255,6 +262,57 @@ descriptor-capable `weave-git` and `weave-code` are required. Minimum supported 
 - [x] Remove hardcoded `_repo`/`_project`/`_package`/`_commit`/`Code*`/`_code` branches after migration.
 - [x] Remove legacy adapters after every first-party conformance and parity suite passes.
 - [x] Require descriptor-capable `weave-git`/`weave-code` and record the minimum extension line.
+
+## Tier 13 — Documentation integrity
+
+Drift found in the documentation audit. Each row fixes one inconsistency or gap. Items that change a
+spec or an accepted ADR need the usual approval before any `weave` work starts.
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Product version source and cross-document version lint: the git tag is the source (`release.yml` injects it into `weave version`); code stores no version | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
+| Reconcile the version narrative (ROADMAP headings, backlog "0.7 includes every tier", architecture key decisions, ADR 0009 title) | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
+| Workspace registry schema version: code has v8 (registry), v9 (provider columns) and v10 (extension tables); corrected in the specs and architecture index | [storage-and-sync.md](specs/storage-and-sync.md) | - | - | - | - | backlog |
+| Remove delivery status, milestones and "work after" text from the architecture index; link the roadmap | [architecture/index.md](architecture/index.md) | - | - | - | - | backlog |
+| Reconcile Feature Register and backlog status for #42, #43 and #44 and their tier rows | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
+| Add a Feature Register row for keyword and fuzzy search, or record the foundation exception in one place | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | - | - | - | - | backlog |
+| Fix the contradiction in the git follow-ups: the hardcoded `_code`/`_sources` writer item is unchecked while the branch-removal item is checked | [backlog.md](backlog.md) | - | - | - | - | backlog |
+| Replace the duplicated enrichment payloads in the privacy and extensions architecture with a link to the IPC spec | [privacy-and-extensions.md](architecture/privacy-and-extensions.md) | - | - | - | - | backlog |
+| Remove phase-history wording from the extension IPC spec ("This slice", description) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Correct the ROADMAP §2 hybrid row to BM25 + fuzzy for persistent search | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
+| Confirm the ADR 0002 "v1.0 database location" wording and the policy for fixing typos in accepted ADRs | [ADR 0002](architecture/adr/0002-config-paths-and-db-location.md) | - | - | - | - | backlog |
+| Extend docs checks to cross-validate spec frontmatter, the specs index, the register and the backlog, not only reachability | [STYLE.md](STYLE.md) | - | - | - | - | backlog |
+| Release or correct the extension minimum line: `weave-git` (tag `v0.9.0`) and `weave-code` (tag `v0.8.0`) have unreleased descriptor work, while the boundary spec requires `>= 0.11.0` | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | - | - | - | backlog |
+
+## Tier 14 — Extension ergonomics
+
+Makes extension authoring and operation practical without core changes to first-party extensions.
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| `weave extensions check <name>`: validate the manifest and run canned protocol requests | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| `weave extensions new --role <role> <name>`: scaffold an executable, manifest and fixtures | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Batched request and response envelopes for enrichment and scoring, keeping the single-item form | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages | [ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md) | - | - | - | - | backlog |
+| Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Protocol version negotiation: enforce `requires.min_version` and declare a supported protocol range | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Extension authoring guide for third-party developers in the `weave` repository | [README.md](README.md) | - | - | - | - | backlog |
+
+## Tier 15 — Core features
+
+Proposed core capabilities. Each needs a spec before work starts and a register row when promoted to
+the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-git` (Tier 11).
+
+| Feature | Spec | PR | Spec | BDD | TDD | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Per-type frontmatter schemas in `.weave/types/*.yaml`, checked by `weave audit` | - | - | - | - | - | backlog |
+| `weave mv` with inbound link rewriting, a changeset and `--dry-run` | - | - | - | - | - | backlog |
+| Field filters in `weave search` (for example `type:adr keywords:sqlite`) | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | - | - | - | - | backlog |
+| Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [node-graph-engine.md](specs/node-graph-engine.md) | - | - | - | - | backlog |
+| SARIF output for `weave audit` to surface gate failures in code-scanning UIs | [weave-audit.md](specs/weave-audit.md) | - | - | - | - | backlog |
+| Enrichment caching by content hash, with `--force` to bypass | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Pluggable tokenizer or analyzer role for language-specific stemming. Needs a decision: it reverses the current non-goal "no synonyms or stemming yet" | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
 
 ## Cross-cutting
 
@@ -337,6 +395,197 @@ Execution waves:
 14. 0.8 / P1: `weave-code` project analysis, code relations and optional symbol documents.
 
 Critical path: `contract -> parser/graph/search -> storage -> sync -> BM25 -> privacy -> extension runner -> MCP sensitive`.
+
+## Pending Work: Spec, ADR and Dependencies
+
+Classification of every pending row. "Spec" means a new specification or an amendment to an existing
+one, which needs explicit approval before `weave` work starts. "ADR" means a new decision record,
+numbered from `0013` in the order they are accepted. Items marked "none" are documentation or
+migration work that the existing contracts already allow.
+
+### Requirements
+
+| Item | Spec | ADR | Notes |
+| --- | --- | --- | --- |
+| Tier 5: watch event delivery (`fsnotify`) | amend [watch-mode.md](specs/watch-mode.md) | none | Post-1.0 |
+| Tier 11: snapshot diff in `weave-git` | amend [weave-git.md](specs/weave-git.md) and the source protocol | ADR | Adds a new operation to the generic source role, which extends the boundary in ADR 0012 |
+| Tier 12: remove hardcoded `_code`/`_sources` writers | none | none | Migration gated by the behavior-preservation rule in ADR 0012 |
+| Tier 13: single product version source and lint | none | none | Update [STYLE.md](STYLE.md) |
+| Tier 13: reconcile version narrative | none | only if the versioning policy changes | ADR 0009 is accepted and immutable, so a policy change needs a superseding ADR |
+| Tier 13: workspace schema version | Correction only (done in this commit) | none | Verified against `storage/sqlite/schema.go` |
+| Tier 13: remove delivery status from architecture index | none | none | Documentation only |
+| Tier 13: reconcile register and backlog status (#42–#44) | none | none | ROADMAP and backlog only |
+| Tier 13: keyword and fuzzy register row | none | none | Could record a foundation exception in STYLE.md |
+| Tier 13: backlog `_code`/`_sources` contradiction | none | none | Backlog only |
+| Tier 13: privacy and extensions duplicated payloads | none | none | Link to [extension-ipc.md](specs/extension-ipc.md) instead |
+| Tier 13: IPC spec phase wording | amend [extension-ipc.md](specs/extension-ipc.md) (wording only) | none | Still needs approval under the spec rules |
+| Tier 13: ROADMAP §2 hybrid row | none | none | ROADMAP only |
+| Tier 13: ADR 0002 wording and typo policy | none | policy decision; new ADR only if adopted as a rule | ADRs are immutable; errata need a rule |
+| Tier 13: extend docs checks | none | none | Tooling and STYLE.md |
+| Tier 14: `weave extensions check` | amend [extension-ipc.md](specs/extension-ipc.md) with a conformance section | none | New CLI behavior, so BDD scenarios are needed |
+| Tier 14: `weave extensions new --role` | amend [extension-ipc.md](specs/extension-ipc.md) or a new authoring spec | none | New CLI behavior, so BDD scenarios are needed |
+| Tier 14: batched envelopes | amend [extension-ipc.md](specs/extension-ipc.md); additive contract change | none | Schema change, so `schema-diff` applies |
+| Tier 14: parallel invocations | amend [extension-ipc.md](specs/extension-ipc.md) §2.2 | ADR | Reverses the sequential and deterministic invocation decision |
+| Tier 14: role descriptor registry | none | ADR | Extends ADR 0012; no behavior change, so the behavior-preservation gate applies |
+| Tier 14: bundle-local trust gate | amend [extension-ipc.md](specs/extension-ipc.md) §2.1 | ADR | Changes a security default that the architecture calls deliberate |
+| Tier 14: protocol version negotiation | amend [extension-ipc.md](specs/extension-ipc.md) | ADR | Changes the versioning policy in ROADMAP §9 |
+| Tier 14: authoring guide | none | none | End-user guide in `weave/docs/guides`; no BDD |
+| Tier 15: per-type frontmatter schemas | new spec | ADR | Changes the Weave profile in invariant 3 |
+| Tier 15: `weave mv` with link rewriting | new spec | ADR | Reverses the non-goal "No writes to source bundles" |
+| Tier 15: search field filters | amend [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | none | Requires a calibration baseline review |
+| Tier 15: graph export formats | amend [node-graph-engine.md](specs/node-graph-engine.md) or a new small spec | none | Additive output |
+| Tier 15: SARIF output for audit | amend [weave-audit.md](specs/weave-audit.md) | none | New output format |
+| Tier 15: enrichment caching | amend [extension-ipc.md](specs/extension-ipc.md) §2.3 | none | Changes the re-run replacement rule |
+| Tier 15: pluggable tokenizer role | new spec | ADR | Reverses the non-goal "No synonyms or stemming yet" and changes ranking, so calibration review applies |
+
+### Dependencies
+
+Arrows read "must come before". Items marked "soft" are preferred but not required.
+
+Documentation integrity:
+
+```text
+backlog contradiction ─┐
+ROADMAP hybrid row     │
+privacy duplication    │
+IPC phase wording ─────┼──────────────────────────────┐
+                       │                              │
+architecture status ───┼─► version narrative ◄─ version source
+schema version ────────┘        │                     │
+                                │                     │
+register/backlog #42–#44 ───────┼─────────────────────┤
+keyword register row ───────────┘                     ▼
+                                              docs lint extension
+```
+
+Feature sequencing:
+
+```text
+Tier 12 writer removal ──► role registry ──► batching ──► parallel invocations
+                               │   │              ▲
+                               │   └─(soft)─► scaffold ──► authoring guide
+                               │                  ▲
+                               │             extensions check ──┘
+                               │                  ▲
+                               │       IPC spec wording (D12)
+                               │
+                               ├──► snapshot diff (also needs source-protocol ADR)
+                               └──► tokenizer role (also needs non-goal ADR)
+
+version negotiation ──► batching
+version negotiation ──► enrichment caching
+trust gate ──► authoring guide
+per-type schemas ──(soft)──► SARIF output
+mv ──(needs non-goal ADR)
+field filters ──(soft)──► tokenizer (both change search evidence; sequence the calibration reviews)
+```
+
+Dependency table:
+
+| Item | Depends on | Blocks |
+| --- | --- | --- |
+| Backlog contradiction | none | Register and backlog reconciliation |
+| Architecture status removal | none | Version narrative |
+| Schema version correction (done) | none | Version narrative |
+| Version source | none | Version narrative, docs lint |
+| Version narrative | architecture status removal, schema version, version source, ADR if policy changes | Docs lint |
+| Register and backlog reconciliation | backlog contradiction | Docs lint |
+| Keyword register row | none | Docs lint, promoting Tier 15 items |
+| Docs lint extension | version source, version narrative, reconciliation, keyword register row | Gate for every new spec and register row |
+| IPC spec wording | approval | Every IPC spec amendment (avoids conflicting edits) |
+| Tier 12 writer removal | none | Role registry, snapshot diff |
+| Role registry | Tier 12 writer removal | Batching, parallel invocations, tokenizer role, snapshot diff, scaffold (soft) |
+| `extensions check` | IPC spec wording | Scaffold (soft), batching and parallelism tests, authoring guide |
+| Scaffold | `extensions check` (soft), role registry (soft) | Authoring guide |
+| Version negotiation | IPC spec wording | Batching, enrichment caching |
+| Batching | version negotiation, role registry (soft), `extensions check` | Parallel invocations (soft) |
+| Parallel invocations | batching (soft), ADR | none |
+| Trust gate | IPC spec wording, ADR | Authoring guide |
+| Enrichment caching | version negotiation | none |
+| Snapshot diff | Tier 12 writer removal, role registry (soft), source-protocol ADR | none |
+| Per-type schemas | ADR, contract additive change | SARIF (soft) |
+| SARIF output | per-type schemas (soft) | none |
+| `weave mv` | non-goal ADR | none |
+| Field filters | calibration review | Tokenizer role (soft) |
+| Graph export | none | none |
+| Tokenizer role | role registry, non-goal ADR, field filters (soft) | none |
+| Authoring guide | `extensions check`, scaffold, trust gate | none |
+| fsnotify watch | none (post-1.0) | none |
+
+### Sequencing
+
+Documentation integrity comes first. Within the tier:
+
+1. **Now, no approval needed:** backlog contradiction, ROADMAP hybrid row, privacy duplication, architecture
+   status removal, schema version resolution, keyword register row, version source, register and backlog
+   reconciliation.
+2. **Now, needs a decision:** ADR 0002 errata policy, version narrative policy (ADR or not), IPC wording
+   approval.
+3. **After steps 1–2:** version narrative, then the docs lint extension last, so it checks a consistent
+   state.
+
+Features follow the docs work:
+
+1. Tier 12 writer removal, then the role registry, which many later items touch.
+2. Decision records for the new ADRs (trust gate, parallel invocations, version negotiation, source
+   protocol, non-goal revisions, per-type schema, tokenizer).
+3. Specs and BDD for `extensions check`, version negotiation and field filters; then `extensions check`,
+   negotiation, field filters, graph export and per-type schemas.
+4. Scaffold, batching, enrichment caching, SARIF and snapshot diff.
+5. Parallel invocations, the authoring guide, the tokenizer role and fsnotify (post-1.0).
+
+### Release Line
+
+Behavior changes that add capability without changing an existing invocation, file, envelope or
+default ship in the 0.X line. A change is breaking only if one of those changes meaning; breaking
+changes wait for `contract/v2` or `weave.cli/v2` after 1.0.
+
+| Item | Classification | Line |
+| --- | --- | --- |
+| Batched envelopes | New behavior; single-item form kept | 0.X |
+| Parallel invocations | New behavior; result order unchanged | 0.X |
+| Trust gate, warn first | New behavior | 0.X |
+| Trust gate, default-deny | Breaking for bundles that rely on `.weave/bin` | Decision needed; 0.X only as opt-in |
+| Version negotiation, warnings | New behavior | 0.X |
+| Version negotiation, refusal | Breaking for extensions that run today | Decision needed; warn first |
+| Enrichment caching | New behavior; opt-in or bypassed with `--force` | 0.X |
+| Per-type schemas (opt-in config) | New behavior | 0.X |
+| `weave mv` | New command | 0.X |
+| Search field filters | Additive flags | 0.X |
+| Graph export formats | Additive output | 0.X |
+| SARIF output | Additive output | 0.X |
+| Tokenizer role | New opt-in role; default ranking unchanged | 0.X |
+| Snapshot diff | New capability in `weave-git` | 0.X |
+| fsnotify watch events | New non-breaking behavior | 0.X eligible; the register says post-1.0, so that row needs an edit if confirmed |
+
+Feature work does not reset the 1.0 gate. Only confirmed defects do: a fix on `main` restarts the
+30-day window, and the earliest 1.0.0 date is 2026-12-10.
+
+### Drift Analysis (2026-11-15)
+
+Checked against the code, tags and migrations before any item was started:
+
+- **Schema:** `storage/sqlite/schema.go` sets `schemaVersion = 10`. v8 creates the `sources` registry,
+  v9 adds `provider` and `metadata_json`, and v10 adds `extension_artifacts` and
+  `extension_relations`. Three specs and the architecture index named v10 for the registry; they are
+  corrected in this commit.
+- **Product version:** no version is stored in code. `release.yml` injects the git tag into
+  `weave version` with `-X main.version`. The latest tag is `v0.10.1`. Remaining drift is listed in the
+  Tier 13 version rows: ADR 0009, architecture key decisions, the ROADMAP §2 and §3 headings and the
+  backlog's "0.7 includes every tier".
+- **Extension line:** `weave-git` is tagged `v0.9.0` and `weave-code` `v0.8.0`, but both have
+  descriptor work on `main` that is not tagged. The generic boundary spec requires `>= 0.11.0` for both,
+  which no tag provides. ROADMAP #44 calls the boundary shipped, so the claim holds on `main` only.
+- **Legacy writers:** no non-test code writes `_code`, `_sources`, `_repo`, `_project`, `_package` or
+  `_commit` literals. The only `_repo` in non-test code is a comment in `engine/operations/write.go`.
+  The unchecked Tier 12 item appears complete; the owner should verify and close it.
+- **Pending features, verified absent:** per-type schemas (no `.weave/types` reference), `extensions
+  check` and `extensions new` (no subcommand), SARIF, `weave mv`, a `graph --format` flag (only `export`
+  has `--format`), enrichment caching and a tokenizer or stemming path. Search has no type or tag filters;
+  `list` has them (`cmd/weave/flags.go`).
+- **Matches the docs:** `.weave/bin` is searched before `PATH` and the first match wins (`discoverDir`),
+  the default timeout is 5 seconds, and the enrichment request carries `doc_path` and `bundle_root`.
+  No goroutines in `engine/extensions`, so invocations are sequential as the spec states.
 
 ## Maintenance
 
