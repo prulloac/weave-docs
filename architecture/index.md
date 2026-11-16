@@ -213,6 +213,8 @@ Milestone status is tracked in the [roadmap phases](../ROADMAP.md#8-phased-roadm
 | [ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md) | Product versioning moved to 0.7.0 pre-1.0; 1.0.0 is the stability milestone |
 | [ADR 0010](adr/0010-extension-provided-graph-relations-and-project-analysis.md) | Extensions contribute graph relations from project-wide analysis; calls and references are opt-in |
 | [ADR 0011](adr/0011-git-repositories-as-source-providers.md) | Git repositories are source providers; commit-pinned snapshots become repository graph nodes |
+| [ADR 0012](adr/0012-extension-owned-documents-and-opaque-options.md) | Extension output as generic synthetic documents, relations, artifacts and opaque provider options |
+| [ADR 0013](adr/0013-role-descriptor-registry.md) | One descriptor per extension role drives dispatch, validation and limits |
 | [Keyword + Fuzzy Search spec](../specs/keyword-fuzzy-search.md) | Detailed data model, algorithms, CLI and calibration |
 | [Contract layer](layers/contract.md) | Documents, keywords, graph and search contract |
 | [Engine layer](layers/engine-go.md) | Parser, graph, search and navigation |

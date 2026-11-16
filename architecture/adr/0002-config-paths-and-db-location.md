@@ -158,6 +158,11 @@ property shapes, and newly required properties.
 Breaking changes require `weave.contract/v2` or `weave.cli/v2`. Additive fields need a schema and
 golden update in the same change.
 
+## Errata
+
+- 2026-11-15: "v1.0" in this record refers to the release line later numbered 0.7.0 by
+  [ADR 0009](0009-product-versioning-0.7-pre-1.0.md). The decisions are unchanged.
+
 ## Related Documents
 
 - [Configuration specification](../../specs/configuration.md)
