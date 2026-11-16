@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "Extension Subprocess IPC Specification"
-description: "Git-style weave-<name> subprocess protocol for enrichment and reranking over weave.cli/v1."
+description: "Git-style weave-<name> subprocess protocol for extension roles over weave.cli/v1, with conformance checks and version negotiation."
 tags:
   - "specification"
   - "extensions"
@@ -10,7 +10,7 @@ tags:
 generated:
   by: opencode/deepseek-v4.1-flash
   at: "2026-10-28T00:00:00Z"
-status: stable
+status: draft
 ---
 
 # Specification: Extension Subprocess IPC
@@ -19,8 +19,8 @@ status: stable
 
 Weave extensions are standalone executables named `weave-<name>`. Core starts one process per
 invocation, writes one JSON request to stdin, reads one JSON response from stdout and waits for exit.
-This slice ships the runner plus the two reference consumers: **enrichment during writes** and
-**reranking during search**.
+The runner serves the enrichment, project-analysis, reranking and embedding roles defined in §2:
+**enrichment during writes** and **reranking during search** are the reference consumers.
 
 Extension IPC is the shared transport for later crypto providers; that contract remains in
 [External Crypto Providers](external-crypto-providers.md) and is out of scope here.
@@ -346,6 +346,56 @@ weave codecs list [<path>] --json
 - Enrichment warnings are counted in `IngestReport.warnings` or `SyncReport.warnings`; search
   warnings only go to stderr and do not change the exit code.
 - JSON stdout stays a single valid envelope; diagnostics go to stderr.
+
+### 2.8 Conformance Check
+
+```sh
+weave extensions check <name> [<path>] [--timeout 5s] [--json]
+```
+
+- Resolves `<name>` with the discovery rules in §2.1. When `<path>` is given, the bundle-local
+  `.weave/bin` is searched first. An unknown name fails with `EXTENSION_NOT_FOUND`, exit `2`.
+- Runs `weave-<name> --describe --json` and validates the manifest as §2.1 requires. A failed
+  manifest is reported as a failed `manifest` check; no role checks run.
+- For each declared role, sends the canonical request for that role from the
+  `contract/v1/golden/extension-ipc` corpus and validates the response with the validator used at
+  runtime. Roles that are not declared are not checked.
+- Uses canned requests only. The check never reads or writes a bundle or database, and it makes no
+  network call beyond what the extension performs itself.
+- `--timeout` applies to each invocation, with the default from §2.2.
+- A role whose response fails validation fails with the code the runtime would report:
+  `EXTENSION_PROTOCOL` for malformed output and timeouts as defined in §5.
+- JSON output is one envelope:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "extension": "rerank",
+  "ok": false,
+  "checks": [
+    {"check": "manifest", "status": "pass"},
+    {"check": "rerank", "status": "fail", "code": "EXTENSION_PROTOCOL", "message": "rerank_score is not numeric"}
+  ]
+}
+```
+
+- Checks are sorted by name. `ok` is `true` only when every check passes.
+- Human output prints one line per check and a final summary line.
+- The exit status is `0` when `ok` is `true`. When any check fails, the status is the non-zero status
+  the error contract defines for a failed extension, not a usage error.
+
+### 2.9 Version Negotiation
+
+- Manifests may declare `protocols`, a list of protocol identifiers the extension speaks, for example
+  `["weave.cli/v1"]`. Core ignores identifiers it does not know; `extensions check` reports them.
+- For each `requires` entry that names `weave`, core compares `min_version` with its own version using
+  semantic versioning. When the core version is older, core writes one warning to stderr for the
+  invocation and continues. The invocation is not refused.
+- A core build without a release version (`dev`) skips the comparison and emits no warning.
+- `requires` entries for other extensions are checked only by `weave extensions check`, not at
+  runtime.
+- Refusing an extension whose requirements are not met is out of scope for this specification. It
+  changes behavior for existing users and needs a decision recorded in an ADR first.
 
 ## 3. Behavior
 

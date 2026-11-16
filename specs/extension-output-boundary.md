@@ -352,7 +352,7 @@ Migration gate:
 5. **Legacy removal:** the adapter and typed source response fields are removed. Core requires
    descriptor-capable extensions.
 
-Minimum supported extension line for this core:
+Minimum extension line for the 0.11.0 core release line:
 
 ```text
 weave >= 0.11.0
@@ -360,7 +360,8 @@ weave-git >= 0.11.0
 weave-code >= 0.11.0
 ```
 
-Older extension releases must be upgraded before use. The protocol version remains
+This line is not yet tagged. The released `weave-git` v0.9.0 and `weave-code` v0.8.0 predate
+descriptors and do not satisfy it. Older extension releases must be upgraded before use. The protocol version remains
 `weave.source/v1` and `weave.cli/v1`; the required fields are now the generic descriptors.
 
 ## 12. Acceptance Criteria
