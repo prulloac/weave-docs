@@ -2,8 +2,9 @@
 
 Tracked work queue for the Weave vision: "To weave flat files into a living universe of knowledge."
 
-**0.7 includes every tier below except rows marked `stretch`.** Persistence, privacy, extensions and
-MCP are 0.7 scope, not a later platform; the tiers and waves are internal delivery order.
+**Every tier below ships in the current release line except rows marked `stretch`.** Persistence,
+privacy, extensions and MCP are part of the platform, not a later version; the tiers and waves are
+internal delivery order.
 
 Status legend:
 
@@ -155,7 +156,7 @@ Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no o
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | x | x | review |
+| Code knowledge extension | [weave-code.md](specs/weave-code.md) | - | x | x | x | green |
 
 Specification is stable. Slices C1-C5 are implemented and released in v0.8.0: core protocol and
 graph relations, eleven-language parsing, cross-file relations, optional symbols and external
@@ -174,6 +175,9 @@ snapshot limits, explicit cache GC, submodule/LFS opt-ins, manifest-backed `Proj
 `ExternalPackage` nodes with `depends_on` edges, opt-in `Commit` history with `parent_of` edges and
 deterministic host URLs. The P2 release, integration CI, BDD coverage and schema/`contains`
 documentation items are also complete. Released in `weave v0.9.0` and `weave-git v0.9.0`.
+
+Register #43 is shipped in `weave-git` v0.9.0. This tier stays `in-progress` until the open snapshot-diff
+follow-up is resolved.
 
 ### Git source follow-ups
 
@@ -229,7 +233,7 @@ and re-prioritize them when needed.
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | x | green |
+| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | x | in-progress |
 
 ADR 0012 is accepted and the spec is stable. The generic boundary is implemented end to end;
 descriptor-capable `weave-git` and `weave-code` are required. Minimum supported line:
@@ -270,18 +274,18 @@ spec or an accepted ADR need the usual approval before any `weave` work starts.
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Product version source and cross-document version lint: the git tag is the source (`release.yml` injects it into `weave version`); code stores no version | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
-| Reconcile the version narrative (ROADMAP headings, backlog "0.7 includes every tier", architecture key decisions, ADR 0009 title) | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
-| Workspace registry schema version: code has v8 (registry), v9 (provider columns) and v10 (extension tables); corrected in the specs and architecture index | [storage-and-sync.md](specs/storage-and-sync.md) | - | - | - | - | backlog |
-| Remove delivery status, milestones and "work after" text from the architecture index; link the roadmap | [architecture/index.md](architecture/index.md) | - | - | - | - | backlog |
-| Reconcile Feature Register and backlog status for #42, #43 and #44 and their tier rows | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
-| Add a Feature Register row for keyword and fuzzy search, or record the foundation exception in one place | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | - | - | - | - | backlog |
-| Fix the contradiction in the git follow-ups: the hardcoded `_code`/`_sources` writer item is unchecked while the branch-removal item is checked | [backlog.md](backlog.md) | - | - | - | - | backlog |
-| Replace the duplicated enrichment payloads in the privacy and extensions architecture with a link to the IPC spec | [privacy-and-extensions.md](architecture/privacy-and-extensions.md) | - | - | - | - | backlog |
+| Product version source and cross-document version lint: the git tag is the source (`release.yml` injects it into `weave version`); code stores no version | [ROADMAP.md](ROADMAP.md) | - | - | - | - | review |
+| Reconcile the version narrative (ROADMAP headings, backlog "0.7 includes every tier", architecture key decisions); ADR 0009 title stays, since ADRs are immutable | [ROADMAP.md](ROADMAP.md) | - | - | - | - | review |
+| Workspace registry schema version: code has v8 (registry), v9 (provider columns) and v10 (extension tables); corrected in the specs and architecture index | [storage-and-sync.md](specs/storage-and-sync.md) | - | - | - | - | review |
+| Remove delivery status, milestones and "work after" text from the architecture index; link the roadmap | [architecture/index.md](architecture/index.md) | - | - | - | - | review |
+| Reconcile Feature Register and backlog status for #42, #43 and #44 and their tier rows | [ROADMAP.md](ROADMAP.md) | - | - | - | - | review |
+| Add a Feature Register row for keyword and fuzzy search, or record the foundation exception in one place | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | - | - | - | - | review |
+| Fix the contradiction in the git follow-ups: the hardcoded `_code`/`_sources` writer item is unchecked while the branch-removal item is checked | [backlog.md](backlog.md) | - | - | - | - | review |
+| Replace the duplicated enrichment payloads in the privacy and extensions architecture with a link to the IPC spec | [privacy-and-extensions.md](architecture/privacy-and-extensions.md) | - | - | - | - | review |
 | Remove phase-history wording from the extension IPC spec ("This slice", description) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Correct the ROADMAP §2 hybrid row to BM25 + fuzzy for persistent search | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
+| Correct the ROADMAP §2 hybrid row to BM25 + fuzzy for persistent search | [ROADMAP.md](ROADMAP.md) | - | - | - | - | review |
 | Confirm the ADR 0002 "v1.0 database location" wording and the policy for fixing typos in accepted ADRs | [ADR 0002](architecture/adr/0002-config-paths-and-db-location.md) | - | - | - | - | backlog |
-| Extend docs checks to cross-validate spec frontmatter, the specs index, the register and the backlog, not only reachability | [STYLE.md](STYLE.md) | - | - | - | - | backlog |
+| Extend docs checks to cross-validate spec frontmatter, the specs index, the register and the backlog, not only reachability | [STYLE.md](STYLE.md) | - | - | - | - | review |
 | Release or correct the extension minimum line: `weave-git` (tag `v0.9.0`) and `weave-code` (tag `v0.8.0`) have unreleased descriptor work, while the boundary spec requires `>= 0.11.0` | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | - | - | - | backlog |
 
 ## Tier 14 — Extension ergonomics
