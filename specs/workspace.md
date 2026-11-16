@@ -124,7 +124,7 @@ Rules:
 
 ## 6. Source registry and storage
 
-The index database persists a registry in a `sources` table (schema v10):
+The index database persists a registry in a `sources` table (created in schema v8; provider columns added in v9):
 
 | Column | Meaning |
 | --- | --- |
@@ -142,15 +142,15 @@ registry maps `alias` to `bundle_root`; it does not duplicate document data or s
 URI column. For git sources the stable identity lives in the graph while `path` points at the
 provider-owned snapshot.
 
-Migration from v8:
+Migration from v8 to v9:
 
 1. Add `provider` with default `path`.
 2. Add `metadata_json` with default `{}`.
 3. Existing path sources keep their rows and backfill to `provider='path'`.
 
-Migration from v9 adds `extension_artifacts` and `extension_relations`, both keyed by
-`bundle_root`. Existing rows are untouched. Migration from v7 still creates `sources` and backfills
-aliases first, then applies the later columns and extension tables.
+Migration from v9 to v10 adds `extension_artifacts` and `extension_relations`, both keyed by
+`bundle_root`. Existing rows are untouched. Migration from v7 to v8 still creates `sources` and
+backfills aliases first, then the later migrations apply the provider columns and extension tables.
 
 Extension-owned data:
 
