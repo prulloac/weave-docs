@@ -24,13 +24,15 @@ architecture/           current design and boundaries
 architecture/adr/       immutable decisions
 knowledge/              vision and concepts
 scripts/check-links.py  local link checker
+scripts/check-consistency.py  release status, register, backlog and spec index checker
 ```
 
 ## Commands
 
 - Markdown lint: `npx --yes markdownlint-cli2 "**/*.md"`
 - Link and reachability check: `python3 scripts/check-links.py`
-- Both: `python3 scripts/check-links.py && npx --yes markdownlint-cli2 "**/*.md"`
+- Consistency (release status, Feature Register, backlog statuses, spec index): `python3 scripts/check-consistency.py`
+- Both: `python3 scripts/check-links.py && python3 scripts/check-consistency.py && npx --yes markdownlint-cli2 "**/*.md"`
 
 This repository has no Go build or test target; the product and its tests live in `weave`.
 

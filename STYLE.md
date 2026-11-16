@@ -48,6 +48,16 @@ in the sibling [`weave`](https://github.com/prulloac/weave) repository.
 - Every ADR appears in [`architecture/adr/README.md`](architecture/adr/README.md).
 - Every document is reachable from [`README.md`](README.md).
 
+## Versions
+
+- The current `weave` release is stated once, in the status line at the top of
+  [`ROADMAP.md`](ROADMAP.md). Other documents link to the roadmap instead of restating it.
+- Released versions are git tags in the owning repository. Each member has its own tag line.
+- Wave labels such as `0.7` or `0.8` in the roadmap and backlog name delivery waves. They are not
+  product versions.
+- `python3 scripts/check-consistency.py` fails when the status line disagrees with the latest `weave`
+  tag, when a register row or backlog row links a missing spec, or when a spec is not indexed.
+
 ## Voice and structure
 
 - Open with one sentence that states the document's purpose.
