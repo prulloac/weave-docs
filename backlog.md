@@ -282,11 +282,11 @@ spec or an accepted ADR need the usual approval before any `weave` work starts.
 | Add a Feature Register row for keyword and fuzzy search, or record the foundation exception in one place | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | - | - | - | - | review |
 | Fix the contradiction in the git follow-ups: the hardcoded `_code`/`_sources` writer item is unchecked while the branch-removal item is checked | [backlog.md](backlog.md) | - | - | - | - | review |
 | Replace the duplicated enrichment payloads in the privacy and extensions architecture with a link to the IPC spec | [privacy-and-extensions.md](architecture/privacy-and-extensions.md) | - | - | - | - | review |
-| Remove phase-history wording from the extension IPC spec ("This slice", description) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Remove phase-history wording from the extension IPC spec ("This slice", description) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | review |
 | Correct the ROADMAP §2 hybrid row to BM25 + fuzzy for persistent search | [ROADMAP.md](ROADMAP.md) | - | - | - | - | review |
-| Confirm the ADR 0002 "v1.0 database location" wording and the policy for fixing typos in accepted ADRs | [ADR 0002](architecture/adr/0002-config-paths-and-db-location.md) | - | - | - | - | backlog |
+| Confirm the ADR 0002 "v1.0 database location" wording and the policy for fixing typos in accepted ADRs | [ADR 0002](architecture/adr/0002-config-paths-and-db-location.md) | - | - | - | - | review |
 | Extend docs checks to cross-validate spec frontmatter, the specs index, the register and the backlog, not only reachability | [STYLE.md](STYLE.md) | - | - | - | - | review |
-| Release or correct the extension minimum line: `weave-git` (tag `v0.9.0`) and `weave-code` (tag `v0.8.0`) have unreleased descriptor work, while the boundary spec requires `>= 0.11.0` | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | - | - | - | backlog |
+| Release the 0.11.0 extension line: `weave-git` and `weave-code` descriptor work is on `main` but untagged. The boundary spec minimum is corrected to 0.11.0 and is not satisfied by the released v0.9.0 and v0.8.0 | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | - | - | - | backlog |
 
 ## Tier 14 — Extension ergonomics
 
@@ -294,13 +294,13 @@ Makes extension authoring and operation practical without core changes to first-
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| `weave extensions check <name>`: validate the manifest and run canned protocol requests | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8 drafted, awaiting approval) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | `weave extensions new --role <role> <name>`: scaffold an executable, manifest and fixtures | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Batched request and response envelopes for enrichment and scoring, keeping the single-item form | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages | [ADR 0012](architecture/adr/0012-extension-owned-documents-and-opaque-options.md) | - | - | - | - | backlog |
+| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
 | Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Protocol version negotiation: enforce `requires.min_version` and declare a supported protocol range | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Protocol version negotiation: warn on unmet `requires.min_version` and declare a supported protocol range (spec §2.9 drafted; needs an ADR before any refusal behavior) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Extension authoring guide for third-party developers in the `weave` repository | [README.md](README.md) | - | - | - | - | backlog |
 
 ## Tier 15 — Core features
