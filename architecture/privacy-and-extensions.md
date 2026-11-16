@@ -151,60 +151,9 @@ extension role is requested.
 
 ### 2.2 Standard Extension Protocol (`weave.cli/v1`)
 
-#### Ingestion Enrichment Request (`stdin`)
-
-Fired during `weave sync --with-enricher <name>`:
-
-```json
-{
-  "v": "weave.cli/v1",
-  "type": "enrichment_request",
-  "doc_id": "docs/adrs/adr-004.md",
-  "title": "Database Storage Selection",
-  "frontmatter": { "type": "adr", "keywords": ["database", "storage"] },
-  "body": "We decided to adopt pure-Go SQLite..."
-}
-```
-
-#### Ingestion Enrichment Response (`stdout`)
-
-```json
-{
-  "v": "weave.cli/v1",
-  "inferred_keywords": ["sqlite", "cgo-free", "wal"],
-  "custom_metadata": {
-    "summary": "Selection of pure-Go SQLite for zero-CGO static builds."
-  }
-}
-```
-
-#### Reranker Request (`stdin`)
-
-Fired during `weave search <query> --rerank <name>`:
-
-```json
-{
-  "v": "weave.cli/v1",
-  "type": "rerank_request",
-  "query": "zero cgo database",
-  "candidates": [
-    { "id": "docs/adrs/adr-004.md", "lexical_score": 0.82, "fuzzy_score": 0.45 },
-    { "id": "docs/adrs/adr-001.md", "lexical_score": 0.31, "fuzzy_score": 0.10 }
-  ]
-}
-```
-
-#### Reranker Response (`stdout`)
-
-```json
-{
-  "v": "weave.cli/v1",
-  "ranked_candidates": [
-    { "id": "docs/adrs/adr-004.md", "rerank_score": 0.95 },
-    { "id": "docs/adrs/adr-001.md", "rerank_score": 0.15 }
-  ]
-}
-```
+The request and response envelopes for enrichment, reranking, scoring, embeddings and project analysis
+are owned by [Extension Subprocess IPC](../specs/extension-ipc.md) (§2.2 transport, §2.3 enrichment,
+§2.4 project analysis). This document does not repeat them, so each envelope has one owner.
 
 ### 2.3 Extension Guarantees & Fallbacks
 

@@ -7,7 +7,7 @@ okf_version: "0.2"
 Weave is a **local-first related-document database**. It loads OKF bundles into memory or a
 persistent SQLite index, builds concept nodes and link edges, and answers keyword, BM25 and weighted
 fuzzy searches with top-K results. Privacy directives, subprocess extensions, watch reload and an
-MCP server are part of the shipped 0.7 surface.
+MCP server are part of the current surface.
 
 **The UI is retired.** Browser visualization, renderer, mount, lens and Astro are cancelled by
 [ADR 0001](adr/0001-keyword-fuzzy-search-and-ui-retirement.md). The Go engine and CLI are the only
@@ -137,15 +137,17 @@ remains the compatibility promise.
 
 ## Milestones
 
-| Milestone | Scope | Status |
-| --- | --- | --- |
-| A — Base engine | contract, parser, graph, operations, machine CLI | Complete |
-| B — Search v1 | mandatory keywords, weighted fuzzy search, hybrid top-K, calibration, CLI `search` | Complete |
-| C — Cleanup | remove UI, old search and TypeScript implementation; finalize v1 docs | Complete |
-| D — Introspection | `weave audit`, `weave relate`, `weave explain` | Complete |
-| E — Storage & sync | SQLite persistence, incremental sync, watch | Complete |
-| F — Privacy & extensions | Explicit privacy directives and subprocess plugins | Directives, IPC, enrichment, rerank, crypto providers and AI plugin complete |
-| G — MCP | MCP tools over operations | Tools, transport, resources, multi-source and sensitive access complete |
+| Milestone | Scope |
+| --- | --- |
+| A — Base engine | contract, parser, graph, operations, machine CLI |
+| B — Search v1 | mandatory keywords, weighted fuzzy search, hybrid top-K, calibration, CLI `search` |
+| C — Cleanup | remove UI, old search and TypeScript implementation; finalize v1 docs |
+| D — Introspection | `weave audit`, `weave relate`, `weave explain` |
+| E — Storage & sync | SQLite persistence, incremental sync, watch |
+| F — Privacy & extensions | Explicit privacy directives and subprocess plugins |
+| G — MCP | MCP tools over operations |
+
+Milestone status is tracked in the [roadmap phases](../ROADMAP.md#8-phased-roadmap).
 
 ## Dependency Rules
 
@@ -166,7 +168,7 @@ remains the compatibility promise.
 | Decision | Choice |
 | --- | --- |
 | Engine language | Go |
-| Product version | `weave` and `weave-git` 0.9.0; other products 0.8.0; 1.0.0 is the stability milestone (ADR 0009) |
+| Versioning | Product versions are git tags, stated in the [roadmap](../ROADMAP.md); 1.0.0 is the stability milestone ([ADR 0009](adr/0009-product-versioning-0.7-pre-1.0.md)) |
 | Product surface | Go CLI; no UI |
 | Document identity | Bundle-relative path minus `.md` |
 | Required frontmatter | `type` and `keywords` |
@@ -272,23 +274,6 @@ remains the compatibility promise.
 
 ## Status
 
-The core v1 engine plus `weave audit`, `weave relate`, `weave explain`, SQLite storage, permissive
-ingestion, incremental sync and BM25 lexical ranking are implemented. The Go engine parses
-mandatory keywords, builds keyword and fuzzy indexes, returns keyword/fuzzy/hybrid top-K results,
-exposes the `search` CLI command, audits bundles for conformance and graph quality, returns bounded
-graph neighborhoods and explains score components. Bundles are persisted by default in a
-bundle-scoped SQLite database at `~/.weave/index.db`; `--no-db` uses the transient parser.
-Permissive ingestion synthesizes metadata for dirty Markdown, `weave sync` reconciles changed files
-by SHA-256 hash, and persistent hybrid search combines normalized BM25 with fuzzy scores.
-Calibration passes its baseline. The UI and old TypeScript stack are removed.
-
-The 0.9 feature set ships in `weave` and `weave-git` v0.9.0; `weave-ai`, `weave-code`,
-`weave-codec-lz4`, `weave-image` and `weave-skills` remain at v0.8.0 and are compatible with
-`weave v0.9.0`. See the [release checklist](../release-checklist.md). MCP tools, stdio/TCP
-transport, auth, resources and watch reload are available, privacy directives ship with encrypted,
-tokenized and hashed storage, bodies use zstd by default, `weave-<name>` extensions enrich writes,
-rerank and score searches, blob assets and codec extensions are in place, embeddings back semantic
-search, code knowledge adds project analysis and code graph relations, and the schema v8 workspace
-registry provides `weave workspace`, `weave source`, `weave mcp --workspace` and git source
-provenance. Work after 0.9 is watch event delivery (register #40), MCP polish and the
-[optimization program](../specs/optimization.md); 1.0 is the stability target.
+Delivery status is not recorded in this document. The [roadmap](../ROADMAP.md) owns feature status,
+the [backlog](../backlog.md) owns pipeline state and the [release checklist](../release-checklist.md)
+owns release records.
