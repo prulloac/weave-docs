@@ -15,20 +15,20 @@ watch event delivery, the optimization program and MCP polish; 1.0 remains the s
 
 Weave is a **local-first, related-document knowledge database**:
 
-- **0.7 core (shipped):** ingest OKF/Markdown bundles into memory or a persistent SQLite index,
+- **Core wave (shipped):** ingest OKF/Markdown bundles into memory or a persistent SQLite index,
   build a graph, search by mandatory keywords, weighted fuzzy similarity and BM25 lexical ranking,
   navigate with `show`, `backlinks` and `path`, audit bundle quality with `weave audit`, explore
   graph neighborhoods with `weave relate`, explain ranking with `weave explain`, ingest non-OKF
   Markdown permissively, and sync indexed bundles incrementally.
-- **0.7 platform (shipped):** persist and incrementally sync bundles into SQLite, lexical BM25,
+- **Platform wave (shipped):** persist and incrementally sync bundles into SQLite, lexical BM25,
   permissive Markdown ingestion, explicit privacy directives, and external enrichment/reranking and
   crypto extensions.
-- **0.7 MCP (shipped):** expose the same operations through an in-memory and persistent,
+- **MCP wave (shipped):** expose the same operations through an in-memory and persistent,
   sensitive-aware MCP server.
 
 It is **CLI-first**, local, offline-capable, and has **no UI**.
 
-## 2. Current Capabilities (shipped through 0.8)
+## 2. Current Capabilities (shipped)
 
 | Capability | Status | Notes |
 | --- | --- | --- |
@@ -43,7 +43,7 @@ It is **CLI-first**, local, offline-capable, and has **no UI**.
 | Fuzzy index | Shipped | Field token postings + trigram index |
 | Levenshtein + trigram Dice | Shipped | Max of both, threshold `0.55` |
 | Weighted fields | Shipped | Title `1.00`, description `0.60`, body `0.30` |
-| Hybrid ranking | Shipped | `0.50 * keyword + 0.50 * fuzzy` |
+| Hybrid ranking | Shipped | Persistent: `0.50 * BM25 + 0.50 * fuzzy`; `--no-db`: `0.50 * keyword + 0.50 * fuzzy` |
 | Top-K | Shipped | Default 10, max 100 |
 | Parse cache | Shipped | Opt-in engine, enabled by CLI, concurrency-safe |
 | Calibration | Shipped | NDCG@K and MRR@K baselines |
@@ -62,9 +62,9 @@ It is **CLI-first**, local, offline-capable, and has **no UI**.
 | Workspaces and sources | Shipped | Manifest, persisted source registry, `--workspace` writes, MCP catalog |
 | Extension data API | Shipped | Extension-owned opaque artifacts with list/get/gc |
 
-## 3. 0.7 Scope
+## 3. Platform Scope
 
-Everything below is part of 0.7 except the stretch item. There is no separate v2 platform; phases
+Everything below ships except the stretch item. The Target column names the delivery wave. There is no separate v2 platform; phases
 are internal delivery waves, not product versions.
 
 | Capability | Target | Notes |
@@ -261,6 +261,9 @@ is the completeness check: no feature is considered planned until it appears her
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
 | 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | shipped |
 | 44 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | Tier 12 | extension IPC, graph, contract, storage | 0.11 / P1 | in progress |
+| 45 | Keyword and fuzzy search | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | Tier 2, Tier 3 | parser, graph | 0 / Phase 1 | shipped |
+| 46 | OKF bundle parser | [okf-bundle-parser.md](specs/okf-bundle-parser.md) | Tier 1 | none | 0 / Wave 0 | shipped |
+| 47 | Node graph engine | [node-graph-engine.md](specs/node-graph-engine.md) | Tier 2 | OKF bundle parser | 0 / Wave 0 | shipped |
 
 Rules:
 
@@ -534,8 +537,9 @@ needed.
 
 ### Versioning Policy
 
-- **Product:** 0.10 is the current pre-1.0 release. Every feature marked `shipped` in the register
-  ships in 0.10; `stretch` and `deferred` items do not. Phases are internal delivery waves, not
+- **Product:** the current release is stated once, in the status line at the top of this document.
+  Every feature marked `shipped` in the register ships in the current release line; `stretch` and
+  `deferred` items do not. Phases are internal delivery waves, not
   separate releases. 1.0 is the stability milestone, not a separate feature set.
 - **Contract:** `weave.contract/v1` is authoritative. Until 1.0.0 it may still evolve in place;
   after 1.0.0, breaking changes require `contract/v2`. Additive fields and enum values remain
@@ -544,7 +548,7 @@ needed.
   before and after 1.0; breaking changes after 1.0 require `weave.cli/v2`.
 - **Storage:** the SQLite schema uses `PRAGMA user_version` with explicit migrations, independent of
   the product and contract versions.
-- **Feature status:** the roadmap uses `shipped`, `stretch`, `deferred` and `planned`; the backlog
+- **Feature status:** the roadmap uses `shipped`, `stretch`, `deferred`, `planned` and `in progress`; the backlog
   uses pipeline states. 1.0 is a stability claim, not a feature label.
 
 ### 1.0 Stability Gate

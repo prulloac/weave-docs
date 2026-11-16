@@ -6,9 +6,9 @@ maturity only.
 
 | Spec | Status | BDD | Register |
 | --- | --- | --- | --- |
-| [OKF Bundle Parser](okf-bundle-parser.md) | stable | [Node graph](https://github.com/prulloac/weave/blob/main/docs/bdd/node-graph-engine.md) | foundation |
-| [Node Graph Engine](node-graph-engine.md) | stable | [Node graph](https://github.com/prulloac/weave/blob/main/docs/bdd/node-graph-engine.md) | foundation |
-| [Keyword + Fuzzy Search](keyword-fuzzy-search.md) | stable | — | foundation |
+| [OKF Bundle Parser](okf-bundle-parser.md) | stable | [Node graph](https://github.com/prulloac/weave/blob/main/docs/bdd/node-graph-engine.md) | 46 |
+| [Node Graph Engine](node-graph-engine.md) | stable | [Node graph](https://github.com/prulloac/weave/blob/main/docs/bdd/node-graph-engine.md) | 47 |
+| [Keyword + Fuzzy Search](keyword-fuzzy-search.md) | stable | — | 45 |
 | [Weave Audit](weave-audit.md) | stable | — | 1, 3 |
 | [Weave Relate](weave-relate.md) | stable | — | 1, 2 |
 | [Weave Explain](weave-explain.md) | stable | [Explain](https://github.com/prulloac/weave/blob/main/docs/bdd/weave-explain.md), [BM25 explain](https://github.com/prulloac/weave/blob/main/docs/bdd/bm25-explain.md) | 1, 4, 21 |
@@ -43,8 +43,7 @@ maturity only.
 
 ## Ownership rules
 
-- A spec is owned by the register rows listed above. `foundation` rows predate the register and are
-  covered by their behavior tests and calibration baselines.
+- A spec is owned by the register rows listed above. Every spec maps to at least one register row.
 - `—` means the spec is covered by unit, conformance or calibration tests rather than a separate BDD
   document.
 - A spec may be owned by several register rows when the behavior is genuinely shared. The first
