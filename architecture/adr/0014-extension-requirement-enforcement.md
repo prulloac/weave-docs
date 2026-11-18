@@ -27,13 +27,20 @@ binary, so there is no moment in the current product at which an extension is in
 
 1. **Selection is refused.** An extension with an unsatisfied `requires` entry is not invoked for any
    role. Selecting it fails the command before any write or search with `EXTENSION_REQUIREMENT_UNMET`,
-   with a non-zero status and the unmet entries in the message.
+   with exit status `1`, `EXTENSION_REQUIREMENT_UNMET` and the unmet entries in the message, as
+   [extension IPC §2.9](../../specs/extension-ipc.md) and §5 define.
 2. **No silent fallback.** A failed requirement is never downgraded to a warning, and the extension's
    role is not replaced by the core default.
 3. **Versions are declared.** Manifests may declare `version`. A requirement on another extension is
    unsatisfied when that extension declares no version.
 4. **Listing does not evaluate requirements.** `weave extensions list` keeps its directory-scan
    behavior and does not run any executable.
+
+5. **Conformance check.** `weave extensions check` reports an unsatisfied requirement as a failed
+   `requirements` check, and the check exits with status `1` (see extension IPC §2.8).
+6. **Development builds.** A core without a release version cannot compare versions. A requirement
+   naming `weave` then produces one warning on stderr for the invocation and is treated as satisfied
+   (see extension IPC §2.9).
 
 ## Deferred: Installation
 

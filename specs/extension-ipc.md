@@ -360,9 +360,10 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
   `.weave/bin` is searched first. An unknown name fails with `EXTENSION_NOT_FOUND`, exit `2`.
 - Runs `weave-<name> --describe --json` and validates the manifest as §2.1 requires. A failed
   manifest is reported as a failed `manifest` check; no role checks run.
-- For each declared role, sends the canonical request for that role from the
+- For each declared role except codecs, sends the canonical request for that role from the
   `contract/v1/golden/extension-ipc` corpus and validates the response with the validator used at
-  runtime. Roles that are not declared are not checked.
+  runtime. Roles that are not declared are not checked. Codec extensions use raw byte pipes, so their
+  check is not defined by this section; it is an open decision in the backlog.
 - Unsatisfied requirements (§2.9) fail the `requirements` check.
 - Uses canned requests only. The check never reads bundle documents and never writes to a bundle or
   database. The only bundle access is the `.weave/bin` lookup described above. It makes no network call
@@ -386,8 +387,8 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 
 - Checks are sorted by name. `ok` is `true` only when every check passes.
 - Human output prints one line per check and a final summary line.
-- The exit status is `0` when `ok` is `true`. When any check fails, the status is the non-zero status
-  the error contract defines for a failed extension, not a usage error.
+- The exit status is `0` when `ok` is `true` and `1` when any check fails. A failed check is not a
+  usage error, so it never exits `2`.
 
 ### 2.9 Version Negotiation
 
@@ -401,7 +402,7 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 - An extension with an unsatisfied requirement is **not loaded**. Core never invokes it for any role.
   Selecting it (`--with-enricher`, `--with-embedder`, `--rerank`, `--scorer`, `--git` or a codec or
   crypto provider) fails the command before any write or search with `EXTENSION_REQUIREMENT_UNMET`,
-  exit `2`, and the unmet entries in the message. Core never falls back silently.
+  exit status `1`, and the unmet entries in the message. Core never falls back silently.
 - A core build without a release version (`dev`) cannot compare versions. A `requires` entry naming
   `weave` then emits one warning to stderr for the invocation and is treated as satisfied.
 - `weave extensions list` does not run extensions and does not evaluate requirements. Its output is
@@ -427,7 +428,7 @@ The proposed rules for any installer that places a `weave-<name>` executable in 
 2. Evaluate each `requires` entry against the installed `weave` version (`weave version --json`) and
    against the `version` of any installed companion extension named in `requires`. A `weave` that is not
    installed leaves its requirement unsatisfied.
-3. If any requirement is unsatisfied, exit with a non-zero status and print `EXTENSION_REQUIREMENT_UNMET`,
+3. If any requirement is unsatisfied, exit with status `1` and print `EXTENSION_REQUIREMENT_UNMET`,
    the unmet entries and the requirement the user must satisfy. The staged file is discarded.
 4. An existing executable with the same name is left unchanged on failure.
 5. Proposed: installers do not downgrade this check to a warning and provide no flag that skips it.
@@ -501,6 +502,7 @@ CLI search --rerank
 | Malformed JSON, wrong `v`, oversized output | `EXTENSION_PROTOCOL` | Warning; fallback |
 | Rerank misses/duplicates/adds candidates | `EXTENSION_PROTOCOL` | Warning; unchanged results |
 | Invalid timeout | `INVALID_REQUEST` | Exit `2` |
+| Unsatisfied `requires` at selection, or a failed `requirements` check | `EXTENSION_REQUIREMENT_UNMET` | Exit `1` before writes or searches; never falls back |
 
 - Extension diagnostics include the extension name, a short reason and the exit status; they never
   include request bodies or document content.
