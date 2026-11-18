@@ -300,7 +300,8 @@ Makes extension authoring and operation practical without core changes to first-
 | Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
 | Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Protocol version negotiation: refuse extensions with unmet `requires` at selection and at installation (explicit error, no silent fallback), and declare a supported protocol range (spec §2.9 and §2.10 drafted; ADR 0014 proposed) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Protocol version negotiation: refuse extensions with unmet `requires` at selection (explicit error, no silent fallback), and declare a supported protocol range (spec §2.9 drafted; ADR 0014 proposed) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Proposal: `weave extensions install <name>` with the staging and requirement checks in §2.10; not scheduled, and whether refusal applies at install is an open decision | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Extension authoring guide for third-party developers in the `weave` repository | [README.md](README.md) | - | - | - | - | backlog |
 
 ## Tier 15 — Core features

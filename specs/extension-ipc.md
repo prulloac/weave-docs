@@ -403,15 +403,20 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 - `weave extensions list` does not run extensions and does not evaluate requirements. Its output is
   unchanged by this section.
 - `weave extensions check` reports unsatisfied requirements as a failed `requirements` check.
-- Installing an extension with unsatisfied requirements is an explicit error (§2.10), never a warning.
+- Installation rules are a proposal and not current behavior; see §2.10.
 - Refusing extensions changes behavior for installations that run such extensions today. It is
   recorded in [ADR 0014](../architecture/adr/0014-extension-requirement-enforcement.md) before the
   behavior is implemented.
 
-### 2.10 Installation
+### 2.10 Installation (proposal)
 
-Any installer that places a `weave-<name>` executable in a bin directory applies these rules before the
-file is placed:
+> **Proposal, not current behavior.** `weave` has no extension install step today. The installers in
+> this repository place only the `weave` binary, and extension installers live in their own repositories.
+> The rules below are the proposed behavior for a future `weave extensions install <name>` subcommand or
+> for installers that follow this specification. Whether an incompatible install is refused, and how,
+> is an open decision for discussion. Selection-time refusal in §2.9 is not affected.
+
+The proposed rules for any installer that places a `weave-<name>` executable in a bin directory:
 
 1. Stage the downloaded executable in a temporary location. Read its manifest with
    `weave-<name> --describe --json`, using the timeout in §2.2.
@@ -421,9 +426,10 @@ file is placed:
 3. If any requirement is unsatisfied, exit with a non-zero status and print `EXTENSION_REQUIREMENT_UNMET`,
    the unmet entries and the requirement the user must satisfy. The staged file is discarded.
 4. An existing executable with the same name is left unchanged on failure.
-5. Installers never downgrade this check to a warning and provide no flag that skips it.
+5. Proposed: installers do not downgrade this check to a warning and provide no flag that skips it.
 
-The rule applies to first-party installers and to any installer that follows this specification.
+Open: whether `weave extensions install` is added, and whether these rules are mandatory or advisory
+for third-party installers.
 
 ## 3. Behavior
 
