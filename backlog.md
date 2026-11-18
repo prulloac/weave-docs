@@ -542,8 +542,9 @@ Features follow the docs work:
 ### Release Line
 
 Behavior changes that add capability without changing an existing invocation, file, envelope or
-default ship in the 0.X line. A change is breaking only if one of those changes meaning; breaking
-changes wait for `contract/v2` or `weave.cli/v2` after 1.0.
+default ship in the 0.X line. A change is breaking only if one of those changes meaning. ROADMAP §9
+allows breaking changes in the v1 contract before 1.0 and requires `contract/v2` or `weave.cli/v2`
+only after 1.0. Breaking changes ship with release notes.
 
 | Item | Classification | Line |
 | --- | --- | --- |
@@ -551,7 +552,7 @@ changes wait for `contract/v2` or `weave.cli/v2` after 1.0.
 | Parallel invocations | New behavior; result order unchanged | 0.X |
 | Trust gate, warn first | New behavior | 0.X |
 | Trust gate, default-deny | Breaking for bundles that rely on `.weave/bin` | Decision needed; 0.X only as opt-in |
-| Version negotiation, refusal | Breaking for installs running extensions with unmet requirements; decided by the owner, recorded in ADR 0014 | 0.X as a documented exception, with release notes |
+| Version negotiation, refusal | Breaking for installs running extensions with unmet requirements; decided by the owner, recorded in ADR 0014 | 0.X, with release notes |
 | Enrichment caching | New behavior; opt-in or bypassed with `--force` | 0.X |
 | Per-type schemas (opt-in config) | New behavior | 0.X |
 | `weave mv` | New command | 0.X |
