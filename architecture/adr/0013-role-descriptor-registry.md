@@ -28,11 +28,14 @@ boundary, and it grows with every role.
 ## Decision
 
 1. **One descriptor per role.** Each role is described once in `engine/extensions`. A descriptor
-   names the manifest role key, the protocol identifier (`weave.cli/v1` or `weave.source/v1`), the
-   request and response types, the default timeout, the response and request size bounds, the failure
-   policy (fallback to core results, or failure of the operation) and the CLI flag that selects it.
+   names the manifest role key, the transport (a JSON protocol identifier, `weave.cli/v1` or
+   `weave.source/v1`, or raw bytes for codec extensions named `weave-codec-<name>`), the request and
+   response types, the default timeout, the response and request size bounds, the failure policy
+   (fallback to core results, failure of the operation, or refusal before invocation for unsatisfied
+   requirements, as ADR 0014 requires) and the CLI flag that selects it.
 2. **One invocation path.** Core dispatches every role through the same routine. The routine performs
-   discovery, `--describe --json` validation, the timeout, size caps, stderr capture and response
+   discovery, `--describe --json` validation, requirement evaluation (ADR 0014), the timeout, size caps,
+   stderr capture and response
    validation. Role code supplies only typed request construction and response validation.
 3. **Static registration.** Descriptors are compiled into core. Core does not load roles at runtime.
    Extensions remain subprocesses, as ADR 0012 requires.

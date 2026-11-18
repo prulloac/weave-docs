@@ -65,8 +65,9 @@ This ADR will be extended or superseded once those questions are answered.
 - `weave extensions list` stays cheap and does not run extensions. Trust is unchanged for listing.
 - The new code `EXTENSION_REQUIREMENT_UNMET` joins the error catalog. It is an additive error code in
   `weave.cli/v1`.
-- The breaking nature of the change is a deliberate exception to the release-line policy in the backlog,
-  which otherwise keeps breaking changes out of 0.X. Release notes must state it.
+- The change breaks installations that run an extension with an unmet requirement. ROADMAP §9 allows
+  breaking changes in the v1 contract before 1.0, so no new contract version is needed. Release notes
+  must state the change.
 
 ## Related Documents
 
