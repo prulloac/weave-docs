@@ -83,13 +83,15 @@ An extension may expose a machine-readable capability manifest with
 }
 ```
 
-- `asset_types` and `requires` are optional.
+- `asset_types`, `requires`, `version` and `protocols` are optional. `version` and `protocols` are
+  defined in §2.9.
 - `analysis_modes` is optional and defaults to `["document"]`. `"project"` declares that the
   extension accepts a project-wide analysis request; see §2.4.
 - `source_extensions` is optional and used by a project analyzer to declare the source file
   extensions it handles, for example `[".go", ".py"]`.
 - Core uses `asset_types` to filter blob discovery when `--asset-types` is absent.
-- `requires` is informational for core and authoritative for installers and runtime checks.
+- `requires` is enforced at selection (§2.9) and checked by `weave extensions check` (§2.8). Installers
+  apply it only if the proposal in §2.10 is adopted.
 - `capabilities` and other unknown manifest fields are informational and ignored by core.
 - A missing or malformed manifest degrades to explicit `--asset-types`; it never blocks text
   enrichment.
@@ -322,6 +324,7 @@ Response:
 
 ```sh
 weave extensions list [<path>] [--short] [--json]
+weave extensions check <name> [<path>] [--timeout 5s] [--json]
 weave ingest  <path> --with-enricher <name> [--with-embedder <name>] [--timeout 5s] --json
 weave rebuild <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
 weave sync    <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
@@ -361,11 +364,12 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
   `contract/v1/golden/extension-ipc` corpus and validates the response with the validator used at
   runtime. Roles that are not declared are not checked.
 - Unsatisfied requirements (§2.9) fail the `requirements` check.
-- Uses canned requests only. The check never reads or writes a bundle or database, and it makes no
-  network call beyond what the extension performs itself.
+- Uses canned requests only. The check never reads bundle documents and never writes to a bundle or
+  database. The only bundle access is the `.weave/bin` lookup described above. It makes no network call
+  beyond what the extension performs itself.
 - `--timeout` applies to each invocation, with the default from §2.2.
 - A role whose response fails validation fails with the code the runtime would report:
-  `EXTENSION_PROTOCOL` for malformed output and timeouts as defined in §5.
+  `EXTENSION_PROTOCOL` for malformed output and `EXTENSION_TIMEOUT` for timeouts, as defined in §5.
 - JSON output is one envelope:
 
 ```json
@@ -512,6 +516,10 @@ CLI search --rerank
 - Rerank reorders, blends at 0.5/0.5, sets `rerank_score` and preserves hit shapes.
 - Rerank failure returns the unchanged core ordering.
 - Timeout flag validation and exit codes.
+- Conformance check: manifest validation, one check per declared role, the `requirements` check, the
+  JSON envelope, and bundle access limited to the `.weave/bin` lookup.
+- Version negotiation: an unmet `requires` entry refuses selection with `EXTENSION_REQUIREMENT_UNMET`
+  and never falls back; a `dev` core build warns once and treats the entry as satisfied.
 - No enrichment invocation on read-only commands.
 - Determinism across repeated runs with the same fixture extension.
 - Full gate: `go test ./...`, `go test -race ./...`, `go vet ./...`, `./scripts/verify.sh`,
@@ -527,6 +535,8 @@ checked-in scripts with explicit shebangs.
 - Enrichment adds searchable inferred keywords and persists custom metadata.
 - Reranking blends core and extension scores deterministically and annotates hits.
 - Missing extensions fail fast; runtime extension failures degrade to core behavior with warnings.
+- Extensions with unmet `requires` are refused at selection, and `extensions check` reports them as a
+  failed `requirements` check.
 - Extensions never receive index paths or write access through the protocol.
 - Codec extensions resolve `--codec` names and decode stored rows; missing codecs fail reads with
   `CODEC_UNAVAILABLE`.
