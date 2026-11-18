@@ -50,24 +50,11 @@ Non-goals:
 ```json
 {
   "extensions": [
-    {"name": "keywords", "path": "/notes/.weave/bin/weave-keywords", "source": "bundle", "status": "ok"},
-    {
-      "name": "rerank",
-      "path": "/usr/local/bin/weave-rerank",
-      "source": "path",
-      "status": "error",
-      "error": {"code": "EXTENSION_REQUIREMENT_UNMET", "message": "requires weave >= 0.12.0; core is 0.10.1"}
-    }
+    {"name": "keywords", "path": "/notes/.weave/bin/weave-keywords", "source": "bundle"},
+    {"name": "rerank", "path": "/usr/local/bin/weave-rerank", "source": "path"}
   ]
 }
 ```
-
-- `status` is `ok` or `error`. An errored extension stays listed so it can be diagnosed; `error` carries
-  the code and message.
-- Listing runs `weave-<name> --describe --json` for each extension, within the timeout in §2.2, to read
-  its manifest and requirements. A failed or malformed manifest is `error` with `EXTENSION_PROTOCOL`.
-- Human output adds a `status` column. `--short` still prints only names, including errored ones, so
-  existing scripts keep their output shape.
 
 - Sorted by name, then source (`bundle` before `path`).
 - `path` is optional; without it only `$PATH` is scanned.
@@ -413,12 +400,30 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
   exit `2`, and the unmet entries in the message. Core never falls back silently.
 - A core build without a release version (`dev`) cannot compare versions. A `requires` entry naming
   `weave` then emits one warning to stderr for the invocation and is treated as satisfied.
-- `weave extensions list` marks each extension with a status (§2.1). An extension with an unsatisfied
-  requirement is listed with `status` `error`.
+- `weave extensions list` does not run extensions and does not evaluate requirements. Its output is
+  unchanged by this section.
 - `weave extensions check` reports unsatisfied requirements as a failed `requirements` check.
+- Installing an extension with unsatisfied requirements is an explicit error (§2.10), never a warning.
 - Refusing extensions changes behavior for installations that run such extensions today. It is
   recorded in [ADR 0014](../architecture/adr/0014-extension-requirement-enforcement.md) before the
   behavior is implemented.
+
+### 2.10 Installation
+
+Any installer that places a `weave-<name>` executable in a bin directory applies these rules before the
+file is placed:
+
+1. Stage the downloaded executable in a temporary location. Read its manifest with
+   `weave-<name> --describe --json`, using the timeout in §2.2.
+2. Evaluate each `requires` entry against the installed `weave` version (`weave version --json`) and
+   against the `version` of any installed companion extension named in `requires`. A `weave` that is not
+   installed leaves its requirement unsatisfied.
+3. If any requirement is unsatisfied, exit with a non-zero status and print `EXTENSION_REQUIREMENT_UNMET`,
+   the unmet entries and the requirement the user must satisfy. The staged file is discarded.
+4. An existing executable with the same name is left unchanged on failure.
+5. Installers never downgrade this check to a warning and provide no flag that skips it.
+
+The rule applies to first-party installers and to any installer that follows this specification.
 
 ## 3. Behavior
 
