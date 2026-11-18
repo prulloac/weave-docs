@@ -50,11 +50,24 @@ Non-goals:
 ```json
 {
   "extensions": [
-    {"name": "keywords", "path": "/notes/.weave/bin/weave-keywords", "source": "bundle"},
-    {"name": "rerank", "path": "/usr/local/bin/weave-rerank", "source": "path"}
+    {"name": "keywords", "path": "/notes/.weave/bin/weave-keywords", "source": "bundle", "status": "ok"},
+    {
+      "name": "rerank",
+      "path": "/usr/local/bin/weave-rerank",
+      "source": "path",
+      "status": "error",
+      "error": {"code": "EXTENSION_REQUIREMENT_UNMET", "message": "requires weave >= 0.12.0; core is 0.10.1"}
+    }
   ]
 }
 ```
+
+- `status` is `ok` or `error`. An errored extension stays listed so it can be diagnosed; `error` carries
+  the code and message.
+- Listing runs `weave-<name> --describe --json` for each extension, within the timeout in §2.2, to read
+  its manifest and requirements. A failed or malformed manifest is `error` with `EXTENSION_PROTOCOL`.
+- Human output adds a `status` column. `--short` still prints only names, including errored ones, so
+  existing scripts keep their output shape.
 
 - Sorted by name, then source (`bundle` before `path`).
 - `path` is optional; without it only `$PATH` is scanned.
@@ -360,6 +373,7 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 - For each declared role, sends the canonical request for that role from the
   `contract/v1/golden/extension-ipc` corpus and validates the response with the validator used at
   runtime. Roles that are not declared are not checked.
+- Unsatisfied requirements (§2.9) fail the `requirements` check.
 - Uses canned requests only. The check never reads or writes a bundle or database, and it makes no
   network call beyond what the extension performs itself.
 - `--timeout` applies to each invocation, with the default from §2.2.
@@ -386,16 +400,25 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 
 ### 2.9 Version Negotiation
 
-- Manifests may declare `protocols`, a list of protocol identifiers the extension speaks, for example
-  `["weave.cli/v1"]`. Core ignores identifiers it does not know; `extensions check` reports them.
-- For each `requires` entry that names `weave`, core compares `min_version` with its own version using
-  semantic versioning. When the core version is older, core writes one warning to stderr for the
-  invocation and continues. The invocation is not refused.
-- A core build without a release version (`dev`) skips the comparison and emits no warning.
-- `requires` entries for other extensions are checked only by `weave extensions check`, not at
-  runtime.
-- Refusing an extension whose requirements are not met is out of scope for this specification. It
-  changes behavior for existing users and needs a decision recorded in an ADR first.
+- Manifests may declare `version`, the extension's semantic version, and `protocols`, a list of
+  protocol identifiers the extension speaks, for example `["weave.cli/v1"]`. Core ignores protocol
+  identifiers it does not know; `extensions check` reports them.
+- Each `requires` entry names a dependency and a `min_version`. The dependency is `weave` (the running
+  core) or another extension by name. Versions are compared with semantic versioning.
+- A requirement is unsatisfied when the dependency is missing, when its version is below `min_version`,
+  or when another extension declares no `version`.
+- An extension with an unsatisfied requirement is **not loaded**. Core never invokes it for any role.
+  Selecting it (`--with-enricher`, `--with-embedder`, `--rerank`, `--scorer`, `--git` or a codec or
+  crypto provider) fails the command before any write or search with `EXTENSION_REQUIREMENT_UNMET`,
+  exit `2`, and the unmet entries in the message. Core never falls back silently.
+- A core build without a release version (`dev`) cannot compare versions. A `requires` entry naming
+  `weave` then emits one warning to stderr for the invocation and is treated as satisfied.
+- `weave extensions list` marks each extension with a status (§2.1). An extension with an unsatisfied
+  requirement is listed with `status` `error`.
+- `weave extensions check` reports unsatisfied requirements as a failed `requirements` check.
+- Refusing extensions changes behavior for installations that run such extensions today. It is
+  recorded in [ADR 0014](../architecture/adr/0014-extension-requirement-enforcement.md) before the
+  behavior is implemented.
 
 ## 3. Behavior
 
