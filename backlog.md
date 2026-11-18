@@ -300,7 +300,7 @@ Makes extension authoring and operation practical without core changes to first-
 | Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
 | Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Protocol version negotiation: warn on unmet `requires.min_version` and declare a supported protocol range (spec §2.9 drafted; needs an ADR before any refusal behavior) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Protocol version negotiation: refuse extensions with unmet `requires` (no silent fallback), show `status` in `extensions list`, and declare a supported protocol range (spec §2.9 drafted; ADR 0014 proposed) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Extension authoring guide for third-party developers in the `weave` repository | [README.md](README.md) | - | - | - | - | backlog |
 
 ## Tier 15 — Core features
@@ -550,8 +550,7 @@ changes wait for `contract/v2` or `weave.cli/v2` after 1.0.
 | Parallel invocations | New behavior; result order unchanged | 0.X |
 | Trust gate, warn first | New behavior | 0.X |
 | Trust gate, default-deny | Breaking for bundles that rely on `.weave/bin` | Decision needed; 0.X only as opt-in |
-| Version negotiation, warnings | New behavior | 0.X |
-| Version negotiation, refusal | Breaking for extensions that run today | Decision needed; warn first |
+| Version negotiation, refusal | Breaking for installs running extensions with unmet requirements; decided by the owner, recorded in ADR 0014 | 0.X as a documented exception, with release notes |
 | Enrichment caching | New behavior; opt-in or bypassed with `--force` | 0.X |
 | Per-type schemas (opt-in config) | New behavior | 0.X |
 | `weave mv` | New command | 0.X |
