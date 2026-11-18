@@ -294,6 +294,9 @@ Makes extension authoring and operation practical without core changes to first-
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
+| **URGENT, resolve ASAP:** the manifest parser ignores `requires`, `version` and `protocols`, so an extension with unmet requirements runs without error today. Implement the selection refusal (extension IPC §2.9, ADR 0014): add the manifest fields, `EXTENSION_REQUIREMENT_UNMET` with exit status `1` in `contract/v1` and the error catalog, and the check in the runner | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Canonical goldens for scorer, embedder, project analysis and source request and response envelopes, with schema definitions and an additive baseline (`weave` repo, `contract/v1`). The `weave-ai` mirror is not updated | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | review |
+| Decision: how codec extensions (`weave-codec-<name>`, raw byte pipes) are conformance-checked and whether they get byte-level goldens. Excluded from §2.8 until decided | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | backlog |
 | `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8 drafted, awaiting approval) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | `weave extensions new --role <role> <name>`: scaffold an executable, manifest and fixtures | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Batched request and response envelopes for enrichment and scoring, keeping the single-item form | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
