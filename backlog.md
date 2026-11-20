@@ -21,6 +21,25 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 - `-` — not applicable / not started
 - `x` — complete
 
+## Current Session Queue (2026-11-19)
+
+Carry this list into the next session. Each item names its owner or blocker so no work is resumed
+from memory.
+
+| Item | State | Next action |
+| --- | --- | --- |
+| `weave extensions check` (extension IPC §2.8) | implemented | BDD scenarios and CLI/engine tests are green. Roles detectable from today's manifest are `enrichment`, `project` and `source`. |
+| Manifest role declaration for reranking, scoring and embedding | blocked | Those roles have no manifest key, so `extensions check` cannot discover them. Decide whether `protocols` or a new `roles` field declares them, then amend §2.1 and §2.8. ADR 0013 is the likely home. |
+| Version-minimum gap for descriptor roles | implemented | Core enforces the 0.11.0 line for source providers and project analyzers; unit and BDD cases are green and ADR 0014 carries a dated amendment. |
+| Codec conformance check (codec spec §13) | implemented | `weave extensions check codec-<name>` runs the fixed 4096-byte round trip and determinism check; the real `weave-codec-lz4` passes. |
+| Role descriptor registry (ADR 0013) | accepted, not started | Land one role adapter at a time behind the existing suites. Unblocks batching, parallel invocations, tokenizer and the scoped conformance checks above. |
+| Tier 12 hardcoded writer removal | code check complete | Owner must verify and close the last unchecked item. |
+| Feature ADRs: trust gate, batched envelopes, parallel invocations, snapshot diff, tokenizer role, `weave mv`, per-type schemas | awaiting owner decisions | Discuss with the owner, then draft in that order. Nothing is implemented. |
+| Draft specs: search field filters, graph export, SARIF, enrichment caching, extension authoring guide | drafted (`draft`) | Owner review before BDD/TDD. Registered as features 48–52. |
+| Publish `v0.11.0` for `weave`, `weave-git`, `weave-code` | tagged locally, not pushed | Push the tags and run the release workflows. Then update `weave-code/AGENTS.md` and `weave-git/AGENTS.md` release lines. |
+| `weave extensions install` (§2.10) | proposal only | Keep as a proposal until the owner decides whether refusal applies at install. |
+| `weave-ai` machine manifest | in progress | Its `--describe --json` now needs to emit JSON so the conformance check can read it. Human output stays unchanged. |
+
 ## Tier 1 — Foundation
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
@@ -295,19 +314,20 @@ Makes extension authoring and operation practical without core changes to first-
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | **URGENT, resolve ASAP:** selection refusal for `requires` (extension IPC §2.9, ADR 0014). Implemented in `weave` for enrichment, embedding, semantic search, reranking, scoring, project analysis, the `git` source provider and `embed --with-embedder`: manifest fields, `EXTENSION_REQUIREMENT_UNMET` (exit `1`), and BDD tests (`docs/bdd/extension-requirements.md`). Pending review, not merged | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
-| **URGENT, resolve ASAP:** crypto provider selection (`crypto-<name>`) refuses unmet `requires` and never falls back to the local provider. Implemented in `weave` with a unit test; BDD scenario drafted in `docs/bdd/extension-requirements.md`, awaiting approval. Pending review | [external-crypto-providers.md](specs/external-crypto-providers.md) | - | - | - | - | review |
-| Canonical goldens for scorer, embedder, project analysis and source request and response envelopes, with schema definitions and an additive baseline (`weave` repo, `contract/v1`). The `weave-ai` mirror is not updated | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | review |
-| Codec conformance check (`weave extensions check codec-<name>`): spec §13 approved; implementation pending | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | backlog |
+| **URGENT, resolve ASAP:** crypto provider selection (`crypto-<name>`) refuses unmet `requires` and never falls back to the local provider. Implemented in `weave` with a unit test; BDD approved in `docs/bdd/extension-requirements.md`. Pending review | [external-crypto-providers.md](specs/external-crypto-providers.md) | - | x | x | x | review |
+| Canonical goldens for scorer, embedder, project analysis and source request and response envelopes, with schema definitions and an additive baseline (`weave` repo, `contract/v1`). The `weave-ai` mirror is synced with `scripts/sync-fixtures.sh` | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | review |
+| Codec conformance check (`weave extensions check codec-<name>`): spec §13, implemented with manifest, requirements, compress, determinism and round-trip checks | [codec-extensions.md](specs/codec-extensions.md) | - | x | x | x | review |
 | Codec selection (`--codec <name>`) refuses unmet `requires` with `EXTENSION_REQUIREMENT_UNMET`. Accepted limitation: development-build warnings are dropped on storage body paths, which have no warning sink. Pending review | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | review |
-| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8 approved; BDD approved; implementation pending) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8; BDD and implementation green; detected roles are enrichment, project and source until manifests declare the other roles) | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
 | `weave extensions new --role <role> <name>`: scaffold an executable, manifest and fixtures | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Batched request and response envelopes for enrichment and scoring, keeping the single-item form | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages. ADR 0013 accepted; implementation not started | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
+| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages. ADR 0013 accepted; implementation not started. It also owns the manifest role keys that unblock full `extensions check` coverage | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
 | Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Protocol version negotiation: refuse extensions with unmet `requires` at selection (explicit error, no silent fallback), and declare a supported protocol range (spec §2.9 drafted; ADR 0014 proposed) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Protocol version negotiation: refuse extensions with unmet `requires` at selection (explicit error, no silent fallback). Implemented in `weave` for every role; spec §2.9 stable and ADR 0014 accepted. A declared per-extension protocol range remains a future addition | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
+| Descriptor-role minimum version: core refuses a source provider or project analyzer whose manifest has no `version` or is below the 0.11.0 line, closing the gap where `weave-git` v0.9.0 and `weave-code` v0.8.0 could still run. Spec §2.9 and ADR 0014 carry the dated amendment | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
 | Proposal: `weave extensions install <name>` with the staging and requirement checks in §2.10; not scheduled, and whether refusal applies at install is an open decision | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Extension authoring guide for third-party developers in the `weave` repository | [extension-authoring.md](specs/extension-authoring.md) | - | - | - | - | backlog |
+| Extension authoring guide for third-party developers in the `weave` repository. The content contract is drafted in the spec; the guide itself is not written | [extension-authoring.md](specs/extension-authoring.md) | - | - | - | - | backlog |
 
 ## Tier 15 — Core features
 
@@ -432,13 +452,13 @@ migration work that the existing contracts already allow.
 | Tier 13: ROADMAP §2 hybrid row | none | none | ROADMAP only |
 | Tier 13: ADR 0002 wording and typo policy | none | policy decision; new ADR only if adopted as a rule | ADRs are immutable; errata need a rule |
 | Tier 13: extend docs checks | none | none | Tooling and STYLE.md |
-| Tier 14: `weave extensions check` | amend [extension-ipc.md](specs/extension-ipc.md) with a conformance section | none | New CLI behavior, so BDD scenarios are needed |
+| Tier 14: `weave extensions check` | done: §2.8 in [extension-ipc.md](specs/extension-ipc.md) | none | BDD and TDD green. Role checks need manifest role keys before rerank, scoring and embedding can be discovered |
 | Tier 14: `weave extensions new --role` | amend [extension-ipc.md](specs/extension-ipc.md) or a new authoring spec | none | New CLI behavior, so BDD scenarios are needed |
 | Tier 14: batched envelopes | amend [extension-ipc.md](specs/extension-ipc.md); additive contract change | none | Schema change, so `schema-diff` applies |
 | Tier 14: parallel invocations | amend [extension-ipc.md](specs/extension-ipc.md) §2.2 | ADR | Reverses the sequential and deterministic invocation decision |
-| Tier 14: role descriptor registry | none | ADR | Extends ADR 0012; no behavior change, so the behavior-preservation gate applies |
+| Tier 14: role descriptor registry | none | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) accepted | Extends ADR 0012; no behavior change, so the behavior-preservation gate applies |
 | Tier 14: bundle-local trust gate | amend [extension-ipc.md](specs/extension-ipc.md) §2.1 | ADR | Changes a security default that the architecture calls deliberate |
-| Tier 14: protocol version negotiation | amend [extension-ipc.md](specs/extension-ipc.md) | ADR | Changes the versioning policy in ROADMAP §9 |
+| Tier 14: protocol version negotiation | done: §2.9 in [extension-ipc.md](specs/extension-ipc.md) | [ADR 0014](architecture/adr/0014-extension-requirement-enforcement.md) accepted | Implemented for every role; a declared protocol range remains open |
 | Tier 14: authoring guide | none | none | End-user guide in `weave/docs/guides`; no BDD |
 | Tier 15: per-type frontmatter schemas | new spec | ADR | Changes the Weave profile in invariant 3 |
 | Tier 15: `weave mv` with link rewriting | new spec | ADR | Reverses the non-goal "No writes to source bundles" |
@@ -539,8 +559,8 @@ Features follow the docs work:
 1. Tier 12 writer removal, then the role registry, which many later items touch.
 2. Decision records for the new ADRs (trust gate, parallel invocations, version negotiation, source
    protocol, non-goal revisions, per-type schema, tokenizer).
-3. Specs and BDD for `extensions check`, version negotiation and field filters; then `extensions check`,
-   negotiation, field filters, graph export and per-type schemas.
+3. `extensions check`, version negotiation and the descriptor minimum are implemented; next are field
+   filters, graph export and per-type schemas.
 4. Scaffold, batching, enrichment caching, SARIF and snapshot diff.
 5. Parallel invocations, the authoring guide, the tokenizer role and fsnotify (post-1.0).
 

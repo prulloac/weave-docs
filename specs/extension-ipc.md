@@ -363,7 +363,15 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 - For each declared role except codecs, sends the canonical request for that role from the
   `contract/v1/golden/extension-ipc` corpus and validates the response with the validator used at
   runtime. Roles that are not declared are not checked. Codec extensions use raw byte pipes, so their
-  check is not defined by this section; it is an open decision in the backlog.
+  check is not defined by this section; it is defined by
+  [Codec Extensions §13](codec-extensions.md) and is invoked as
+  `weave extensions check codec-<name>`.
+- Enrichment has no explicit manifest key: it is checked when the manifest declares no
+  `source_providers` and `analysis_modes` is empty or contains `document`. The `project` role is
+  checked when `analysis_modes` contains `project`, and `source` when `source_providers` is non-empty.
+  Reranking, scoring and embedding have no manifest role key today, so they are not discovered by
+  this command; the role descriptor registry in
+  [ADR 0013](../architecture/adr/0013-role-descriptor-registry.md) closes that gap.
 - Unsatisfied requirements (§2.9) fail the `requirements` check.
 - Uses canned requests only. The check never reads bundle documents and never writes to a bundle or
   database. The only bundle access is the `.weave/bin` lookup described above. It makes no network call
@@ -371,7 +379,7 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 - `--timeout` applies to each invocation, with the default from §2.2.
 - A role whose response fails validation fails with the code the runtime would report:
   `EXTENSION_PROTOCOL` for malformed output and `EXTENSION_TIMEOUT` for timeouts, as defined in §5.
-- JSON output is one envelope:
+- JSON output uses the standard success envelope; the `result` payload is:
 
 ```json
 {
@@ -385,10 +393,14 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
 }
 ```
 
-- Checks are sorted by name. `ok` is `true` only when every check passes.
+- `manifest` is always present. `requirements` appears when the manifest declares `requires`, when a
+  descriptor-role minimum applies (§2.9) or when a development build emits a comparison warning.
+  `protocols` appears when the manifest declares `protocols`.
+- Checks are sorted by name. The payload `ok` is `true` only when every check passes.
 - Human output prints one line per check and a final summary line.
-- The exit status is `0` when `ok` is `true` and `1` when any check fails. A failed check is not a
-  usage error, so it never exits `2`.
+- The exit status is `0` when every check passes and `1` when any check fails. A failed check is not a
+  usage error, so it never exits `2`. The outer envelope `ok` stays `true` because the check itself
+  completed, exactly as for a completed audit with findings.
 
 ### 2.9 Version Negotiation
 
@@ -399,6 +411,10 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
   core) or another extension by name. Versions are compared with semantic versioning.
 - A requirement is unsatisfied when the dependency is missing, when its version is below `min_version`,
   or when another extension declares no `version`.
+- Core also declares a minimum for the roles that depend on the generic descriptor contract. A source
+  provider or project analyzer must declare `version` at or above `0.11.0`. One that declares no
+  `version`, or a lower one, is refused like an unmet requirement; core never falls back to a legacy
+  provider or analyzer. Other roles keep the rules above and are not refused for an absent `version`.
 - An extension with an unsatisfied requirement is **not loaded**. Core never invokes it for any role.
   Selecting it (`--with-enricher`, `--with-embedder`, `--rerank`, `--scorer`, `--git` or a codec or
   crypto provider) fails the command before any write or search with `EXTENSION_REQUIREMENT_UNMET`,
@@ -522,6 +538,8 @@ CLI search --rerank
   JSON envelope, and bundle access limited to the `.weave/bin` lookup.
 - Version negotiation: an unmet `requires` entry refuses selection with `EXTENSION_REQUIREMENT_UNMET`
   and never falls back; a `dev` core build warns once and treats the entry as satisfied.
+- Descriptor-role minimum: a source provider or project analyzer with no `version`, or one below
+  `0.11.0`, is refused even when its own `requires` entries are satisfied.
 - No enrichment invocation on read-only commands.
 - Determinism across repeated runs with the same fixture extension.
 - Full gate: `go test ./...`, `go test -race ./...`, `go vet ./...`, `./scripts/verify.sh`,

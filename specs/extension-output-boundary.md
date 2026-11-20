@@ -360,9 +360,11 @@ weave-git >= 0.11.0
 weave-code >= 0.11.0
 ```
 
-This line is not yet tagged. The released `weave-git` v0.9.0 and `weave-code` v0.8.0 predate
-descriptors and do not satisfy it. Older extension releases must be upgraded before use. The protocol version remains
-`weave.source/v1` and `weave.cli/v1`; the required fields are now the generic descriptors.
+This line is tagged `v0.11.0` locally and awaits publication. The released `weave-git` v0.9.0 and
+`weave-code` v0.8.0 predate descriptors and do not satisfy it; core refuses them at selection, as
+[Extension Subprocess IPC §2.9](extension-ipc.md) defines. Older extension releases must be upgraded
+before use. The protocol version remains `weave.source/v1` and `weave.cli/v1`; the required fields are
+now the generic descriptors.
 
 ## 12. Acceptance Criteria
 

@@ -203,6 +203,8 @@ byte pipes, so they have their own check.
 - Round trip: the input is the first 4096 bytes of the text `weave codec conformance\n` repeated. The
   check runs `compress`, then `decompress` on that output, and requires the result to equal the input.
 - Determinism: a second `compress` of the same input must produce identical bytes (§5).
+- Checks are named `manifest`, `requirements` (when `requires` is declared), `compress`,
+  `determinism` and `decompress`, sorted by name.
 - Each process uses the §5 timeout, and `--timeout` overrides it.
 - Failures: a malformed manifest or stdout/stderr violation fails with `CODEC_PROTOCOL`; a non-zero exit
   fails with `CODEC_FAILED`; a timeout fails with `CODEC_TIMEOUT`.

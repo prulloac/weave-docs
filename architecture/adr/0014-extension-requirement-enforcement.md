@@ -76,6 +76,23 @@ This ADR will be extended or superseded once those questions are answered.
   breaking changes in the v1 contract before 1.0, so no new contract version is needed. Release notes
   must state the change.
 
+## Amendment (2026-11-19): Descriptor-role minimum
+
+The original decision enforces only the `requires` entries an extension declares. That leaves a gap:
+an extension released before descriptors, such as `weave-git` v0.9.0 or `weave-code` v0.8.0, declares
+no `version` and therefore no requirement core can compare. Core cannot refuse it even though the
+generic descriptor contract in [Extension Output Boundary §11](../../specs/extension-output-boundary.md)
+requires the 0.11.0 line.
+
+Core now declares the minimum itself for the two roles whose output depends on that contract. A source
+provider or project analyzer must declare `version` at or above `0.11.0`. A missing or lower version is
+refused with `EXTENSION_REQUIREMENT_UNMET`, exit `1`, with no fallback to a legacy provider or
+analyzer. Other roles keep the original rule: an absent `version` is allowed unless a `requires` entry
+names that extension. A development build cannot compare versions and warns once, as it does for a
+`weave` requirement.
+
+This amendment adds no install-time behavior; the installation rules remain deferred.
+
 ## Related Documents
 
 - [Extension Subprocess IPC](../../specs/extension-ipc.md), §2.1, §2.9 and §2.10
