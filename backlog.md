@@ -38,7 +38,7 @@ from memory.
 | Draft specs: search field filters, graph export, SARIF, enrichment caching, extension authoring guide | drafted (`draft`) | Owner review before BDD/TDD. Registered as features 48–52. |
 | Publish `v0.11.0` for `weave`, `weave-git`, `weave-code` | tagged locally, not pushed | Push the tags and run the release workflows. Then update `weave-code/AGENTS.md` and `weave-git/AGENTS.md` release lines. |
 | `weave extensions install` (§2.10) | proposal only | Keep as a proposal until the owner decides whether refusal applies at install. |
-| `weave-ai` machine manifest | in progress | Its `--describe --json` now needs to emit JSON so the conformance check can read it. Human output stays unchanged. |
+| `weave-ai` machine manifest | implemented | `weave-ai --describe --json` now emits `weave.extension/v1`; human output is unchanged. `weave extensions check ai` reads it. |
 
 ## Tier 1 — Foundation
 

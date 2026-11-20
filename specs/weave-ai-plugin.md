@@ -58,6 +58,23 @@ weave search <path> "<query>" --rerank ai
 - One request per process, JSON on stdin and stdout, `v: weave.cli/v1`.
 - The plugin honors the runner timeout; it also applies its own provider timeout.
 - Exit `0` with a valid response on success; any other exit is a failed extension call.
+- `weave-ai --describe` prints the human report: provider, models, `vision`, `embedding`, protocol
+  and the consent note. It never prints key values.
+- `weave-ai --describe --json` prints the `weave.extension/v1` machine manifest that
+  `weave extensions check` reads:
+
+  ```json
+  {
+    "v": "weave.extension/v1",
+    "name": "ai",
+    "version": "<release tag, or dev>",
+    "protocols": ["weave.cli/v1"],
+    "analysis_modes": ["document"]
+  }
+  ```
+
+  The manifest carries no configuration values, endpoints or key names. Human output is unchanged
+  when `--json` is absent.
 
 ### 2.2 Enrichment
 
@@ -153,7 +170,7 @@ timeout: 30s
 - `vision_model` must be vision-capable; `embedding_model` must be an embedding model. Provider
   errors surface as normal failures.
 - `--describe` reports the provider, models, `vision: true/false`, `embedding: true/false` and the
-  protocol; it never prints key values.
+  protocol; it never prints key values. The `--json` manifest in §2.1 is the machine-readable form.
 
 ### 2.5 Provider shapes
 
