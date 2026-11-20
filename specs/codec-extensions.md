@@ -191,10 +191,10 @@ Body compression scenarios live in [compression.md](https://github.com/prulloac/
 7. Codec extensions use raw stdin/stdout and never access the database.
 8. Mixed codecs round-trip and `weave codecs list` is accurate.
 
-## 13. Conformance Check (proposal)
+## 13. Conformance Check
 
-> **Proposal, awaiting approval.** [Extension Subprocess IPC §2.8](extension-ipc.md) covers JSON roles
-> only. Codec extensions use raw byte pipes, so they have their own check.
+[Extension Subprocess IPC §2.8](extension-ipc.md) covers JSON roles only. Codec extensions use raw
+byte pipes, so they have their own check.
 
 - Invoked as `weave extensions check codec-<name>`. The name resolves to `weave-codec-<name>` with the
   discovery rules in extension IPC §2.1.

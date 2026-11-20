@@ -2,9 +2,9 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v0.10.1 is the current pre-1.0 release for `weave`; `weave-git` remains at v0.9.0.** Both
-are published; the tag and publish record lives in [release-checklist.md](release-checklist.md).
-Other first-party members remain at v0.8.0 and are compatible with `weave v0.10.1`. The core engine,
+Status: **v0.11.0 is the current pre-1.0 release for `weave`. `weave-git` and `weave-code` are tagged
+v0.11.0 locally and await publication.** The tag and publish record lives in
+[release-checklist.md](release-checklist.md). Other first-party members remain at v0.8.0 and v0.9.0. The core engine,
 introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion,
 privacy directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets,
 codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
@@ -264,6 +264,11 @@ is the completeness check: no feature is considered planned until it appears her
 | 45 | Keyword and fuzzy search | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | Tier 2, Tier 3 | parser, graph | 0 / Phase 1 | shipped |
 | 46 | OKF bundle parser | [okf-bundle-parser.md](specs/okf-bundle-parser.md) | Tier 1 | none | 0 / Wave 0 | shipped |
 | 47 | Node graph engine | [node-graph-engine.md](specs/node-graph-engine.md) | Tier 2 | OKF bundle parser | 0 / Wave 0 | shipped |
+| 48 | Search field filters | [search-field-filters.md](specs/search-field-filters.md) | Tier 15 | keyword and fuzzy search, BM25 | 0.11 / Tier 15 | planned |
+| 49 | Graph export formats | [graph-export.md](specs/graph-export.md) | Tier 15 | node graph engine, relate | 0.11 / Tier 15 | planned |
+| 50 | SARIF audit output | [sarif-output.md](specs/sarif-output.md) | Tier 15 | weave audit | 0.11 / Tier 15 | planned |
+| 51 | Enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | Tier 15 | extension IPC, storage | 0.11 / Tier 15 | planned |
+| 52 | Extension authoring guide | [extension-authoring.md](specs/extension-authoring.md) | Tier 14 | extension IPC, codec extensions | 0.11 / Tier 14 | planned |
 
 Rules:
 

@@ -7,7 +7,7 @@ tags:
   - "extensions"
   - "versioning"
   - "ipc"
-status: proposed
+status: accepted
 ---
 
 # ADR 0014: Extension Requirement Enforcement

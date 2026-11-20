@@ -286,7 +286,7 @@ spec or an accepted ADR need the usual approval before any `weave` work starts.
 | Correct the ROADMAP §2 hybrid row to BM25 + fuzzy for persistent search | [ROADMAP.md](ROADMAP.md) | - | - | - | - | review |
 | Confirm the ADR 0002 "v1.0 database location" wording and the policy for fixing typos in accepted ADRs | [ADR 0002](architecture/adr/0002-config-paths-and-db-location.md) | - | - | - | - | review |
 | Extend docs checks to cross-validate spec frontmatter, the specs index, the register and the backlog, not only reachability | [STYLE.md](STYLE.md) | - | - | - | - | review |
-| Release the 0.11.0 extension line: `weave-git` and `weave-code` descriptor work is on `main` but untagged. The boundary spec minimum is corrected to 0.11.0 and is not satisfied by the released v0.9.0 and v0.8.0 | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | - | - | - | backlog |
+| Release the 0.11.0 extension line: `weave`, `weave-git` and `weave-code` are tagged `v0.11.0` locally; manifests declare `version` and `requires weave >= 0.11.0`. Publishing (push and release workflows) is pending | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | - | - | - | review |
 
 ## Tier 14 — Extension ergonomics
 
@@ -297,17 +297,17 @@ Makes extension authoring and operation practical without core changes to first-
 | **URGENT, resolve ASAP:** selection refusal for `requires` (extension IPC §2.9, ADR 0014). Implemented in `weave` for enrichment, embedding, semantic search, reranking, scoring, project analysis, the `git` source provider and `embed --with-embedder`: manifest fields, `EXTENSION_REQUIREMENT_UNMET` (exit `1`), and BDD tests (`docs/bdd/extension-requirements.md`). Pending review, not merged | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
 | **URGENT, resolve ASAP:** crypto provider selection (`crypto-<name>`) refuses unmet `requires` and never falls back to the local provider. Implemented in `weave` with a unit test; BDD scenario drafted in `docs/bdd/extension-requirements.md`, awaiting approval. Pending review | [external-crypto-providers.md](specs/external-crypto-providers.md) | - | - | - | - | review |
 | Canonical goldens for scorer, embedder, project analysis and source request and response envelopes, with schema definitions and an additive baseline (`weave` repo, `contract/v1`). The `weave-ai` mirror is not updated | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | review |
-| Codec conformance check (`weave extensions check codec-<name>`): drafted in codec spec §13 as a proposal, awaiting approval. Requires a decision on canned round-trip input and determinism | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | review |
-| Codec selection (`--codec <name>`) refuses unmet `requires` with `EXTENSION_REQUIREMENT_UNMET`. Development-build warnings are dropped on storage body paths, which have no warning sink. Pending review | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | review |
-| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8 drafted, awaiting approval) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Codec conformance check (`weave extensions check codec-<name>`): spec §13 approved; implementation pending | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | backlog |
+| Codec selection (`--codec <name>`) refuses unmet `requires` with `EXTENSION_REQUIREMENT_UNMET`. Accepted limitation: development-build warnings are dropped on storage body paths, which have no warning sink. Pending review | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | review |
+| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8 approved; BDD approved; implementation pending) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | `weave extensions new --role <role> <name>`: scaffold an executable, manifest and fixtures | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Batched request and response envelopes for enrichment and scoring, keeping the single-item form | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
+| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages. ADR 0013 accepted; implementation not started | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
 | Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Protocol version negotiation: refuse extensions with unmet `requires` at selection (explicit error, no silent fallback), and declare a supported protocol range (spec §2.9 drafted; ADR 0014 proposed) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
 | Proposal: `weave extensions install <name>` with the staging and requirement checks in §2.10; not scheduled, and whether refusal applies at install is an open decision | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Extension authoring guide for third-party developers in the `weave` repository | [README.md](README.md) | - | - | - | - | backlog |
+| Extension authoring guide for third-party developers in the `weave` repository | [extension-authoring.md](specs/extension-authoring.md) | - | - | - | - | backlog |
 
 ## Tier 15 — Core features
 
@@ -318,10 +318,10 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 | --- | --- | --- | --- | --- | --- | --- |
 | Per-type frontmatter schemas in `.weave/types/*.yaml`, checked by `weave audit` | - | - | - | - | - | backlog |
 | `weave mv` with inbound link rewriting, a changeset and `--dry-run` | - | - | - | - | - | backlog |
-| Field filters in `weave search` (for example `type:adr keywords:sqlite`) | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | - | - | - | - | backlog |
-| Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [node-graph-engine.md](specs/node-graph-engine.md) | - | - | - | - | backlog |
-| SARIF output for `weave audit` to surface gate failures in code-scanning UIs | [weave-audit.md](specs/weave-audit.md) | - | - | - | - | backlog |
-| Enrichment caching by content hash, with `--force` to bypass | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Field filters in `weave search` (for example `type:adr keywords:sqlite`) | [search-field-filters.md](specs/search-field-filters.md) | - | - | - | - | backlog |
+| Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | - | - | - | backlog |
+| SARIF output for `weave audit` to surface gate failures in code-scanning UIs | [sarif-output.md](specs/sarif-output.md) | - | - | - | - | backlog |
+| Enrichment caching by content hash, with `--force` to bypass | [enrichment-caching.md](specs/enrichment-caching.md) | - | - | - | - | backlog |
 | Pluggable tokenizer or analyzer role for language-specific stemming. Needs a decision: it reverses the current non-goal "no synonyms or stemming yet" | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
 
 ## Cross-cutting

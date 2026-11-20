@@ -17,8 +17,8 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0010](0010-extension-provided-graph-relations-and-project-analysis.md) | accepted | Extensions contribute graph relations from a project-wide analysis pass; calls and references are opt-in traversal |
 | [0011](0011-git-repositories-as-source-providers.md) | accepted | Git repositories are source-provider extensions that produce commit-pinned snapshots and repository graph nodes |
 | [0012](0012-extension-owned-documents-and-opaque-options.md) | accepted | Extension output moves to generic synthetic documents, relations, artifacts, namespaces, relation registries and opaque provider options |
-| [0013](0013-role-descriptor-registry.md) | proposed | One descriptor per extension role drives discovery, invocation, validation and limits; wire formats do not change |
-| [0014](0014-extension-requirement-enforcement.md) | proposed | Extensions with unsatisfied version requirements are refused at selection with an explicit error; installation rules deferred |
+| [0013](0013-role-descriptor-registry.md) | accepted | One descriptor per extension role drives discovery, invocation, validation and limits; wire formats do not change |
+| [0014](0014-extension-requirement-enforcement.md) | accepted | Extensions with unsatisfied version requirements are refused at selection with an explicit error; installation rules deferred |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.

@@ -7,7 +7,7 @@ tags:
   - "extensions"
   - "registry"
   - "ipc"
-status: proposed
+status: accepted
 ---
 
 # ADR 0013: Role Descriptor Registry for Extension Roles
