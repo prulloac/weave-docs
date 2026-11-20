@@ -191,6 +191,26 @@ Body compression scenarios live in [compression.md](https://github.com/prulloac/
 7. Codec extensions use raw stdin/stdout and never access the database.
 8. Mixed codecs round-trip and `weave codecs list` is accurate.
 
+## 13. Conformance Check (proposal)
+
+> **Proposal, awaiting approval.** [Extension Subprocess IPC §2.8](extension-ipc.md) covers JSON roles
+> only. Codec extensions use raw byte pipes, so they have their own check.
+
+- Invoked as `weave extensions check codec-<name>`. The name resolves to `weave-codec-<name>` with the
+  discovery rules in extension IPC §2.1.
+- Validates `--describe --json` against §4: `kind` is `codec`, `name` matches the binary suffix and
+  `directions` is a subset of `compress` and `decompress`.
+- Round trip: the input is the first 4096 bytes of the text `weave codec conformance\n` repeated. The
+  check runs `compress`, then `decompress` on that output, and requires the result to equal the input.
+- Determinism: a second `compress` of the same input must produce identical bytes (§5).
+- Each process uses the §5 timeout, and `--timeout` overrides it.
+- Failures: a malformed manifest or stdout/stderr violation fails with `CODEC_PROTOCOL`; a non-zero exit
+  fails with `CODEC_FAILED`; a timeout fails with `CODEC_TIMEOUT`.
+- Exit status is `0` when every check passes and `1` otherwise, as in extension IPC §2.8.
+- The canned input is fixed public text. The check never reads or writes a bundle or database.
+- A codec manifest with `requires` entries is checked as extension IPC §2.9 defines, before any
+  process runs.
+
 ## Related Documents
 
 - [ADR 0006: Codec Extensions and zstd-only Core](../architecture/adr/0006-codec-extensions-and-zstd-only-core.md)
