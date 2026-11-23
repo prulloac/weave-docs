@@ -267,11 +267,11 @@ is the completeness check: no feature is considered planned until it appears her
 | 45 | Keyword and fuzzy search | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | Tier 2, Tier 3 | parser, graph | 0 / Phase 1 | shipped |
 | 46 | OKF bundle parser | [okf-bundle-parser.md](specs/okf-bundle-parser.md) | Tier 1 | none | 0 / Wave 0 | shipped |
 | 47 | Node graph engine | [node-graph-engine.md](specs/node-graph-engine.md) | Tier 2 | OKF bundle parser | 0 / Wave 0 | shipped |
-| 48 | Search field filters | [search-field-filters.md](specs/search-field-filters.md) | Tier 15 | keyword and fuzzy search, BM25 | 0.11 / Tier 15 | planned |
-| 49 | Graph export formats | [graph-export.md](specs/graph-export.md) | Tier 15 | node graph engine, relate | 0.11 / Tier 15 | planned |
-| 50 | SARIF audit output | [sarif-output.md](specs/sarif-output.md) | Tier 15 | weave audit | 0.11 / Tier 15 | planned |
-| 51 | Enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | Tier 15 | extension IPC, storage | 0.11 / Tier 15 | planned |
-| 52 | Extension authoring guide | [extension-authoring.md](specs/extension-authoring.md) | Tier 14 | extension IPC, codec extensions | 0.11 / Tier 14 | planned |
+| 48 | Search field filters | [search-field-filters.md](specs/search-field-filters.md) | Tier 15 | keyword and fuzzy search, BM25 | 0.12 / Tier 15 | in progress |
+| 49 | Graph export formats | [graph-export.md](specs/graph-export.md) | Tier 15 | node graph engine, relate | 0.12 / Tier 15 | in progress |
+| 50 | SARIF audit output | [sarif-output.md](specs/sarif-output.md) | Tier 15 | weave audit | 0.12 / Tier 15 | planned |
+| 51 | Enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | Tier 15 | extension IPC, storage | 0.12 / Tier 15 | planned |
+| 52 | Extension authoring guide | [extension-authoring.md](specs/extension-authoring.md) | Tier 14 | extension IPC, codec extensions | 0.12 / Tier 14 | planned |
 | 53 | Extension conformance check | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner, codec extensions | 0.11 / Tier 14 | shipped |
 | 54 | Bundle-local extension trust gate | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.12 / Tier 14 | planned |
 | 55 | Batched extension envelopes | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.12 / Tier 14 | planned |
@@ -520,11 +520,14 @@ Specs: [Storage & Sync](specs/storage-and-sync.md),
 Specs: [Privacy Directives](specs/privacy-directives.md),
 [Privacy & Extensions](architecture/privacy-and-extensions.md).
 
-### Phase 5 — Extension architecture (runner, enrichment and rerank complete)
+### Phase 5 — Extension architecture (complete)
 
 - `weave-<name>` subprocess plugins over `weave.cli/v1` stdio (shipped).
 - Enrichment during ingest, rebuild and sync (shipped).
-- Reranking during search (shipped).
+- Reranking, pluggable scoring, embeddings, codecs, project analysis and git source providers
+  (shipped).
+- Conformance checks, requirement enforcement and the descriptor minimum (shipped in 0.11).
+- Role declarations, the trust gate, batching and parallel invocation (0.12).
 - Optional [`weave-ai`](https://github.com/prulloac/weave-ai) plugin for local/cloud keyword
   extraction and embeddings.
 - External crypto providers (Age, Vault, KMS).
@@ -599,12 +602,15 @@ started on **2026-11-10**; the earliest 1.0.0 date is **2026-12-10**.
   enterprise search cluster.
 - Core semantic search ships in 0.7 through local embeddings and `vec0` KNN; no external vector
   database or ANN cluster.
-- No custom retrieval or index extensions. Pluggable scoring reorders a bounded core candidate set.
+- No custom retrieval engines or external index plugins. Pluggable scoring reorders a bounded core
+  candidate set; the opt-in tokenizer role supplies stems and query expansions.
 - Core does not interpret media. It stores opaque blobs and generic metadata; extensions provide
   image, video, audio and PDF semantics.
-- No synonyms/stemming yet.
+- Stemming and synonyms are opt-in through the tokenizer role ([ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md));
+  the default tokenizer is unchanged.
 - No native PDF/HTML/web parsing; extensions may ingest them as opaque blobs.
-- No writes to source bundles.
+- Bundles stay read-only except `weave mv`, which moves one document and rewrites its relative links
+  and `related` ids ([ADR 0019](architecture/adr/0019-document-move-with-link-rewriting.md)).
 - No HTTP REST API.
 - No browser UI, mount server, renderer or lens.
 - No multi-tenant remote MCP hosting.
