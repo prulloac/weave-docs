@@ -45,7 +45,7 @@ maturity only.
 | [SARIF Audit Output](sarif-output.md) | draft | — | 50 |
 | [Enrichment Caching](enrichment-caching.md) | draft | — | 51 |
 | [Extension Authoring Guide](extension-authoring.md) | draft | — | 52 |
-| [Source Snapshot Diff](source-diff.md) | draft | — | 57 |
+| [Source Snapshot Diff](source-diff.md) | stable | — | 57 |
 | [Pluggable Tokenizer Role](tokenizer.md) | draft | — | 58 |
 | [Document Move](document-move.md) | draft | — | 59 |
 | [Per-Type Frontmatter Schemas](per-type-schemas.md) | draft | — | 60 |

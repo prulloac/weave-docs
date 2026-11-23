@@ -7,7 +7,7 @@ tags:
   - "git"
   - "extensions"
   - "diff"
-status: draft
+status: stable
 ---
 
 # Source Snapshot Diff
@@ -30,15 +30,18 @@ first implementation.
 ### 2.2 CLI
 
 ```sh
-weave source diff <bundle> --from <ref> --to <ref> [--source <id>] [--format json|patch] [--path <glob>] [--json]
+weave source diff <alias> [--workspace <dir>] --from <ref> --to <ref> [--format json|patch] [--path <glob>] [--out <file>] [--json]
 ```
 
+- `<alias>` is a source registered with `weave source add`; `--workspace` defaults to `.`, as for the
+  other `weave source` subcommands.
+- The provider, URI, ref and commit come from the registered source record; the source identity is
+  derived the same way ingest derives it (`WorkspaceSourceID`).
 - `--from` and `--to` are required and are opaque provider-resolved refs: a commit, tag, branch or a
   snapshot id the provider returned earlier.
-- A bundle with one registered source needs no `--source`; a bundle with several requires it.
 - `--format json` is the default and returns the standard envelope. `--format patch` writes a unified
   patch to stdout or `--out`.
-- `--path` filters changes by bundle-relative glob; it never changes what the provider computes.
+- `--path` filters changes by bundle-relative glob after the provider responds.
 - `--json` with `--format patch` is `INVALID_REQUEST`, exit `2`.
 
 ### 2.3 Request
@@ -61,6 +64,8 @@ weave source diff <bundle> --from <ref> --to <ref> [--source <id>] [--format jso
 ```
 
 - `source_id`, `uri` and `cache_dir` have the meaning defined in [Weave Git §5.1](weave-git.md).
+  `source_id` is derived from the workspace directory, alias and canonical URI, exactly as ingest
+  derives it.
 - `options.format` is `changes` or `patch`; `options.context` bounds unified hunks and defaults to `3`.
 - `options.permissive` allows a cached ref to be used when a remote cannot be reached.
 
@@ -116,8 +121,8 @@ weave source diff <bundle> --from <ref> --to <ref> [--source <id>] [--format jso
 | Condition | Code | Exit |
 | --- | --- | --- |
 | Provider does not declare `diff` | `SOURCE_UNSUPPORTED` | `2` |
+| Unknown source alias | `SOURCE_NOT_FOUND` | `1` |
 | Missing or malformed `--from`/`--to` | `INVALID_REQUEST` | `2` |
-| Source id missing or ambiguous | `INVALID_REQUEST` | `2` |
 | Requirement unmet | `EXTENSION_REQUIREMENT_UNMET` | `1` |
 | Ref not found or cache miss | `EXTENSION_FAILED` | `1` |
 | Timeout | `EXTENSION_TIMEOUT` | `1` |

@@ -276,7 +276,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 54 | Bundle-local extension trust gate | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.12 / Tier 14 | planned |
 | 55 | Batched extension envelopes | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.12 / Tier 14 | planned |
 | 56 | Parallel extension invocations | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | batched envelopes | 0.12 / Tier 14 | planned |
-| 57 | Source snapshot diff | [source-diff.md](specs/source-diff.md) | Tier 11 | weave-git, source protocol | 0.12 / Tier 11 | planned |
+| 57 | Source snapshot diff | [source-diff.md](specs/source-diff.md) | Tier 11 | weave-git, source protocol | 0.12 / Tier 11 | in progress |
 | 58 | Pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | Tier 15 | BM25, extension runner | 0.12 / Tier 15 | planned |
 | 59 | Document move with link rewriting | [document-move.md](specs/document-move.md) | Tier 15 | parser, graph, storage | 0.12 / Tier 15 | planned |
 | 60 | Per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | Tier 15 | parser, audit, ingest | 0.12 / Tier 15 | planned |

@@ -35,7 +35,7 @@ for the drafts that follow.
 | Trust gate | decided, ADR pending | Per-user `~/.weave/trust.yaml` keyed by absolute path and SHA-256; a bundle file can never grant. Untrusted bundle-local extensions are skipped with a warning unless named explicitly, which fails with `EXTENSION_UNTRUSTED` (exit `1`). `extensions trust`, `untrust` and `trusted` are added; hand-editing the file stays valid. |
 | Batched envelopes | decided, spec pending | One generic `batch_request`/`batch_response`, results in request order with per-item `ok`/`error`, max 128 items, one timeout per batch. |
 | Parallel invocations | decided, ADR pending | `--extension-parallelism N`, default `1`, cap `8`; results merge in input order so output stays deterministic. |
-| Snapshot diff | decided, ADR/spec pending | Generic source `diff` operation; structured `changes[]` plus optional unified patch; `weave source diff --format json\|patch`. `weave-git` implements it first. |
+| Snapshot diff | implemented | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. In review. |
 | Pluggable tokenizer role | decided, spec/ADR pending | Stemming and synonyms through one `tokenizer` role; the tokenizer id is recorded with the index and a change requires `rebuild`. |
 | Per-type frontmatter schemas | decided, spec/ADR pending | `.weave/types/<type>.schema.json` opts a bundle in; violations fail ingest with `TYPE_SCHEMA_INVALID` unless `--permissive` downgrades to a warning; `audit` reports the same findings. |
 | `weave mv` with link rewriting | decided, spec/ADR pending | Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
@@ -190,7 +190,8 @@ documents, traversal, raw export manifests, ignore rules and resource limits. Ta
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | in-progress |
+| Git source provider | [weave-git.md](specs/weave-git.md) | - | x | x | x | review |
+| Source snapshot diff | [source-diff.md](specs/source-diff.md) | - | x | x | x | review |
 
 Stable specification. G1–G6 and the G2b/G2c/G5a/G6a follow-ups are implemented: `weave.source/v1`,
 manifest source-provider role, schema v9 provenance, stable worktrees, remote fetch with bare
@@ -200,8 +201,8 @@ snapshot limits, explicit cache GC, submodule/LFS opt-ins, manifest-backed `Proj
 deterministic host URLs. The P2 release, integration CI, BDD coverage and schema/`contains`
 documentation items are also complete. Released in `weave v0.9.0` and `weave-git v0.9.0`.
 
-Register #43 is shipped in `weave-git` v0.9.0. This tier stays `in-progress` until the open snapshot-diff
-follow-up is resolved.
+Register #43 is shipped in `weave-git` v0.9.0. Snapshot diff (register #57) is implemented in `weave`
+and `weave-git` and is in review; the tier moves to `review` with it.
 
 ### Git source follow-ups
 
@@ -445,7 +446,7 @@ migration work that the existing contracts already allow.
 | Item | Spec | ADR | Notes |
 | --- | --- | --- | --- |
 | Tier 5: watch event delivery (`fsnotify`) | amend [watch-mode.md](specs/watch-mode.md) | none | Post-1.0 |
-| Tier 11: snapshot diff in `weave-git` | [source-diff.md](specs/source-diff.md) and amend [weave-git.md](specs/weave-git.md) | [ADR 0017](architecture/adr/0017-generic-source-diff-operation.md) accepted | Adds one operation to the generic source role; `weave-git` implements it first |
+| Tier 11: snapshot diff in `weave-git` | [source-diff.md](specs/source-diff.md) and amend [weave-git.md](specs/weave-git.md) | [ADR 0017](architecture/adr/0017-generic-source-diff-operation.md) accepted | Implemented: `source_diff_request`/`source_diff_response`, `weave source diff`, `diff` capability |
 | Tier 12: remove hardcoded `_code`/`_sources` writers | none | none | Closed 2026-11-22: no non-test writer literals remain; namespaces are extension-declared |
 | Tier 13: single product version source and lint | none | none | Update [STYLE.md](STYLE.md) |
 | Tier 13: reconcile version narrative | none | only if the versioning policy changes | ADR 0009 is accepted and immutable, so a policy change needs a superseding ADR |
