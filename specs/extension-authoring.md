@@ -31,17 +31,20 @@ Non-goals:
 The guide must contain these sections, in this order:
 
 1. **What an extension is.** `weave-<name>` executables, discovery in `.weave/bin` and on `PATH`, and the
-   bundle-local trust warning.
-2. **Manifest.** The `--describe --json` fields `v`, `name`, `version`, `requires`, `protocols` and the
-   role keys, with a minimal valid example. Links to extension IPC §2.1 and §2.9.
+   bundle-local trust gate with `weave extensions trust`.
+2. **Manifest.** The `--describe --json` fields `v`, `name`, `version`, `requires`, `protocols`,
+   `roles`, `cache_key` and `capabilities`, with a minimal valid example. Links to extension IPC §2.1
+   and §2.9.
 3. **Transport.** One request per process, JSON on stdin and stdout only, diagnostics on stderr, exit `0`
-   on success and `1` on failure, the default timeout and size bounds. Links to extension IPC §2.2.
+   on success and `1` on failure, the default timeout and size bounds, and the opt-in `batch` envelope.
+   Links to extension IPC §2.2.
 4. **Roles.** One short subsection per role, linking the owning section: enrichment, reranking, scoring,
-   embeddings, project analysis, and source provider. Codecs link to their own specification.
+   embeddings, project analysis, source provider and tokenizer. Codecs link to their own
+   specification.
 5. **Requirements.** How to declare `requires`, what a refusal looks like (`EXTENSION_REQUIREMENT_UNMET`),
    and what a development build does.
-6. **Conformance.** How to run `weave extensions check <name>` and read its result, marked as pending
-   until that command ships.
+6. **Conformance.** How to run `weave extensions check <name>` and read its result, including the
+   codec form and the `requirements` failure.
 7. **Worked example.** A complete POSIX shell enrichment extension that passes the canonical request in
    the golden corpus.
 8. **Testing.** Using the golden corpus as fixtures, and the rule that extensions must never open the

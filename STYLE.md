@@ -29,6 +29,16 @@ in the sibling [`weave`](https://github.com/prulloac/weave) repository.
 - A document's status describes the document, not the feature. A shipped feature can have a `draft`
   spec while the contract is being reviewed, but that is an exception to close before release.
 
+## Decision Records
+
+- ADR decision text is immutable. Correcting a fact, a broken link or a typo that changes no meaning
+  uses a dated `## Errata (YYYY-MM-DD)` section at the end of the ADR.
+- Extending an accepted decision without reversing it uses a dated
+  `## Amendment (YYYY-MM-DD): <topic>` section at the end. The original text stays as written.
+- Reversing a decision needs a new ADR. The old ADR's frontmatter changes to `superseded` and links
+  the replacement; it is never rewritten to read as if it always said so.
+- Errata and amendments do not change the ADR number or title.
+
 ## Numbering
 
 - ADR files are `NNNN-kebab-title.md`, contiguous from `0001`. The number in the filename, title,

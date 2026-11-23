@@ -83,8 +83,16 @@ An extension may expose a machine-readable capability manifest with
 }
 ```
 
-- `asset_types`, `requires`, `version` and `protocols` are optional. `version` and `protocols` are
-  defined in §2.9.
+- `asset_types`, `requires`, `version`, `protocols`, `roles` and `cache_key` are optional. `version`
+  and `protocols` are defined in §2.9.
+- `roles` lists the roles an extension implements: `enrichment`, `project`, `source`, `rerank`,
+  `scorer`, `embedder` or `tokenizer`. It is an additive alias for the older keys: `analysis_modes`
+  with `"document"` or absent implies `enrichment`, `"project"` implies `project`, and a non-empty
+  `source_providers` implies `source`. `source_providers` still names the providers the extension
+  supports. When both forms are present, `roles` wins and the old keys remain descriptive.
+- `cache_key` is an optional opaque string that an extension changes when its output changes without
+  a version change, such as a different model or prompt. Core uses it in the enrichment cache key
+  (§2.3) and the tokenizer identity. It must not contain secrets.
 - `analysis_modes` is optional and defaults to `["document"]`. `"project"` declares that the
   extension accepts a project-wide analysis request; see §2.4.
 - `source_extensions` is optional and used by a project analyzer to declare the source file
@@ -92,7 +100,9 @@ An extension may expose a machine-readable capability manifest with
 - Core uses `asset_types` to filter blob discovery when `--asset-types` is absent.
 - `requires` is enforced at selection (§2.9) and checked by `weave extensions check` (§2.8). Installers
   apply it only if the proposal in §2.10 is adopted.
-- `capabilities` and other unknown manifest fields are informational and ignored by core.
+- `capabilities` is informational except for source providers, where `"diff"` enables
+  [Source Snapshot Diff](source-diff.md). Other unknown manifest fields are ignored by core.
+- A bundle-local `weave-<name>` executable runs only after the user trusts it; see §2.11.
 - A missing or malformed manifest degrades to explicit `--asset-types`; it never blocks text
   enrichment.
 - Codec extensions use the same manifest shape but are named `weave-codec-<name>` and use raw byte
@@ -114,8 +124,59 @@ An extension may expose a machine-readable capability manifest with
   the matching schema is
   [`extension-ipc.schema.json`](https://github.com/prulloac/weave/blob/main/contract/v1/schema/extension-ipc.schema.json).
 - Default timeout is 5 seconds, configurable with `--timeout` (Go duration, e.g. `750ms`, `10s`).
-- Invocations are sequential and deterministic; no extension concurrency.
+- Invocations are sequential and deterministic by default; §2.2.2 defines the opt-in bound.
 - The child inherits the process environment and working directory.
+
+#### 2.2.1 Batching
+
+An extension may declare `"batch"` in `capabilities`. Core then sends one process a `batch_request`
+instead of one process per document:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "type": "batch_request",
+  "requests": [
+    {"type": "enrichment_request", "doc_id": "a.md", "title": "A", "frontmatter": {}, "body": "..."},
+    {"type": "enrichment_request", "doc_id": "b.md", "title": "B", "frontmatter": {}, "body": "..."}
+  ]
+}
+```
+
+The response is a `batch_response` whose `results` are in request order:
+
+```json
+{
+  "v": "weave.cli/v1",
+  "type": "batch_response",
+  "results": [
+    {"type": "enrichment_response", "v": "weave.cli/v1", "inferred_keywords": ["a"]},
+    {"ok": false, "error": {"code": "EXTENSION_PROTOCOL", "message": "inferred_keywords is not a list"}}
+  ]
+}
+```
+
+- The batch is limited to 128 requests and the existing size bounds apply to the whole envelope.
+  A larger batch is `EXTENSION_PROTOCOL`.
+- Each result is either the role response object or `{"ok": false, "error": {...}}`. Core validates
+  every result with the same validator it uses for a single response.
+- One failed result does not invalidate the others; the failure is applied in that item's position.
+- One timeout covers the batch. A timeout, exit or malformed envelope fails every item in it.
+- An extension that does not declare `batch` is invoked per request as before; core never sends a
+  batch to an undeclared extension.
+- The batch envelope is opt-in per role and per extension; no role is required to support it.
+
+#### 2.2.2 Parallel Invocation
+
+- Without `--extension-parallelism`, invocations are sequential.
+- `--extension-parallelism N` accepts `1` through `8`, default `1`; other values are
+  `INVALID_REQUEST`, exit `2`.
+- The bound applies to the whole command. Each item still gets its own process, stdin, stdout,
+  stderr and timeout; there is no shared worker.
+- Results, warnings, keyword merges and extension-data writes are applied in input order after the
+  invocations settle. Output is identical to the sequential run with the same inputs.
+- A failed item does not cancel in-flight items and is never retried. MCP stays sequential because it
+  has no per-call flag.
 
 ### 2.3 Enrichment
 
@@ -325,23 +386,30 @@ Response:
 ```sh
 weave extensions list [<path>] [--short] [--json]
 weave extensions check <name> [<path>] [--timeout 5s] [--json]
-weave ingest  <path> --with-enricher <name> [--with-embedder <name>] [--timeout 5s] --json
-weave rebuild <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
-weave sync    <path> --with-enricher <name> [--with-embedder <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
+weave ingest  <path> --with-enricher <name> [--with-embedder <name>] [--tokenizer <name>] [--timeout 5s] --json
+weave rebuild <path> --with-enricher <name> [--with-embedder <name>] [--tokenizer <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
+weave sync    <path> --with-enricher <name> [--with-embedder <name>] [--tokenizer <name>] [--assets|--no-assets] [--asset-types <mime,...>] [--timeout 5s] --json
 weave search  <path> <query> --rerank <name> [--timeout 5s] --json
+weave search  <path> <query> --scorer <name> [--scorer-weight <0..1>] [--timeout 5s] --json
+weave search  <path> <query> [--tokenizer <name>] [--extension-parallelism <n>] --json
 weave search  <path> <query> --mode semantic [--embedder <name>] --json
 weave ingest  <path> --assets [--asset-types <mime,...>] [--with-enricher <name>] --json
 weave codecs list [<path>] --json
 ```
 
-- `--with-enricher`, `--with-embedder`, `--embedder` and `--rerank` accept one extension name.
+- `--with-enricher`, `--with-embedder`, `--embedder`, `--tokenizer`, `--rerank` and `--scorer` accept
+  one extension name.
 - `--short` is only valid for `weave extensions list`; other commands reject it with
   `INVALID_REQUEST` (exit `2`). `--help` still takes precedence.
 - An enricher that declares `"analysis_modes": ["project"]` is invoked once for the write; others run
   per document. See §2.4.
 - A missing or invalid name fails before any write with `EXTENSION_NOT_FOUND`, exit `2`.
+- `--tokenizer` is defined by [Pluggable Tokenizer Role](tokenizer.md). A missing tokenizer is
+  `TOKENIZER_NOT_FOUND`, exit `2`.
 - `--timeout` requires a positive duration; invalid values exit `2`.
-- `--timeout` without an extension role is a usage error.
+- `--timeout` without an extension role is a usage error, except for `extensions check`, where it
+  bounds the manifest and role checks.
+- `--extension-parallelism` is defined in §2.2.2.
 - `--assets` enables blob scanning; `--asset-types` filters by MIME type or suffix wildcard.
   Extension capability discovery is defined in [Generic Blob Assets](blob-assets.md).
 - `weave codecs list --json` reports built-in and extension codecs; `--codec` resolution is defined
@@ -366,12 +434,14 @@ weave extensions check <name> [<path>] [--timeout 5s] [--json]
   check is not defined by this section; it is defined by
   [Codec Extensions §13](codec-extensions.md) and is invoked as
   `weave extensions check codec-<name>`.
-- Enrichment has no explicit manifest key: it is checked when the manifest declares no
-  `source_providers` and `analysis_modes` is empty or contains `document`. The `project` role is
-  checked when `analysis_modes` contains `project`, and `source` when `source_providers` is non-empty.
-  Reranking, scoring and embedding have no manifest role key today, so they are not discovered by
-  this command; the role descriptor registry in
-  [ADR 0013](../architecture/adr/0013-role-descriptor-registry.md) closes that gap.
+- Enrichment has no explicit manifest key: when `roles` is absent, it is checked when the manifest
+  declares no `source_providers` and `analysis_modes` is empty or contains `document`. The `project`
+  role is checked when `analysis_modes` contains `project`, and `source` when `source_providers` is
+  non-empty. When `roles` is present, every listed role is checked: `enrichment`, `project`, `source`,
+  `rerank`, `scorer`, `embedder` and `tokenizer`. The last four are the new declarations from §2.1;
+  an unknown role name is a failed `manifest` check.
+- A bundle-local extension that the user has not trusted fails the `requirements` check with
+  `EXTENSION_UNTRUSTED` before any role is invoked; see §2.11.
 - Unsatisfied requirements (§2.9) fail the `requirements` check.
 - Uses canned requests only. The check never reads bundle documents and never writes to a bundle or
   database. The only bundle access is the `.weave/bin` lookup described above. It makes no network call
@@ -450,7 +520,29 @@ The proposed rules for any installer that places a `weave-<name>` executable in 
 5. Proposed: installers do not downgrade this check to a warning and provide no flag that skips it.
 
 Open: whether `weave extensions install` is added, and whether these rules are mandatory or advisory
-for third-party installers.
+for third-party installers. The owner kept this as a proposal on 2026-11-22: there is no install
+step, and requirement refusal stays at selection.
+
+### 2.11 Bundle-Local Trust
+
+An executable in `<bundle>/.weave/bin/` is not run until the user trusts its exact path and bytes,
+because a cloned bundle would otherwise execute its own code on the first command that discovers it.
+The decision is [ADR 0015](../architecture/adr/0015-bundle-local-extension-trust-gate.md).
+
+- Trust lives in the user's `~/.weave/trust.yaml` (or `WEAVE_HOME`), keyed by extension name to the
+  absolute executable path and its SHA-256. A bundle file never grants trust.
+- An extension found on `$PATH` is not gated; installing it there is already a user action.
+- An untrusted bundle-local extension is skipped with one warning when it is discovered for a role
+  that was not named on the command line. Core behavior continues.
+- Naming it explicitly (`--with-enricher`, `--with-embedder`, `--embedder`, `--rerank`, `--scorer`,
+  `--tokenizer`, `--git`, a codec, a crypto provider or `extensions check`) fails before invocation
+  with `EXTENSION_UNTRUSTED`, exit `1`, and a hint naming the trust command.
+- `weave extensions trust <name> [<path>]` records the resolved path and hash; `untrust <name>`
+  removes it; `trusted [<path>]` reports path, hash and whether the file still matches. Hand-editing
+  the file is valid. No command prompts interactively.
+- Replacing the executable or moving the bundle changes the path or hash and requires trust again.
+- `extensions list` stays a plain scan and reports no trust state; `extensions trusted` is the read
+  surface.
 
 ## 3. Behavior
 
@@ -519,6 +611,8 @@ CLI search --rerank
 | Rerank misses/duplicates/adds candidates | `EXTENSION_PROTOCOL` | Warning; unchanged results |
 | Invalid timeout | `INVALID_REQUEST` | Exit `2` |
 | Unsatisfied `requires` at selection, or a failed `requirements` check | `EXTENSION_REQUIREMENT_UNMET` | Exit `1` before writes or searches; never falls back |
+| Untrusted bundle-local executable selected explicitly | `EXTENSION_UNTRUSTED` | Exit `1` before invocation; auto-discovered use is skipped with a warning |
+| Provider does not advertise a requested source capability | `SOURCE_UNSUPPORTED` | Exit `2` before invocation |
 
 - Extension diagnostics include the extension name, a short reason and the exit status; they never
   include request bodies or document content.
@@ -541,6 +635,14 @@ CLI search --rerank
 - Descriptor-role minimum: a source provider or project analyzer with no `version`, or one below
   `0.11.0`, is refused even when its own `requires` entries are satisfied.
 - No enrichment invocation on read-only commands.
+- Roles: `roles` selects the checked and invoked roles and takes precedence over the older keys; an
+  unknown role name fails the manifest check.
+- Trust: an untrusted bundle-local extension is skipped with a warning, and explicit selection fails
+  with `EXTENSION_UNTRUSTED`; a changed hash requires trust again.
+- Batching: a declared `batch` capability produces one `batch_response` per batch, results stay in
+  request order, and one failed item does not fail the others.
+- Parallelism: `--extension-parallelism 8` produces byte-identical output to `N=1`, including
+  warnings and keyword order.
 - Determinism across repeated runs with the same fixture extension.
 - Full gate: `go test ./...`, `go test -race ./...`, `go vet ./...`, `./scripts/verify.sh`,
   docs-lint, markdownlint; calibration unchanged.

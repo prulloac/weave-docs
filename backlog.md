@@ -21,24 +21,29 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 - `-` — not applicable / not started
 - `x` — complete
 
-## Current Session Queue (2026-11-19)
+## Current Session Queue (2026-11-22)
 
 Carry this list into the next session. Each item names its owner or blocker so no work is resumed
-from memory.
+from memory. The owner answered the decision questions on 2026-11-22; the answers below are binding
+for the drafts that follow.
 
 | Item | State | Next action |
 | --- | --- | --- |
-| `weave extensions check` (extension IPC §2.8) | implemented | BDD scenarios and CLI/engine tests are green. Roles detectable from today's manifest are `enrichment`, `project` and `source`. |
-| Manifest role declaration for reranking, scoring and embedding | blocked | Those roles have no manifest key, so `extensions check` cannot discover them. Decide whether `protocols` or a new `roles` field declares them, then amend §2.1 and §2.8. ADR 0013 is the likely home. |
-| Version-minimum gap for descriptor roles | implemented | Core enforces the 0.11.0 line for source providers and project analyzers; unit and BDD cases are green and ADR 0014 carries a dated amendment. |
-| Codec conformance check (codec spec §13) | implemented | `weave extensions check codec-<name>` runs the fixed 4096-byte round trip and determinism check; the real `weave-codec-lz4` passes. |
-| Role descriptor registry (ADR 0013) | accepted, not started | Land one role adapter at a time behind the existing suites. Unblocks batching, parallel invocations, tokenizer and the scoped conformance checks above. |
-| Tier 12 hardcoded writer removal | code check complete | Owner must verify and close the last unchecked item. |
-| Feature ADRs: trust gate, batched envelopes, parallel invocations, snapshot diff, tokenizer role, `weave mv`, per-type schemas | awaiting owner decisions | Discuss with the owner, then draft in that order. Nothing is implemented. |
-| Draft specs: search field filters, graph export, SARIF, enrichment caching, extension authoring guide | drafted (`draft`) | Owner review before BDD/TDD. Registered as features 48–52. |
-| Publish `v0.11.0` for `weave`, `weave-git`, `weave-code` | tagged locally, not pushed | Push the tags and run the release workflows. Then update `weave-code/AGENTS.md` and `weave-git/AGENTS.md` release lines. |
-| `weave extensions install` (§2.10) | proposal only | Keep as a proposal until the owner decides whether refusal applies at install. |
-| `weave-ai` machine manifest | implemented | `weave-ai --describe --json` now emits `weave.extension/v1`; human output is unchanged. `weave extensions check ai` reads it. |
+| `weave extensions check` (extension IPC §2.8) | shipped in v0.11.0 | BDD and engine tests are green; codec §13 and the descriptor minimum are included. |
+| Tier 12 hardcoded writer removal | closed 2026-11-22 | No non-test `_code`/`_sources` writer literals remain; namespaces are extension-declared. |
+| Role descriptor registry (ADR 0013) | approved to start | Add the `roles` manifest key as an additive alias for `analysis_modes`/`source_providers`, amend §2.1/§2.8, then land the registry one role at a time. Canonical roles: `enrichment`, `project`, `source`, `rerank`, `scorer`, `embedder`. |
+| Trust gate | decided, ADR pending | Per-user `~/.weave/trust.yaml` keyed by absolute path and SHA-256; a bundle file can never grant. Untrusted bundle-local extensions are skipped with a warning unless named explicitly, which fails with `EXTENSION_UNTRUSTED` (exit `1`). `extensions trust`, `untrust` and `trusted` are added; hand-editing the file stays valid. |
+| Batched envelopes | decided, spec pending | One generic `batch_request`/`batch_response`, results in request order with per-item `ok`/`error`, max 128 items, one timeout per batch. |
+| Parallel invocations | decided, ADR pending | `--extension-parallelism N`, default `1`, cap `8`; results merge in input order so output stays deterministic. |
+| Snapshot diff | decided, ADR/spec pending | Generic source `diff` operation; structured `changes[]` plus optional unified patch; `weave source diff --format json\|patch`. `weave-git` implements it first. |
+| Pluggable tokenizer role | decided, spec/ADR pending | Stemming and synonyms through one `tokenizer` role; the tokenizer id is recorded with the index and a change requires `rebuild`. |
+| Per-type frontmatter schemas | decided, spec/ADR pending | `.weave/types/<type>.schema.json` opts a bundle in; violations fail ingest with `TYPE_SCHEMA_INVALID` unless `--permissive` downgrades to a warning; `audit` reports the same findings. |
+| `weave mv` with link rewriting | decided, spec/ADR pending | Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
+| Enrichment caching fingerprint | decided | The manifest gains an optional `cache_key`; absent, the key stays name + version + request. The draft is otherwise approved. |
+| Draft specs 48–52 | approved for BDD/TDD | All five approved. Suggested order: graph export, field filters, per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
+| `weave extensions install` (§2.10) | stays a proposal | No install step; requirement refusal stays at selection. |
+| ADR errata rule | adopted | STYLE.md now defines dated `## Errata` and `## Amendment` sections; decision text is never rewritten. |
+| Publish the 0.11 line | done 2026-11-22 | Pushed `weave` v0.11.0 (retagged at HEAD), `weave-ai` v0.9.0, `weave-git` v0.11.0 and `weave-code` v0.11.0, plus main branches and `weave-docs`. Release workflows ran; record assets in `release-checklist.md`. |
 
 ## Tier 1 — Foundation
 
@@ -252,7 +257,7 @@ and re-prioritize them when needed.
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | x | in-progress |
+| Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | - | x | x | x | review |
 
 ADR 0012 is accepted and the spec is stable. The generic boundary is implemented end to end;
 descriptor-capable `weave-git` and `weave-code` are required. Minimum supported line:
@@ -276,8 +281,9 @@ descriptor-capable `weave-git` and `weave-code` are required. Minimum supported 
   migration.
 - [x] Move default relation policy into persisted active-extension declarations; reads append them to
   core defaults.
-- [ ] Remove the hardcoded `_code`/`_sources` writers after extension producers migrate. Code check
-  (2026-11-15): no non-test writer literals remain; the owner should verify and close this item.
+- [x] Remove the hardcoded `_code`/`_sources` writers after extension producers migrate. Verified
+  (2026-11-22): no non-test writer literals remain; the namespaces are declared by `weave-code` and
+  `weave-git` and the remaining references are export-layout tests. Closed by the owner.
 - [x] Migrate `weave-git` to descriptors, namespaces, artifacts and `source_metadata`.
 - [x] Collect project-analyzer artifacts through the generic storage path.
 - [x] Migrate `weave-code` document types and `_code` export to generic descriptors and artifacts.
@@ -438,8 +444,8 @@ migration work that the existing contracts already allow.
 | Item | Spec | ADR | Notes |
 | --- | --- | --- | --- |
 | Tier 5: watch event delivery (`fsnotify`) | amend [watch-mode.md](specs/watch-mode.md) | none | Post-1.0 |
-| Tier 11: snapshot diff in `weave-git` | amend [weave-git.md](specs/weave-git.md) and the source protocol | ADR | Adds a new operation to the generic source role, which extends the boundary in ADR 0012 |
-| Tier 12: remove hardcoded `_code`/`_sources` writers | none | none | Migration gated by the behavior-preservation rule in ADR 0012 |
+| Tier 11: snapshot diff in `weave-git` | [source-diff.md](specs/source-diff.md) and amend [weave-git.md](specs/weave-git.md) | [ADR 0017](architecture/adr/0017-generic-source-diff-operation.md) accepted | Adds one operation to the generic source role; `weave-git` implements it first |
+| Tier 12: remove hardcoded `_code`/`_sources` writers | none | none | Closed 2026-11-22: no non-test writer literals remain; namespaces are extension-declared |
 | Tier 13: single product version source and lint | none | none | Update [STYLE.md](STYLE.md) |
 | Tier 13: reconcile version narrative | none | only if the versioning policy changes | ADR 0009 is accepted and immutable, so a policy change needs a superseding ADR |
 | Tier 13: workspace schema version | Correction only (done in this commit) | none | Verified against `storage/sqlite/schema.go` |
@@ -452,21 +458,21 @@ migration work that the existing contracts already allow.
 | Tier 13: ROADMAP §2 hybrid row | none | none | ROADMAP only |
 | Tier 13: ADR 0002 wording and typo policy | none | policy decision; new ADR only if adopted as a rule | ADRs are immutable; errata need a rule |
 | Tier 13: extend docs checks | none | none | Tooling and STYLE.md |
-| Tier 14: `weave extensions check` | done: §2.8 in [extension-ipc.md](specs/extension-ipc.md) | none | BDD and TDD green. Role checks need manifest role keys before rerank, scoring and embedding can be discovered |
+| Tier 14: `weave extensions check` | done: §2.8 in [extension-ipc.md](specs/extension-ipc.md) | none | Shipped in v0.11.0; role checks cover enrichment, project, source and codecs |
 | Tier 14: `weave extensions new --role` | amend [extension-ipc.md](specs/extension-ipc.md) or a new authoring spec | none | New CLI behavior, so BDD scenarios are needed |
-| Tier 14: batched envelopes | amend [extension-ipc.md](specs/extension-ipc.md); additive contract change | none | Schema change, so `schema-diff` applies |
-| Tier 14: parallel invocations | amend [extension-ipc.md](specs/extension-ipc.md) §2.2 | ADR | Reverses the sequential and deterministic invocation decision |
-| Tier 14: role descriptor registry | none | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) accepted | Extends ADR 0012; no behavior change, so the behavior-preservation gate applies |
-| Tier 14: bundle-local trust gate | amend [extension-ipc.md](specs/extension-ipc.md) §2.1 | ADR | Changes a security default that the architecture calls deliberate |
+| Tier 14: batched envelopes | amend [extension-ipc.md](specs/extension-ipc.md) §2.2.1; additive contract change | none | Decided: generic `batch_request`/`batch_response`, max 128, per-item errors |
+| Tier 14: parallel invocations | amend [extension-ipc.md](specs/extension-ipc.md) §2.2.2 | [ADR 0016](architecture/adr/0016-opt-in-parallel-extension-invocation.md) accepted | Decided: `--extension-parallelism`, default `1`, cap `8`, ordered merge |
+| Tier 14: role descriptor registry | amend [extension-ipc.md](specs/extension-ipc.md) §2.1/§2.8 (additive `roles` key) | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) accepted | Canonical roles: enrichment, project, source, rerank, scorer, embedder, tokenizer |
+| Tier 14: bundle-local trust gate | amend [extension-ipc.md](specs/extension-ipc.md) §2.11 | [ADR 0015](architecture/adr/0015-bundle-local-extension-trust-gate.md) accepted | Per-user hash-pinned store; skip unless explicit; trust subcommands plus config file |
 | Tier 14: protocol version negotiation | done: §2.9 in [extension-ipc.md](specs/extension-ipc.md) | [ADR 0014](architecture/adr/0014-extension-requirement-enforcement.md) accepted | Implemented for every role; a declared protocol range remains open |
-| Tier 14: authoring guide | none | none | End-user guide in `weave/docs/guides`; no BDD |
-| Tier 15: per-type frontmatter schemas | new spec | ADR | Changes the Weave profile in invariant 3 |
-| Tier 15: `weave mv` with link rewriting | new spec | ADR | Reverses the non-goal "No writes to source bundles" |
-| Tier 15: search field filters | amend [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | none | Requires a calibration baseline review |
-| Tier 15: graph export formats | amend [node-graph-engine.md](specs/node-graph-engine.md) or a new small spec | none | Additive output |
-| Tier 15: SARIF output for audit | amend [weave-audit.md](specs/weave-audit.md) | none | New output format |
-| Tier 15: enrichment caching | amend [extension-ipc.md](specs/extension-ipc.md) §2.3 | none | Changes the re-run replacement rule |
-| Tier 15: pluggable tokenizer role | new spec | ADR | Reverses the non-goal "No synonyms or stemming yet" and changes ranking, so calibration review applies |
+| Tier 14: authoring guide | [extension-authoring.md](specs/extension-authoring.md) | none | End-user guide in `weave/docs/guides`; approved for BDD/TDD |
+| Tier 15: per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | [ADR 0020](architecture/adr/0020-per-type-frontmatter-schemas.md) accepted | Opt-in `.weave/types`, strict ingest with `--permissive`, audit agrees |
+| Tier 15: `weave mv` with link rewriting | [document-move.md](specs/document-move.md) | [ADR 0019](architecture/adr/0019-document-move-with-link-rewriting.md) accepted | Rewrites relative links and `related` ids; refuses overwrite; `--dry-run` |
+| Tier 15: search field filters | [search-field-filters.md](specs/search-field-filters.md) | none | Approved for BDD/TDD; requires a calibration baseline review |
+| Tier 15: graph export formats | [graph-export.md](specs/graph-export.md) | none | Approved for BDD/TDD; additive output |
+| Tier 15: SARIF output for audit | [sarif-output.md](specs/sarif-output.md) | none | Approved for BDD/TDD; new output format |
+| Tier 15: enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | none | Approved for BDD/TDD; key gains the optional manifest `cache_key` |
+| Tier 15: pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | [ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md) accepted | Stemming and query expansions; index identity and rebuild on change |
 
 ### Dependencies
 
@@ -556,13 +562,13 @@ Documentation integrity comes first. Within the tier:
 
 Features follow the docs work:
 
-1. Tier 12 writer removal, then the role registry, which many later items touch.
-2. Decision records for the new ADRs (trust gate, parallel invocations, version negotiation, source
-   protocol, non-goal revisions, per-type schema, tokenizer).
-3. `extensions check`, version negotiation and the descriptor minimum are implemented; next are field
-   filters, graph export and per-type schemas.
-4. Scaffold, batching, enrichment caching, SARIF and snapshot diff.
-5. Parallel invocations, the authoring guide, the tokenizer role and fsnotify (post-1.0).
+1. Role registry (ADR 0013) with the additive `roles` key; Tier 12 writer removal is closed.
+2. ADRs 0015–0020 are accepted; the specs they need are drafted and await owner review.
+3. `extensions check`, version negotiation and the descriptor minimum shipped in v0.11.0.
+4. Next implementation order: role registry, field filters, graph export, per-type schemas, trust gate,
+   batching, parallel invocations, SARIF, enrichment caching, snapshot diff, tokenizer, `weave mv`,
+   then the authoring guide.
+5. fsnotify remains post-1.0.
 
 ### Release Line
 
@@ -573,10 +579,9 @@ only after 1.0. Breaking changes ship with release notes.
 
 | Item | Classification | Line |
 | --- | --- | --- |
-| Batched envelopes | New behavior; single-item form kept | 0.X |
+| Batched envelopes | New behavior; extensions opt in with the `batch` capability | 0.X |
 | Parallel invocations | New behavior; result order unchanged | 0.X |
-| Trust gate, warn first | New behavior | 0.X |
-| Trust gate, default-deny | Breaking for bundles that rely on `.weave/bin` | Decision needed; 0.X only as opt-in |
+| Trust gate, default-deny | Breaking for bundles that rely on `.weave/bin`; owner chose default-deny on 2026-11-22 | 0.X, with release notes |
 | Version negotiation, refusal | Breaking for installs running extensions with unmet requirements; decided by the owner, recorded in ADR 0014 | 0.X, with release notes |
 | Enrichment caching | New behavior; opt-in or bypassed with `--force` | 0.X |
 | Per-type schemas (opt-in config) | New behavior | 0.X |

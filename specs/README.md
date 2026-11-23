@@ -19,7 +19,7 @@ maturity only.
 | [Compression](compression.md) | stable | [Compression](https://github.com/prulloac/weave/blob/main/docs/bdd/compression.md), [Codec extensions](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md) | 11, 38 |
 | [Codec Extensions](codec-extensions.md) | stable | [Codec extensions](https://github.com/prulloac/weave/blob/main/docs/bdd/codec-extensions.md) | 38 |
 | [Privacy Directives](privacy-directives.md) | stable | [Privacy](https://github.com/prulloac/weave/blob/main/docs/bdd/privacy-directives.md) | 12 |
-| [Extension Subprocess IPC](extension-ipc.md) | stable | [Extension IPC](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-ipc.md) | 13, 14, 15 |
+| [Extension Subprocess IPC](extension-ipc.md) | stable | [Extension IPC](https://github.com/prulloac/weave/blob/main/docs/bdd/extension-ipc.md) | 13, 14, 15, 53, 54, 55, 56 |
 | [External Crypto Providers](external-crypto-providers.md) | stable | [External crypto](https://github.com/prulloac/weave/blob/main/docs/bdd/external-crypto.md) | 17 |
 | [Weave AI Extension](weave-ai-plugin.md) | stable | [core behavior](https://github.com/prulloac/weave/blob/main/docs/bdd/ai-plugin.md), [plugin protocol](https://github.com/prulloac/weave-ai/blob/main/docs/bdd/ai-plugin.md) | 16, 34 |
 | [MCP Server](mcp-server.md) | stable | [MCP server](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-server.md), [Transport](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-transport.md), [Resources](https://github.com/prulloac/weave/blob/main/docs/bdd/mcp-resources.md) | 19, 20, 22, 23, 24 |
@@ -45,6 +45,10 @@ maturity only.
 | [SARIF Audit Output](sarif-output.md) | draft | — | 50 |
 | [Enrichment Caching](enrichment-caching.md) | draft | — | 51 |
 | [Extension Authoring Guide](extension-authoring.md) | draft | — | 52 |
+| [Source Snapshot Diff](source-diff.md) | draft | — | 57 |
+| [Pluggable Tokenizer Role](tokenizer.md) | draft | — | 58 |
+| [Document Move](document-move.md) | draft | — | 59 |
+| [Per-Type Frontmatter Schemas](per-type-schemas.md) | draft | — | 60 |
 
 ## Ownership rules
 

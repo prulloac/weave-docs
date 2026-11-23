@@ -33,6 +33,8 @@ The key is the SHA-256 of canonical JSON containing:
 
 - the enricher name;
 - the enricher `version` from `--describe --json`, or the literal `unversioned` when absent;
+- the enricher `cache_key` from `--describe --json` when present, so a model or prompt change under
+  the same version still invalidates the entry;
 - `doc_id`, `doc_path`, `media_type`, `title`, `frontmatter` and `body`, as sent in the request.
 
 The key excludes `bundle_root` and `workspace`, which change between machines and invocations.

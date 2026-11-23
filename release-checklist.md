@@ -2,7 +2,37 @@
 
 This checklist records the release state. Tag and publish steps are owner actions.
 
-# v0.10.1 (current pre-1.0 release)
+# v0.11.0 (current pre-1.0 release)
+
+## Complete
+
+- [x] Tagged and pushed `v0.11.0`: `weave` (`77e7b37`, retagged at HEAD), `weave-git` (`2a9e2f7`),
+  `weave-code` (`863333b`) and `weave-ai` `v0.9.0` (`0250319`). Main branches and `weave-docs` were
+  pushed with the tags.
+- [x] Release workflows built six static archives plus checksums for each product and created draft
+  releases.
+- [x] Downloaded and verified the Linux `amd64` archive against each checksum file; the binaries report
+  `weave v0.11.0 (contract 1)`, `weave-ai v0.9.0 (weave.cli/v1)`, `weave-git v0.11.0
+  (weave.extension/v1)` and `weave-code v0.11.0 (weave.extension/v1)`.
+- [x] Published `weave` v0.11.0, `weave-ai` v0.9.0, `weave-git` v0.11.0 and `weave-code` v0.11.0 with
+  highlights naming the tested core version.
+- [x] The 0.11 feature set adds extension requirement enforcement for every role, the descriptor
+  minimum for source and project roles, `weave extensions check` with the codec round trip, the
+  machine manifest for `weave-ai`, and the generic extension output boundary follow-ups.
+- [x] `weave`, specs, roadmap, backlog and release notes describe the 0.11 set.
+
+## Notes
+
+- 0.11 is a **pre-1.0** release for `weave`. `weave.contract/v1` and `weave.cli/v1` remain
+  authoritative and may still evolve in place until 1.0.0.
+- `weave-codec-lz4` and `weave-image` remain at v0.8.0; their `weave >= 0.8.0` floors are satisfied by
+  `weave v0.11.0`, and `weave-image` requires `weave-ai >= 0.8.0`, satisfied by v0.9.0.
+- Publishing remains manual; a tag push only creates a draft release.
+- The next line is 0.12: role registry, trust gate, batching, parallel invocations, source snapshot
+  diff, tokenizer, `weave mv`, per-type schemas and the approved Tier 15 specs.
+- The performance optimization program and watch event delivery are post-1.0 work.
+
+# v0.10.1 (previous pre-1.0 release)
 
 ## Complete
 

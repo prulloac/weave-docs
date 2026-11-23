@@ -19,10 +19,17 @@ ADRs are immutable; a later decision supersedes them with a new number.
 | [0012](0012-extension-owned-documents-and-opaque-options.md) | accepted | Extension output moves to generic synthetic documents, relations, artifacts, namespaces, relation registries and opaque provider options |
 | [0013](0013-role-descriptor-registry.md) | accepted | One descriptor per extension role drives discovery, invocation, validation and limits; wire formats do not change |
 | [0014](0014-extension-requirement-enforcement.md) | accepted | Extensions with unsatisfied version requirements are refused at selection with an explicit error; installation rules deferred |
+| [0015](0015-bundle-local-extension-trust-gate.md) | accepted | Bundle-local extensions run only after a per-user, hash-pinned trust entry; untrusted ones are skipped unless selected explicitly |
+| [0016](0016-opt-in-parallel-extension-invocation.md) | accepted | Invocation stays sequential unless `--extension-parallelism` raises the bound; results merge in input order |
+| [0017](0017-generic-source-diff-operation.md) | accepted | `weave.source/v1` gains a diff operation; providers advertise it and return structured changes with an optional patch |
+| [0018](0018-pluggable-tokenizer-role.md) | accepted | An opt-in tokenizer role supplies stems and query expansions; the index records its identity and a change requires a rebuild |
+| [0019](0019-document-move-with-link-rewriting.md) | accepted | `weave mv` moves one document and rewrites the relative links and related ids that point at it |
+| [0020](0020-per-type-frontmatter-schemas.md) | accepted | A bundle may opt in to JSON Schema per document type under `.weave/types`, validated at ingest and audit |
 
 Numbering is contiguous from `0001`. A decision that is replaced keeps its number and is marked
 `superseded`; it is never deleted.
 
-An accepted ADR's decision text is immutable. Errata may correct a factual error or a stale product
-reference without changing the decision. Add a dated `## Errata` section at the end of the ADR; do
-not edit the decision text.
+An accepted ADR's decision text is immutable. Corrections use a dated `## Errata (YYYY-MM-DD)`
+section; extensions that do not reverse the decision use a dated
+`## Amendment (YYYY-MM-DD): <topic>` section. Neither changes the decision text. Reversing a decision
+needs a new ADR.

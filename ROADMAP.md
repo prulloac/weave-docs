@@ -2,14 +2,17 @@
 
 > Weave loads OKF bundles into memory or a persistent SQLite index, relates documents as a graph, and answers calibrated keyword, BM25 and fuzzy top-K searches through a Go CLI.
 
-Status: **v0.11.0 is the current pre-1.0 release for `weave`. `weave-git` and `weave-code` are tagged
-v0.11.0 locally and await publication.** The tag and publish record lives in
-[release-checklist.md](release-checklist.md). Other first-party members remain at v0.8.0 and v0.9.0. The core engine,
+Status: **v0.11.0 is the current pre-1.0 release for `weave`.** `weave-git` and `weave-code` v0.11.0
+and `weave-ai` v0.9.0 are published with it; `weave-codec-lz4` and `weave-image` remain at v0.8.0.
+The tag and publish record lives in [release-checklist.md](release-checklist.md). The core engine,
 introspection commands, SQLite storage, incremental sync, watch reload, BM25, permissive ingestion,
 privacy directives, body compression, extension IPC with enrichment/rerank, workspaces, blob assets,
 codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
-automation and the MCP server are shipped. Work after 0.10 is the generic extension output boundary,
-watch event delivery, the optimization program and MCP polish; 1.0 remains the stability target.
+automation, the MCP server, the generic extension output boundary, extension conformance checks and
+descriptor requirement enforcement are shipped. Work after 0.11 is the extension trust gate, batched
+and parallel invocations, source snapshot diff, the tokenizer role, `weave mv`, per-type schemas, the
+0.12 specs, watch event delivery, the optimization program and MCP polish; 1.0 remains the stability
+target.
 
 ## 1. What Weave Is
 
@@ -260,7 +263,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 41 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | Tier 9 | release readiness, issue tracker | 1.0 / P1 | shipped |
 | 42 | Code knowledge extension | [weave-code.md](specs/weave-code.md) | Tier 10 | blob assets, extension IPC, graph, project analysis | 0.8 / P1 | shipped |
 | 43 | Git source provider | [weave-git.md](specs/weave-git.md) | Tier 11 | workspace, extension IPC, graph, source cache | 0.9 / P1 | shipped |
-| 44 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | Tier 12 | extension IPC, graph, contract, storage | 0.11 / P1 | in progress |
+| 44 | Generic extension output boundary | [extension-output-boundary.md](specs/extension-output-boundary.md) | Tier 12 | extension IPC, graph, contract, storage | 0.11 / P1 | shipped |
 | 45 | Keyword and fuzzy search | [keyword-fuzzy-search.md](specs/keyword-fuzzy-search.md) | Tier 2, Tier 3 | parser, graph | 0 / Phase 1 | shipped |
 | 46 | OKF bundle parser | [okf-bundle-parser.md](specs/okf-bundle-parser.md) | Tier 1 | none | 0 / Wave 0 | shipped |
 | 47 | Node graph engine | [node-graph-engine.md](specs/node-graph-engine.md) | Tier 2 | OKF bundle parser | 0 / Wave 0 | shipped |
@@ -269,6 +272,14 @@ is the completeness check: no feature is considered planned until it appears her
 | 50 | SARIF audit output | [sarif-output.md](specs/sarif-output.md) | Tier 15 | weave audit | 0.11 / Tier 15 | planned |
 | 51 | Enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | Tier 15 | extension IPC, storage | 0.11 / Tier 15 | planned |
 | 52 | Extension authoring guide | [extension-authoring.md](specs/extension-authoring.md) | Tier 14 | extension IPC, codec extensions | 0.11 / Tier 14 | planned |
+| 53 | Extension conformance check | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner, codec extensions | 0.11 / Tier 14 | shipped |
+| 54 | Bundle-local extension trust gate | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.12 / Tier 14 | planned |
+| 55 | Batched extension envelopes | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.12 / Tier 14 | planned |
+| 56 | Parallel extension invocations | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | batched envelopes | 0.12 / Tier 14 | planned |
+| 57 | Source snapshot diff | [source-diff.md](specs/source-diff.md) | Tier 11 | weave-git, source protocol | 0.12 / Tier 11 | planned |
+| 58 | Pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | Tier 15 | BM25, extension runner | 0.12 / Tier 15 | planned |
+| 59 | Document move with link rewriting | [document-move.md](specs/document-move.md) | Tier 15 | parser, graph, storage | 0.12 / Tier 15 | planned |
+| 60 | Per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | Tier 15 | parser, audit, ingest | 0.12 / Tier 15 | planned |
 
 Rules:
 
