@@ -31,7 +31,7 @@ for the drafts that follow.
 | --- | --- | --- |
 | `weave extensions check` (extension IPC §2.8) | shipped in v0.11.0 | BDD and engine tests are green; codec §13 and the descriptor minimum are included. |
 | Tier 12 hardcoded writer removal | closed 2026-11-22 | No non-test `_code`/`_sources` writer literals remain; namespaces are extension-declared. |
-| Role descriptor registry (ADR 0013) | approved to start | Add the `roles` manifest key as an additive alias for `analysis_modes`/`source_providers`, amend §2.1/§2.8, then land the registry one role at a time. Canonical roles: `enrichment`, `project`, `source`, `rerank`, `scorer`, `embedder`. |
+| Role descriptor registry (ADR 0013) | in progress | The additive `roles` key and conformance checks for all seven roles are implemented. Next: move invocation behind one descriptor, one role at a time, behind the existing suites. |
 | Trust gate | decided, ADR pending | Per-user `~/.weave/trust.yaml` keyed by absolute path and SHA-256; a bundle file can never grant. Untrusted bundle-local extensions are skipped with a warning unless named explicitly, which fails with `EXTENSION_UNTRUSTED` (exit `1`). `extensions trust`, `untrust` and `trusted` are added; hand-editing the file stays valid. |
 | Batched envelopes | decided, spec pending | One generic `batch_request`/`batch_response`, results in request order with per-item `ok`/`error`, max 128 items, one timeout per batch. |
 | Parallel invocations | decided, ADR pending | `--extension-parallelism N`, default `1`, cap `8`; results merge in input order so output stays deterministic. |
@@ -40,7 +40,7 @@ for the drafts that follow.
 | Per-type frontmatter schemas | decided, spec/ADR pending | `.weave/types/<type>.schema.json` opts a bundle in; violations fail ingest with `TYPE_SCHEMA_INVALID` unless `--permissive` downgrades to a warning; `audit` reports the same findings. |
 | `weave mv` with link rewriting | decided, spec/ADR pending | Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
 | Enrichment caching fingerprint | decided | The manifest gains an optional `cache_key`; absent, the key stays name + version + request. The draft is otherwise approved. |
-| Draft specs 48–52 | approved for BDD/TDD | All five approved. Suggested order: graph export, field filters, per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
+| Draft specs 48–52 | approved for BDD/TDD | Graph export is implemented and in review; field filters BDD is approved and implementation is next. Remaining: per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
 | `weave extensions install` (§2.10) | stays a proposal | No install step; requirement refusal stays at selection. |
 | ADR errata rule | adopted | STYLE.md now defines dated `## Errata` and `## Amendment` sections; decision text is never rewritten. |
 | Publish the 0.11 line | done 2026-11-22 | Pushed `weave` v0.11.0 (retagged at HEAD), `weave-ai` v0.9.0, `weave-git` v0.11.0 and `weave-code` v0.11.0, plus main branches and `weave-docs`. Release workflows ran; record assets in `release-checklist.md`. |
@@ -324,12 +324,12 @@ Makes extension authoring and operation practical without core changes to first-
 | Canonical goldens for scorer, embedder, project analysis and source request and response envelopes, with schema definitions and an additive baseline (`weave` repo, `contract/v1`). The `weave-ai` mirror is synced with `scripts/sync-fixtures.sh` | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | review |
 | Codec conformance check (`weave extensions check codec-<name>`): spec §13, implemented with manifest, requirements, compress, determinism and round-trip checks | [codec-extensions.md](specs/codec-extensions.md) | - | x | x | x | review |
 | Codec selection (`--codec <name>`) refuses unmet `requires` with `EXTENSION_REQUIREMENT_UNMET`. Accepted limitation: development-build warnings are dropped on storage body paths, which have no warning sink. Pending review | [codec-extensions.md](specs/codec-extensions.md) | - | - | - | - | review |
-| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8; BDD and implementation green; detected roles are enrichment, project and source until manifests declare the other roles) | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
+| `weave extensions check <name>`: validate the manifest and run canned protocol requests (spec §2.8; BDD and implementation green; `roles` covers enrichment, project, source, rerank, scorer, embedder and tokenizer) | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
 | `weave extensions new --role <role> <name>`: scaffold an executable, manifest and fixtures | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Batched request and response envelopes for enrichment and scoring, keeping the single-item form | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Bounded parallel extension invocations with deterministic result order (replaces the sequential rule) | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
-| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages. ADR 0013 accepted; implementation not started. It also owns the manifest role keys that unblock full `extensions check` coverage | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | - | - | - | backlog |
-| Trust gate for bundle-local `.weave/bin` extensions: opt-in flag or manifest hash allowlist | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
+| Batched request and response envelopes for enrichment and scoring, keeping the single-item form. Decided: generic `batch_request`/`batch_response`, max 128, per-item errors | [extension-ipc.md](specs/extension-ipc.md) | - | x | - | - | backlog |
+| Bounded parallel extension invocations with deterministic result order (replaces the sequential rule). Decided: `--extension-parallelism`, default `1`, cap `8` | [extension-ipc.md](specs/extension-ipc.md) | - | x | - | - | backlog |
+| Role descriptor registry in `engine/extensions`, so a new role touches one adapter instead of many packages. ADR 0013 accepted. The additive `roles` key and conformance coverage for all seven roles are implemented; the invocation refactor is next | [ADR 0013](architecture/adr/0013-role-descriptor-registry.md) | - | x | x | x | in-progress |
+| Trust gate for bundle-local `.weave/bin` extensions: per-user, hash-pinned allowlist; skip unless explicit. ADR 0015 accepted, spec §2.11 approved, implementation pending | [extension-ipc.md](specs/extension-ipc.md) | - | x | - | - | backlog |
 | Protocol version negotiation: refuse extensions with unmet `requires` at selection (explicit error, no silent fallback). Implemented in `weave` for every role; spec §2.9 stable and ADR 0014 accepted. A declared per-extension protocol range remains a future addition | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
 | Descriptor-role minimum version: core refuses a source provider or project analyzer whose manifest has no `version` or is below the 0.11.0 line, closing the gap where `weave-git` v0.9.0 and `weave-code` v0.8.0 could still run. Spec §2.9 and ADR 0014 carry the dated amendment | [extension-ipc.md](specs/extension-ipc.md) | - | x | x | x | review |
 | Proposal: `weave extensions install <name>` with the staging and requirement checks in §2.10; not scheduled, and whether refusal applies at install is an open decision | [extension-ipc.md](specs/extension-ipc.md) | - | - | - | - | backlog |
@@ -342,13 +342,13 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Per-type frontmatter schemas in `.weave/types/*.yaml`, checked by `weave audit` | - | - | - | - | - | backlog |
-| `weave mv` with inbound link rewriting, a changeset and `--dry-run` | - | - | - | - | - | backlog |
-| Field filters in `weave search` (for example `type:adr keywords:sqlite`) | [search-field-filters.md](specs/search-field-filters.md) | - | - | - | - | backlog |
-| Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | - | - | - | backlog |
-| SARIF output for `weave audit` to surface gate failures in code-scanning UIs | [sarif-output.md](specs/sarif-output.md) | - | - | - | - | backlog |
-| Enrichment caching by content hash, with `--force` to bypass | [enrichment-caching.md](specs/enrichment-caching.md) | - | - | - | - | backlog |
-| Pluggable tokenizer or analyzer role for language-specific stemming. Needs a decision: it reverses the current non-goal "no synonyms or stemming yet" | [ROADMAP.md](ROADMAP.md) | - | - | - | - | backlog |
+| Per-type frontmatter schemas in `.weave/types/<type>.schema.json`, checked by ingest and `weave audit` | [per-type-schemas.md](specs/per-type-schemas.md) | - | x | - | - | backlog |
+| `weave mv` with inbound link rewriting and `--dry-run` | [document-move.md](specs/document-move.md) | - | x | - | - | backlog |
+| Field filters in `weave search` (for example `--where type:adr`) | [search-field-filters.md](specs/search-field-filters.md) | - | x | x | - | in-progress |
+| Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | x | x | x | review |
+| SARIF output for `weave audit` to surface gate failures in code-scanning UIs | [sarif-output.md](specs/sarif-output.md) | - | x | - | - | backlog |
+| Enrichment caching by content hash, with `--force` to bypass and an optional manifest `cache_key` | [enrichment-caching.md](specs/enrichment-caching.md) | - | x | - | - | backlog |
+| Pluggable tokenizer role for stemming and query expansions; the index records the tokenizer identity | [tokenizer.md](specs/tokenizer.md) | - | x | - | - | backlog |
 
 ## Cross-cutting
 
