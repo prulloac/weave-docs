@@ -35,7 +35,7 @@ for the drafts that follow.
 | Trust gate | approved, not started | ADR 0015 and spec §2.11 are accepted. Per-user `~/.weave/trust.yaml` keyed by absolute path and SHA-256; a bundle file can never grant. Untrusted bundle-local extensions are skipped with a warning unless named explicitly, which fails with `EXTENSION_UNTRUSTED` (exit `1`). `extensions trust`, `untrust` and `trusted` are added; hand-editing the file stays valid. |
 | Batched envelopes | approved, not started | Spec §2.2.1. One generic `batch_request`/`batch_response`, results in request order with per-item `ok`/`error`, max 128 items, one timeout per batch. |
 | Parallel invocations | approved, not started | ADR 0016 and spec §2.2.2. `--extension-parallelism N`, default `1`, cap `8`; results merge in input order so output stays deterministic. |
-| Snapshot diff | implemented | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. In review. |
+| Snapshot diff | shipped in v0.12.0 | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. |
 | Pluggable tokenizer role | approved, not started | ADR 0018 and `tokenizer.md`. Stemming and synonyms through one `tokenizer` role; the tokenizer id is recorded with the index and a change requires `rebuild`. |
 | Per-type frontmatter schemas | approved, not started | ADR 0020 and `per-type-schemas.md`. `.weave/types/<type>.schema.json` opts a bundle in; violations fail ingest with `TYPE_SCHEMA_INVALID` unless `--permissive` downgrades to a warning; `audit` reports the same findings. |
 | `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
@@ -43,7 +43,8 @@ for the drafts that follow.
 | Draft specs 48–52 | approved for BDD/TDD | Field filters and graph export are implemented and in review. Remaining: per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
 | `weave extensions install` (§2.10) | stays a proposal | No install step; requirement refusal stays at selection. |
 | ADR errata rule | adopted | STYLE.md now defines dated `## Errata` and `## Amendment` sections; decision text is never rewritten. |
-| Publish the 0.11 line | done 2026-11-22 | Pushed `weave` v0.11.0 (retagged at HEAD), `weave-ai` v0.9.0, `weave-git` v0.11.0 and `weave-code` v0.11.0, plus main branches and `weave-docs`. Release workflows ran; record assets in `release-checklist.md`. |
+| Publish the 0.12 line | done 2026-11-22 | Pushed `weave` v0.12.0 (`987eba6`) and `weave-git` v0.12.0 (`70e3777`). Release workflows ran, checksums and versions were verified, and both releases were published. |
+| Publish the 0.11 line | done 2026-11-22 | Pushed `weave` v0.11.0 (retagged at HEAD), `weave-ai` v0.9.0, `weave-git` v0.11.0 and `weave-code` v0.11.0, plus main branches and `weave-docs`. |
 
 ## Tier 1 — Foundation
 

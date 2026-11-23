@@ -2,7 +2,34 @@
 
 This checklist records the release state. Tag and publish steps are owner actions.
 
-# v0.11.0 (current pre-1.0 release)
+# v0.12.0 (current pre-1.0 release)
+
+## Complete
+
+- [x] Tagged and pushed `v0.12.0`: `weave` (`987eba6`) and `weave-git` (`70e3777`).
+- [x] Release workflows built six static archives plus checksums for both products and created draft
+  releases.
+- [x] Downloaded and verified the Linux `amd64` archive against each checksum file; the binaries report
+  `weave v0.12.0 (contract 1)` and `weave-git v0.12.0 (weave.extension/v1)`.
+- [x] Published `weave` v0.12.0 and `weave-git` v0.12.0 with highlights naming the tested core version.
+- [x] The 0.12 feature set adds search field filters, graph export formats, source snapshot diff
+  (core contract, `weave source diff` and the `weave-git` provider), and the extension role table
+  with conformance coverage for all seven roles.
+- [x] `weave`, specs, roadmap, backlog and release notes describe the 0.12 set.
+
+## Notes
+
+- 0.12 is a **pre-1.0** release for `weave`. `weave.contract/v1` and `weave.cli/v1` remain
+  authoritative and may still evolve in place until 1.0.0. All 0.12 contract changes are additive.
+- `weave-git` v0.12.0 adds the `diff` capability and requires `weave >= 0.11.0`; it is tested with
+  `weave v0.12.0`. `weave-code` remains at v0.11.0, `weave-ai` at v0.9.0, and `weave-codec-lz4` and
+  `weave-image` at v0.8.0.
+- Publishing remains manual; a tag push only creates a draft release.
+- Remaining 0.12 work: trust gate, batched envelopes, parallel invocations, per-type schemas, SARIF,
+  enrichment caching, the tokenizer role, `weave mv` and the authoring guide.
+- The performance optimization program and watch event delivery are post-1.0 work.
+
+# v0.11.0 (previous pre-1.0 release)
 
 ## Complete
 
