@@ -21,7 +21,7 @@ Pipeline phase legend (per SDD -> BDD -> TDD):
 - `-` — not applicable / not started
 - `x` — complete
 
-## Current Session Queue (2026-11-22)
+## Current Session Queue (2026-11-23)
 
 Carry this list into the next session. Each item names its owner or blocker so no work is resumed
 from memory. The owner answered the decision questions on 2026-11-22; the answers below are binding
@@ -32,7 +32,7 @@ for the drafts that follow.
 | `weave extensions check` (extension IPC §2.8) | shipped in v0.11.0 | BDD and engine tests are green; codec §13 and the descriptor minimum are included. |
 | Tier 12 hardcoded writer removal | closed 2026-11-22 | No non-test `_code`/`_sources` writer literals remain; namespaces are extension-declared. |
 | Role descriptor registry (ADR 0013) | part done | The role table, `roles` key and descriptor-driven conformance checks are implemented. The runtime invocation refactor remains a separate tracked row. |
-| Trust gate | implemented | ADR 0015 and spec §2.11. Per-user hash-pinned `~/.weave/trust.yaml`, `extensions trust`, `untrust` and `trusted`, `EXTENSION_UNTRUSTED` enforcement, PATH exclusions and the auto-discovery skip. BDD and unit tests are green. |
+| Trust gate | code-complete, in review | ADR 0015 and spec §2.11. Per-user hash-pinned `~/.weave/trust.yaml`, `extensions trust`, `untrust` and `trusted`, `EXTENSION_UNTRUSTED` enforcement, PATH exclusions and the auto-discovery skip. BDD and unit tests are green; targets 0.13. |
 | Batched envelopes | approved, not started | Spec §2.2.1. One generic `batch_request`/`batch_response`, results in request order with per-item `ok`/`error`, max 128 items, one timeout per batch. |
 | Parallel invocations | approved, not started | ADR 0016 and spec §2.2.2. `--extension-parallelism N`, default `1`, cap `8`; results merge in input order so output stays deterministic. |
 | Snapshot diff | shipped in v0.12.0 | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. |
@@ -40,7 +40,7 @@ for the drafts that follow.
 | Per-type frontmatter schemas | approved, not started | ADR 0020 and `per-type-schemas.md`. `.weave/types/<type>.schema.json` opts a bundle in; violations fail ingest with `TYPE_SCHEMA_INVALID` unless `--permissive` downgrades to a warning; `audit` reports the same findings. |
 | `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
 | Enrichment caching fingerprint | approved, not started | `enrichment-caching.md`; the manifest gains an optional `cache_key`, absent, the key stays name + version + request. |
-| Draft specs 48–52 | approved for BDD/TDD | Field filters and graph export are implemented and in review. Remaining: per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
+| Draft specs 48–52 | shipped / approved | Field filters and graph export shipped in 0.12.0. Remaining: per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
 | `weave extensions install` (§2.10) | stays a proposal | No install step; requirement refusal stays at selection. |
 | ADR errata rule | adopted | STYLE.md now defines dated `## Errata` and `## Amendment` sections; decision text is never rewritten. |
 | Publish the 0.12 line | done 2026-11-22 | Pushed `weave` v0.12.0 (`987eba6`) and `weave-git` v0.12.0 (`70e3777`). Release workflows ran, checksums and versions were verified, and both releases were published. |
