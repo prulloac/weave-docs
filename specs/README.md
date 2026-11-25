@@ -42,7 +42,7 @@ maturity only.
 | [Embeddings](embeddings.md) | stable | [Embeddings](https://github.com/prulloac/weave/blob/main/docs/bdd/embeddings.md) | 37 |
 | [Search Field Filters](search-field-filters.md) | draft | — | 48 |
 | [Graph Export Formats](graph-export.md) | draft | — | 49 |
-| [SARIF Audit Output](sarif-output.md) | draft | — | 50 |
+| [SARIF Audit Output](sarif-output.md) | stable | — | 50 |
 | [Enrichment Caching](enrichment-caching.md) | draft | — | 51 |
 | [Extension Authoring Guide](extension-authoring.md) | draft | — | 52 |
 | [Source Snapshot Diff](source-diff.md) | stable | — | 57 |

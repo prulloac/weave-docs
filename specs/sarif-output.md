@@ -6,7 +6,7 @@ tags:
   - "specification"
   - "audit"
   - "ci"
-status: draft
+status: stable
 ---
 
 # Specification: SARIF Audit Output
