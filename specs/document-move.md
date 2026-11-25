@@ -6,7 +6,7 @@ tags:
   - "cli"
   - "bundle"
   - "links"
-status: draft
+status: stable
 ---
 
 # Document Move with Link Rewriting

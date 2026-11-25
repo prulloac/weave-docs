@@ -25,9 +25,9 @@ This checklist records the release state. Tag and publish steps are owner action
   `weave v0.12.0`. `weave-code` remains at v0.11.0, `weave-ai` at v0.9.0, and `weave-codec-lz4` and
   `weave-image` at v0.8.0.
 - Publishing remains manual; a tag push only creates a draft release.
-- Remaining 0.13 work: `weave mv`, the authoring guide and the runtime role-descriptor refactor.
-  Batched envelopes, parallel invocations, per-type schemas, SARIF, enrichment caching, the
-  tokenizer role and the bundle-local trust gate are implemented and await the 0.13 line.
+- Remaining 0.13 work: the authoring guide and the runtime role-descriptor refactor. Batched
+  envelopes, parallel invocations, per-type schemas, SARIF, enrichment caching, the tokenizer role,
+  `weave mv` and the bundle-local trust gate are implemented and await the 0.13 line.
 - The performance optimization program and watch event delivery are post-1.0 work.
 
 # v0.11.0 (previous pre-1.0 release)

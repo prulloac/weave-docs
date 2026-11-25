@@ -39,7 +39,7 @@ for the drafts that follow.
 | Pluggable tokenizer role | implemented, in review | ADR 0018 and `tokenizer.md`. Role selection, index identity with rebuild enforcement, keyword and BM25 terms, query expansions, `--no-db` fallback, privacy, protocol and timeout errors are green. |
 | Per-type frontmatter schemas | implemented, in review | ADR 0020 and `per-type-schemas.md`. `.weave/types` loading, strict/permissive ingest, audit parity, local refs and both schema error codes are green. |
 | SARIF audit output | implemented, in review | `weave audit --format sarif` maps findings to SARIF 2.1.0, keeps `--fail-on` exit codes, sorts deterministically and writes `--out` atomically. |
-| `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
+| `weave mv` with link rewriting | implemented, in review | ADR 0019 and `document-move.md`. Moves one document, rewrites relative links, images, reference definitions and `related` ids, updates the index in one transaction, refuses an existing destination and supports `--dry-run`. |
 | Enrichment caching fingerprint | implemented, in review | `enrichment-caching.md`. Cache key uses name, version, optional `cache_key` and the exact request; reuse skips the extension, `--force` bypasses, file-producing results are never reused. |
 | Draft specs 48–52 | shipped / approved | Field filters, graph export and SARIF shipped/implemented. Remaining: enrichment caching and the authoring guide. |
 | `weave extensions install` (§2.10) | stays a proposal | No install step; requirement refusal stays at selection. |
@@ -347,7 +347,7 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Per-type frontmatter schemas in `.weave/types/<type>.schema.json`, checked by ingest and `weave audit`. Implemented with strict/permissive parity and local refs | [per-type-schemas.md](specs/per-type-schemas.md) | - | x | x | x | review |
-| `weave mv` with inbound link rewriting and `--dry-run` | [document-move.md](specs/document-move.md) | - | x | - | - | backlog |
+| `weave mv` with inbound link rewriting and `--dry-run`. Implemented with index rollback | [document-move.md](specs/document-move.md) | - | x | x | x | review |
 | Field filters in `weave search` (for example `--where type:adr`), applied before top-K in every mode | [search-field-filters.md](specs/search-field-filters.md) | - | x | x | x | review |
 | Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | x | x | x | review |
 | SARIF output for `weave audit` to surface gate failures in code-scanning UIs. Implemented with deterministic mapping and `--out` | [sarif-output.md](specs/sarif-output.md) | - | x | x | x | review |
@@ -471,7 +471,7 @@ migration work that the existing contracts already allow.
 | Tier 14: protocol version negotiation | done: §2.9 in [extension-ipc.md](specs/extension-ipc.md) | [ADR 0014](architecture/adr/0014-extension-requirement-enforcement.md) accepted | Implemented for every role; a declared protocol range remains open |
 | Tier 14: authoring guide | [extension-authoring.md](specs/extension-authoring.md) | none | End-user guide in `weave/docs/guides`; approved for BDD/TDD |
 | Tier 15: per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | [ADR 0020](architecture/adr/0020-per-type-frontmatter-schemas.md) accepted | Implemented: `.weave/types`, strict/permissive ingest, audit parity, local refs |
-| Tier 15: `weave mv` with link rewriting | [document-move.md](specs/document-move.md) | [ADR 0019](architecture/adr/0019-document-move-with-link-rewriting.md) accepted | Rewrites relative links and `related` ids; refuses overwrite; `--dry-run` |
+| Tier 15: `weave mv` with link rewriting | [document-move.md](specs/document-move.md) | [ADR 0019](architecture/adr/0019-document-move-with-link-rewriting.md) accepted | Implemented: links, images, reference definitions, related ids, index rollback, `--dry-run` |
 | Tier 15: search field filters | [search-field-filters.md](specs/search-field-filters.md) | none | Implemented in every mode before the top-K cut; BDD and storage tests are green |
 | Tier 15: graph export formats | [graph-export.md](specs/graph-export.md) | none | Implemented for DOT, Mermaid and GraphML; BDD and renderer tests are green |
 | Tier 15: SARIF output for audit | [sarif-output.md](specs/sarif-output.md) | none | Implemented: SARIF 2.1.0 mapping, deterministic order, atomic `--out`, gate-preserving exit |
@@ -569,9 +569,9 @@ Features follow the docs work:
 1. Role registry (ADR 0013) with the additive `roles` key; Tier 12 writer removal is closed.
 2. ADRs 0015–0020 are accepted; the specs they need are drafted and await owner review.
 3. `extensions check`, version negotiation and the descriptor minimum shipped in v0.11.0.
-4. Next implementation order: `weave mv`, then the authoring guide. The role registry, field filters,
-   graph export, per-type schemas, trust gate, batching, parallel invocations, SARIF, enrichment
-   caching, snapshot diff and tokenizer are implemented.
+4. Next implementation order: the authoring guide. The role registry, field filters, graph export,
+   per-type schemas, trust gate, batching, parallel invocations, SARIF, enrichment caching, snapshot
+   diff, tokenizer and `weave mv` are implemented.
 5. fsnotify remains post-1.0.
 
 ### Release Line
