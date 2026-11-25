@@ -10,9 +10,8 @@ ingestion, privacy directives, body compression, extension IPC with enrichment/r
 assets, codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
 automation, the MCP server, the generic extension output boundary, extension conformance checks,
 descriptor requirement enforcement, search field filters, graph export, source snapshot diff and the
-extension role table are shipped. Work after 0.12 is the tokenizer role, `weave mv`, enrichment caching,
-the authoring guide, watch event delivery, the optimization program and MCP polish; 1.0 remains the
-stability target.
+extension role table are shipped. Work after 0.12 is the tokenizer role, `weave mv`, the authoring guide,
+watch event delivery, the optimization program and MCP polish; 1.0 remains the stability target.
 
 ## 1. What Weave Is
 
@@ -270,7 +269,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 48 | Search field filters | [search-field-filters.md](specs/search-field-filters.md) | Tier 15 | keyword and fuzzy search, BM25 | 0.12 / Tier 15 | shipped |
 | 49 | Graph export formats | [graph-export.md](specs/graph-export.md) | Tier 15 | node graph engine, relate | 0.12 / Tier 15 | shipped |
 | 50 | SARIF audit output | [sarif-output.md](specs/sarif-output.md) | Tier 15 | weave audit | 0.13 / Tier 15 | in progress |
-| 51 | Enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | Tier 15 | extension IPC, storage | 0.13 / Tier 15 | planned |
+| 51 | Enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | Tier 15 | extension IPC, storage | 0.13 / Tier 15 | in progress |
 | 52 | Extension authoring guide | [extension-authoring.md](specs/extension-authoring.md) | Tier 14 | extension IPC, codec extensions | 0.13 / Tier 14 | planned |
 | 53 | Extension conformance check | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner, codec extensions | 0.11 / Tier 14 | shipped |
 | 54 | Bundle-local extension trust gate | [extension-ipc.md](specs/extension-ipc.md) | Tier 14 | extension runner | 0.13 / Tier 14 | in progress |

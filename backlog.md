@@ -40,7 +40,7 @@ for the drafts that follow.
 | Per-type frontmatter schemas | implemented, in review | ADR 0020 and `per-type-schemas.md`. `.weave/types` loading, strict/permissive ingest, audit parity, local refs and both schema error codes are green. |
 | SARIF audit output | implemented, in review | `weave audit --format sarif` maps findings to SARIF 2.1.0, keeps `--fail-on` exit codes, sorts deterministically and writes `--out` atomically. |
 | `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
-| Enrichment caching fingerprint | approved, not started | `enrichment-caching.md`; the manifest gains an optional `cache_key`, absent, the key stays name + version + request. |
+| Enrichment caching fingerprint | implemented, in review | `enrichment-caching.md`. Cache key uses name, version, optional `cache_key` and the exact request; reuse skips the extension, `--force` bypasses, file-producing results are never reused. |
 | Draft specs 48–52 | shipped / approved | Field filters, graph export and SARIF shipped/implemented. Remaining: enrichment caching and the authoring guide. |
 | `weave extensions install` (§2.10) | stays a proposal | No install step; requirement refusal stays at selection. |
 | ADR errata rule | adopted | STYLE.md now defines dated `## Errata` and `## Amendment` sections; decision text is never rewritten. |
@@ -351,7 +351,7 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 | Field filters in `weave search` (for example `--where type:adr`), applied before top-K in every mode | [search-field-filters.md](specs/search-field-filters.md) | - | x | x | x | review |
 | Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | x | x | x | review |
 | SARIF output for `weave audit` to surface gate failures in code-scanning UIs. Implemented with deterministic mapping and `--out` | [sarif-output.md](specs/sarif-output.md) | - | x | x | x | review |
-| Enrichment caching by content hash, with `--force` to bypass and an optional manifest `cache_key` | [enrichment-caching.md](specs/enrichment-caching.md) | - | x | - | - | backlog |
+| Enrichment caching by content hash, with `--force` to bypass and an optional manifest `cache_key`. Implemented with file-producing responses excluded | [enrichment-caching.md](specs/enrichment-caching.md) | - | x | x | x | review |
 | Pluggable tokenizer role for stemming and query expansions; the index records the tokenizer identity | [tokenizer.md](specs/tokenizer.md) | - | x | - | - | backlog |
 
 ## Cross-cutting
@@ -475,7 +475,7 @@ migration work that the existing contracts already allow.
 | Tier 15: search field filters | [search-field-filters.md](specs/search-field-filters.md) | none | Implemented in every mode before the top-K cut; BDD and storage tests are green |
 | Tier 15: graph export formats | [graph-export.md](specs/graph-export.md) | none | Implemented for DOT, Mermaid and GraphML; BDD and renderer tests are green |
 | Tier 15: SARIF output for audit | [sarif-output.md](specs/sarif-output.md) | none | Implemented: SARIF 2.1.0 mapping, deterministic order, atomic `--out`, gate-preserving exit |
-| Tier 15: enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | none | Approved for BDD/TDD; key gains the optional manifest `cache_key` |
+| Tier 15: enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | none | Implemented: key with version/`cache_key`/request, reuse, `--force`, file-safety |
 | Tier 15: pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | [ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md) accepted | Stemming and query expansions; index identity and rebuild on change |
 
 ### Dependencies

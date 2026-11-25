@@ -7,7 +7,7 @@ tags:
   - "extensions"
   - "enrichment"
   - "cache"
-status: draft
+status: stable
 ---
 
 # Specification: Enrichment Caching
