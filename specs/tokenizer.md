@@ -7,7 +7,7 @@ tags:
   - "extensions"
   - "tokenization"
   - "ranking"
-status: draft
+status: stable
 ---
 
 # Pluggable Tokenizer Role

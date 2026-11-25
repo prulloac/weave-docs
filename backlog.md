@@ -36,7 +36,7 @@ for the drafts that follow.
 | Batched envelopes | implemented, in review | Spec §2.2.1. Generic `batch_request`/`batch_response`, enrichment batching in chunks of 128, per-item fallback, one timeout per batch and the `batch` conformance check. |
 | Parallel invocations | implemented, in review | ADR 0016 and spec §2.2.2. `--extension-parallelism N` (1..8) overlaps batch chunks and per-document enrichment; results and warnings merge in input order. |
 | Snapshot diff | shipped in v0.12.0 | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. |
-| Pluggable tokenizer role | in progress | ADR 0018 and `tokenizer.md`. Slice 1 lands the role, `--tokenizer`, index identity with rebuild enforcement, keyword and BM25 terms, privacy, protocol and timeout errors; `--no-db` parity is next. |
+| Pluggable tokenizer role | implemented, in review | ADR 0018 and `tokenizer.md`. Role selection, index identity with rebuild enforcement, keyword and BM25 terms, query expansions, `--no-db` fallback, privacy, protocol and timeout errors are green. |
 | Per-type frontmatter schemas | implemented, in review | ADR 0020 and `per-type-schemas.md`. `.weave/types` loading, strict/permissive ingest, audit parity, local refs and both schema error codes are green. |
 | SARIF audit output | implemented, in review | `weave audit --format sarif` maps findings to SARIF 2.1.0, keeps `--fail-on` exit codes, sorts deterministically and writes `--out` atomically. |
 | `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
@@ -352,7 +352,7 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 | Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | x | x | x | review |
 | SARIF output for `weave audit` to surface gate failures in code-scanning UIs. Implemented with deterministic mapping and `--out` | [sarif-output.md](specs/sarif-output.md) | - | x | x | x | review |
 | Enrichment caching by content hash, with `--force` to bypass and an optional manifest `cache_key`. Implemented with file-producing responses excluded | [enrichment-caching.md](specs/enrichment-caching.md) | - | x | x | x | review |
-| Pluggable tokenizer role for stemming and query expansions; the index records the tokenizer identity. Persistent path implemented; `--no-db` parity pending | [tokenizer.md](specs/tokenizer.md) | - | x | x | - | in-progress |
+| Pluggable tokenizer role for stemming and query expansions; the index records the tokenizer identity. Implemented with `--no-db` fallback | [tokenizer.md](specs/tokenizer.md) | - | x | x | x | review |
 
 ## Cross-cutting
 
@@ -476,7 +476,7 @@ migration work that the existing contracts already allow.
 | Tier 15: graph export formats | [graph-export.md](specs/graph-export.md) | none | Implemented for DOT, Mermaid and GraphML; BDD and renderer tests are green |
 | Tier 15: SARIF output for audit | [sarif-output.md](specs/sarif-output.md) | none | Implemented: SARIF 2.1.0 mapping, deterministic order, atomic `--out`, gate-preserving exit |
 | Tier 15: enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | none | Implemented: key with version/`cache_key`/request, reuse, `--force`, file-safety |
-| Tier 15: pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | [ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md) accepted | Slice 1 green: role, identity, rebuild, keyword/BM25 terms; `--no-db` parity next |
+| Tier 15: pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | [ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md) accepted | Implemented: role, identity, rebuild, keyword/BM25 terms, expansions, `--no-db` fallback |
 
 ### Dependencies
 
@@ -569,9 +569,9 @@ Features follow the docs work:
 1. Role registry (ADR 0013) with the additive `roles` key; Tier 12 writer removal is closed.
 2. ADRs 0015–0020 are accepted; the specs they need are drafted and await owner review.
 3. `extensions check`, version negotiation and the descriptor minimum shipped in v0.11.0.
-4. Next implementation order: role registry, field filters, graph export, per-type schemas, trust gate,
-   batching, parallel invocations, SARIF, enrichment caching, snapshot diff, tokenizer, `weave mv`,
-   then the authoring guide.
+4. Next implementation order: `weave mv`, then the authoring guide. The role registry, field filters,
+   graph export, per-type schemas, trust gate, batching, parallel invocations, SARIF, enrichment
+   caching, snapshot diff and tokenizer are implemented.
 5. fsnotify remains post-1.0.
 
 ### Release Line

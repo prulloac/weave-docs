@@ -46,7 +46,7 @@ maturity only.
 | [Enrichment Caching](enrichment-caching.md) | stable | — | 51 |
 | [Extension Authoring Guide](extension-authoring.md) | draft | — | 52 |
 | [Source Snapshot Diff](source-diff.md) | stable | — | 57 |
-| [Pluggable Tokenizer Role](tokenizer.md) | draft | — | 58 |
+| [Pluggable Tokenizer Role](tokenizer.md) | stable | — | 58 |
 | [Document Move](document-move.md) | draft | — | 59 |
 | [Per-Type Frontmatter Schemas](per-type-schemas.md) | stable | — | 60 |
 
