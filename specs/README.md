@@ -48,7 +48,7 @@ maturity only.
 | [Source Snapshot Diff](source-diff.md) | stable | — | 57 |
 | [Pluggable Tokenizer Role](tokenizer.md) | draft | — | 58 |
 | [Document Move](document-move.md) | draft | — | 59 |
-| [Per-Type Frontmatter Schemas](per-type-schemas.md) | draft | — | 60 |
+| [Per-Type Frontmatter Schemas](per-type-schemas.md) | stable | — | 60 |
 
 ## Ownership rules
 

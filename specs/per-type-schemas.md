@@ -7,7 +7,7 @@ tags:
   - "schema"
   - "ingest"
   - "audit"
-status: draft
+status: stable
 ---
 
 # Per-Type Frontmatter Schemas

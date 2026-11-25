@@ -10,9 +10,9 @@ ingestion, privacy directives, body compression, extension IPC with enrichment/r
 assets, codecs, embeddings, semantic search, pluggable scoring, code knowledge, git sources, release
 automation, the MCP server, the generic extension output boundary, extension conformance checks,
 descriptor requirement enforcement, search field filters, graph export, source snapshot diff and the
-extension role table are shipped. Work after 0.12 is the tokenizer role, `weave mv`, per-type schemas,
-SARIF, enrichment caching, the authoring guide, watch event delivery, the optimization program and MCP
-polish; 1.0 remains the stability target.
+extension role table are shipped. Work after 0.12 is the tokenizer role, `weave mv`, SARIF, enrichment
+caching, the authoring guide, watch event delivery, the optimization program and MCP polish; 1.0
+remains the stability target.
 
 ## 1. What Weave Is
 
@@ -279,7 +279,7 @@ is the completeness check: no feature is considered planned until it appears her
 | 57 | Source snapshot diff | [source-diff.md](specs/source-diff.md) | Tier 11 | weave-git, source protocol | 0.12 / Tier 11 | shipped |
 | 58 | Pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | Tier 15 | BM25, extension runner | 0.13 / Tier 15 | planned |
 | 59 | Document move with link rewriting | [document-move.md](specs/document-move.md) | Tier 15 | parser, graph, storage | 0.13 / Tier 15 | planned |
-| 60 | Per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | Tier 15 | parser, audit, ingest | 0.13 / Tier 15 | planned |
+| 60 | Per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | Tier 15 | parser, audit, ingest | 0.13 / Tier 15 | in progress |
 
 Rules:
 

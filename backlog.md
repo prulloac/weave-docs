@@ -37,7 +37,7 @@ for the drafts that follow.
 | Parallel invocations | implemented, in review | ADR 0016 and spec §2.2.2. `--extension-parallelism N` (1..8) overlaps batch chunks and per-document enrichment; results and warnings merge in input order. |
 | Snapshot diff | shipped in v0.12.0 | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. |
 | Pluggable tokenizer role | approved, not started | ADR 0018 and `tokenizer.md`. Stemming and synonyms through one `tokenizer` role; the tokenizer id is recorded with the index and a change requires `rebuild`. |
-| Per-type frontmatter schemas | approved, not started | ADR 0020 and `per-type-schemas.md`. `.weave/types/<type>.schema.json` opts a bundle in; violations fail ingest with `TYPE_SCHEMA_INVALID` unless `--permissive` downgrades to a warning; `audit` reports the same findings. |
+| Per-type frontmatter schemas | implemented, in review | ADR 0020 and `per-type-schemas.md`. `.weave/types` loading, strict/permissive ingest, audit parity, local refs and both schema error codes are green. |
 | `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
 | Enrichment caching fingerprint | approved, not started | `enrichment-caching.md`; the manifest gains an optional `cache_key`, absent, the key stays name + version + request. |
 | Draft specs 48–52 | shipped / approved | Field filters and graph export shipped in 0.12.0. Remaining: per-type schemas, SARIF, enrichment caching, and the authoring guide last. |
@@ -345,7 +345,7 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 
 | Feature | Spec | PR | Spec | BDD | TDD | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Per-type frontmatter schemas in `.weave/types/<type>.schema.json`, checked by ingest and `weave audit` | [per-type-schemas.md](specs/per-type-schemas.md) | - | x | - | - | backlog |
+| Per-type frontmatter schemas in `.weave/types/<type>.schema.json`, checked by ingest and `weave audit`. Implemented with strict/permissive parity and local refs | [per-type-schemas.md](specs/per-type-schemas.md) | - | x | x | x | review |
 | `weave mv` with inbound link rewriting and `--dry-run` | [document-move.md](specs/document-move.md) | - | x | - | - | backlog |
 | Field filters in `weave search` (for example `--where type:adr`), applied before top-K in every mode | [search-field-filters.md](specs/search-field-filters.md) | - | x | x | x | review |
 | Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | x | x | x | review |
@@ -469,7 +469,7 @@ migration work that the existing contracts already allow.
 | Tier 14: bundle-local trust gate | amend [extension-ipc.md](specs/extension-ipc.md) §2.11 | [ADR 0015](architecture/adr/0015-bundle-local-extension-trust-gate.md) accepted | Implemented: per-user hash-pinned store, trust commands, explicit refusal and auto-skip |
 | Tier 14: protocol version negotiation | done: §2.9 in [extension-ipc.md](specs/extension-ipc.md) | [ADR 0014](architecture/adr/0014-extension-requirement-enforcement.md) accepted | Implemented for every role; a declared protocol range remains open |
 | Tier 14: authoring guide | [extension-authoring.md](specs/extension-authoring.md) | none | End-user guide in `weave/docs/guides`; approved for BDD/TDD |
-| Tier 15: per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | [ADR 0020](architecture/adr/0020-per-type-frontmatter-schemas.md) accepted | Opt-in `.weave/types`, strict ingest with `--permissive`, audit agrees |
+| Tier 15: per-type frontmatter schemas | [per-type-schemas.md](specs/per-type-schemas.md) | [ADR 0020](architecture/adr/0020-per-type-frontmatter-schemas.md) accepted | Implemented: `.weave/types`, strict/permissive ingest, audit parity, local refs |
 | Tier 15: `weave mv` with link rewriting | [document-move.md](specs/document-move.md) | [ADR 0019](architecture/adr/0019-document-move-with-link-rewriting.md) accepted | Rewrites relative links and `related` ids; refuses overwrite; `--dry-run` |
 | Tier 15: search field filters | [search-field-filters.md](specs/search-field-filters.md) | none | Implemented in every mode before the top-K cut; BDD and storage tests are green |
 | Tier 15: graph export formats | [graph-export.md](specs/graph-export.md) | none | Implemented for DOT, Mermaid and GraphML; BDD and renderer tests are green |
