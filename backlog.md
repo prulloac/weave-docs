@@ -36,7 +36,7 @@ for the drafts that follow.
 | Batched envelopes | implemented, in review | Spec §2.2.1. Generic `batch_request`/`batch_response`, enrichment batching in chunks of 128, per-item fallback, one timeout per batch and the `batch` conformance check. |
 | Parallel invocations | implemented, in review | ADR 0016 and spec §2.2.2. `--extension-parallelism N` (1..8) overlaps batch chunks and per-document enrichment; results and warnings merge in input order. |
 | Snapshot diff | shipped in v0.12.0 | Generic source `diff` plus `weave source diff` in core and the `weave-git` provider; BDD, unit and end-to-end tests are green. |
-| Pluggable tokenizer role | approved, not started | ADR 0018 and `tokenizer.md`. Stemming and synonyms through one `tokenizer` role; the tokenizer id is recorded with the index and a change requires `rebuild`. |
+| Pluggable tokenizer role | in progress | ADR 0018 and `tokenizer.md`. Slice 1 lands the role, `--tokenizer`, index identity with rebuild enforcement, keyword and BM25 terms, privacy, protocol and timeout errors; `--no-db` parity is next. |
 | Per-type frontmatter schemas | implemented, in review | ADR 0020 and `per-type-schemas.md`. `.weave/types` loading, strict/permissive ingest, audit parity, local refs and both schema error codes are green. |
 | SARIF audit output | implemented, in review | `weave audit --format sarif` maps findings to SARIF 2.1.0, keeps `--fail-on` exit codes, sorts deterministically and writes `--out` atomically. |
 | `weave mv` with link rewriting | approved, not started | ADR 0019 and `document-move.md`. Move or rename one document, rewrite relative Markdown links and `related` ids, update the index, refuse an existing destination, support `--dry-run`. |
@@ -352,7 +352,7 @@ the roadmap. Git-specific capabilities such as snapshot diff belong to `weave-gi
 | Graph export formats: `graph --format dot`, `mermaid` and `graphml` | [graph-export.md](specs/graph-export.md) | - | x | x | x | review |
 | SARIF output for `weave audit` to surface gate failures in code-scanning UIs. Implemented with deterministic mapping and `--out` | [sarif-output.md](specs/sarif-output.md) | - | x | x | x | review |
 | Enrichment caching by content hash, with `--force` to bypass and an optional manifest `cache_key`. Implemented with file-producing responses excluded | [enrichment-caching.md](specs/enrichment-caching.md) | - | x | x | x | review |
-| Pluggable tokenizer role for stemming and query expansions; the index records the tokenizer identity | [tokenizer.md](specs/tokenizer.md) | - | x | - | - | backlog |
+| Pluggable tokenizer role for stemming and query expansions; the index records the tokenizer identity. Persistent path implemented; `--no-db` parity pending | [tokenizer.md](specs/tokenizer.md) | - | x | x | - | in-progress |
 
 ## Cross-cutting
 
@@ -476,7 +476,7 @@ migration work that the existing contracts already allow.
 | Tier 15: graph export formats | [graph-export.md](specs/graph-export.md) | none | Implemented for DOT, Mermaid and GraphML; BDD and renderer tests are green |
 | Tier 15: SARIF output for audit | [sarif-output.md](specs/sarif-output.md) | none | Implemented: SARIF 2.1.0 mapping, deterministic order, atomic `--out`, gate-preserving exit |
 | Tier 15: enrichment caching | [enrichment-caching.md](specs/enrichment-caching.md) | none | Implemented: key with version/`cache_key`/request, reuse, `--force`, file-safety |
-| Tier 15: pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | [ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md) accepted | Stemming and query expansions; index identity and rebuild on change |
+| Tier 15: pluggable tokenizer role | [tokenizer.md](specs/tokenizer.md) | [ADR 0018](architecture/adr/0018-pluggable-tokenizer-role.md) accepted | Slice 1 green: role, identity, rebuild, keyword/BM25 terms; `--no-db` parity next |
 
 ### Dependencies
 
