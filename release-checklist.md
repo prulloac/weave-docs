@@ -2,7 +2,31 @@
 
 This checklist records the release state. Tag and publish steps are owner actions.
 
-# v0.12.0 (current pre-1.0 release)
+# v0.13.0 (current pre-1.0 release)
+
+## Complete
+
+- [x] Tagged and pushed `v0.13.0` on `weave` (`2cae29a`); `weave-git` remains at v0.12.0.
+- [x] Release workflows built six static archives plus checksums and created a draft release.
+- [x] Downloaded and verified the Linux `amd64` archive against the checksum file; the binary reports
+  `weave v0.13.0 (contract 1)` and the build info names commit `2cae29a`.
+- [x] Published `weave` v0.13.0 with generated release notes.
+- [x] The 0.13 feature set adds the bundle-local trust gate, the runtime role-descriptor refactor,
+  batched envelopes, bounded parallel invocations, per-type schemas, SARIF audit output, enrichment
+  caching, the tokenizer role, `weave mv` and the extension authoring guide.
+- [x] `weave`, specs, roadmap, backlog and release notes describe the 0.13 set.
+
+## Notes
+
+- 0.13 is a **pre-1.0** release for `weave`. `weave.contract/v1` and `weave.cli/v1` remain
+  authoritative and may still evolve in place until 1.0.0. All 0.13 contract changes are additive.
+- `weave-git` v0.12.0 requires `weave >= 0.11.0`; it is tested with `weave v0.13.0`. `weave-code`
+  remains at v0.11.0, `weave-ai` at v0.9.0, and `weave-codec-lz4` and `weave-image` at v0.8.0.
+- Publishing remains manual; a tag push only creates a draft release.
+- Remaining 0.13 work: none. The next line is the 1.0 stability gate; watch event delivery and the
+  performance optimization program remain post-1.0 work.
+
+# v0.12.0 (previous pre-1.0 release)
 
 ## Complete
 
@@ -25,13 +49,9 @@ This checklist records the release state. Tag and publish steps are owner action
   `weave v0.12.0`. `weave-code` remains at v0.11.0, `weave-ai` at v0.9.0, and `weave-codec-lz4` and
   `weave-image` at v0.8.0.
 - Publishing remains manual; a tag push only creates a draft release.
-- Remaining 0.13 work: none; the feature set is ready to cut. Batched envelopes, parallel
-  invocations, per-type schemas, SARIF, enrichment caching, the tokenizer role, `weave mv`, the
-  authoring guide, the runtime role-descriptor refactor and the bundle-local trust gate are
-  implemented and await the 0.13 line.
 - The performance optimization program and watch event delivery are post-1.0 work.
 
-# v0.11.0 (previous pre-1.0 release)
+# v0.11.0 (older pre-1.0 release)
 
 ## Complete
 
