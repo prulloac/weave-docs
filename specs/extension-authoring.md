@@ -6,7 +6,7 @@ tags:
   - "specification"
   - "extensions"
   - "documentation"
-status: draft
+status: stable
 ---
 
 # Specification: Extension Authoring Guide
