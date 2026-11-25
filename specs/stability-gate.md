@@ -1,7 +1,7 @@
 ---
 type: specification
 title: "1.0 Stability Gate and Issue Policy"
-description: "Defines the 30-day defect-free window, the supported community issue types and the triage procedure that decides when Weave may release 1.0.0."
+description: "Defines the 30-day defect-free and release-free window, the supported community issue types and the triage procedure that decides when Weave may release 1.0.0."
 tags:
   - "specification"
   - "release"
@@ -20,14 +20,16 @@ Weave is pre-1.0. 1.0.0 is a stability claim, not a feature release. This specif
 gate that opens it, the issue types the project accepts from the community, and the triage process
 that turns a report into a confirmed defect or a closed report.
 
-The gate is intentionally narrow: **one month on `main` without a declared defect**.
+The gate is intentionally narrow: **one month on `main` without a declared defect and without a new
+minor or patch release**.
 
 ## 2. Stability Gate
 
 1.0.0 may be released only when both conditions hold:
 
-1. At least **30 consecutive calendar days** have passed since the start of the current stability
-   window, or since the most recent declared defect, whichever is later.
+1. At least **30 consecutive calendar days** have passed since the later of: the start of the current
+   stability window, the most recent declared defect, or the most recent minor or patch release of a
+   first-party product.
 2. At the evaluation date there is **no open issue labeled `confirmed-defect`** in
    `prulloac/weave` that was declared against `main` or the latest published release.
 
@@ -35,6 +37,10 @@ Rules:
 
 - A **declared defect** is an issue to which a maintainer applies the `confirmed-defect` label. The
   label is the declaration; the report text alone is not.
+- **Every new minor or patch release resets the window**, whether or not it contains a declared
+  defect. The new window starts on the release's publication date. This applies to `weave` and to
+  first-party products such as `weave-git`, `weave-ai`, `weave-code`, `weave-codec-lz4`,
+  `weave-image` and `weave-skills`.
 - A `regression` is a declared defect and resets the window.
 - A confirmed **security defect** resets the window even when it is tracked privately through a
   GitHub security advisory.
@@ -45,12 +51,15 @@ Rules:
   `weave-codec-lz4`, `weave-image`, `weave-skills`) do.
 - Fixing a confirmed defect resets the window start to the date the fix lands on `main`; the
   evaluation date must then be at least 30 days later.
+- Documentation-only changes and release metadata that do not publish a new minor or patch version do
+  not reset the window by themselves.
 - The window start and every reset are recorded in
   [release-checklist.md](../release-checklist.md) and on the pinned stability-gate issue in
   `prulloac/weave`.
 
-The current window starts on **2026-11-10**, the date `v0.7.0` was published. The earliest possible
-1.0.0 date is therefore **2026-12-10**, provided no defect is declared in between.
+The current window starts on **2026-11-25**, the date `v0.13.0` was published. The earliest possible
+1.0.0 date is therefore **2026-12-25**, provided no defect is declared and no new minor or patch
+release follows.
 
 ## 3. Supported Issue Types
 

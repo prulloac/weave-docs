@@ -571,11 +571,13 @@ needed.
 
 ### 1.0 Stability Gate
 
-1.0.0 opens only after **30 consecutive days** without a declared defect on `main`, with no open
-`confirmed-defect` issue in `prulloac/weave`. Only the Weave repository accepts issues; the other
-product repositories are closed and point here. The full rule, supported issue types and triage
-timeline are in [1.0 Stability Gate and Issue Policy](specs/stability-gate.md). The current window
-started on **2026-11-10**; the earliest 1.0.0 date is **2026-12-10**.
+1.0.0 opens only after **30 consecutive days** without a declared defect on `main` and without a new
+minor or patch release, with no open `confirmed-defect` issue in `prulloac/weave`. Only the Weave
+repository accepts issues; the other product repositories are closed and point here. The full rule,
+supported issue types and triage timeline are in
+[1.0 Stability Gate and Issue Policy](specs/stability-gate.md). The current window started on
+**2026-11-25**, the date `v0.13.0` was published; the earliest 1.0.0 date is **2026-12-25**. Every
+new minor or patch release resets the window to its publication date.
 
 ### Quality gates
 

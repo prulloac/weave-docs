@@ -26,6 +26,18 @@ This checklist records the release state. Tag and publish steps are owner action
 - Remaining 0.13 work: none. The next line is the 1.0 stability gate; watch event delivery and the
   performance optimization program remain post-1.0 work.
 
+## 1.0 stability window
+
+- [x] Window reset on **2026-11-25**, the date `v0.13.0` was published; every new minor or patch
+  release resets the window.
+- [x] Earliest possible `v1.0.0`: **2026-12-25**.
+- [x] Confirmed defects declared since the window started: **none**.
+- [ ] No `confirmed-defect` issue remains open on the evaluation date.
+- [ ] 30 consecutive days completed without a defect or a new minor or patch release reset.
+
+The rule and triage procedure are in
+[1.0 Stability Gate and Issue Policy](specs/stability-gate.md).
+
 # v0.12.0 (previous pre-1.0 release)
 
 ## Complete
@@ -143,10 +155,11 @@ This checklist records the release state. Tag and publish steps are owner action
 - [x] Other first-party members remain at v0.8.0; their `weave >= 0.8.0` floors are satisfied by
   `weave v0.9.0`.
 
-## 1.0 stability window
+## 1.0 stability window (historical at that release)
 
-- [x] Window still started on **2026-11-10**, the date `v0.7.0` was published.
-- [x] Earliest possible `v1.0.0`: **2026-12-10**.
+- [x] Window at that time was still based on **2026-11-10**, the date `v0.7.0` was published.
+- [x] Earliest possible `v1.0.0` under the rule then in force: **2026-12-10**. The current
+  release-reset rule and window are recorded in the v0.13.0 section above.
 - [x] Confirmed defects declared since the window started: **none**.
 - [ ] No `confirmed-defect` issue remains open on the evaluation date.
 - [ ] 30 consecutive days completed without a defect reset.
@@ -215,10 +228,11 @@ The rule and triage procedure are in
 - [x] Roadmap, backlog, specs, architecture, READMEs and installation docs describe 0.7 and no
   longer claim a 1.0 GA.
 
-## 1.0 stability window
+## 1.0 stability window (historical at that release)
 
-- [x] Window started on **2026-11-10**, the date `v0.7.0` was published.
-- [x] Earliest possible `v1.0.0`: **2026-12-10**.
+- [x] Window at that time started on **2026-11-10**, the date `v0.7.0` was published.
+- [x] Earliest possible `v1.0.0` under the rule then in force: **2026-12-10**. The current
+  release-reset rule and window are recorded in the v0.13.0 section above.
 - [x] Confirmed defects declared since the window started: **none**.
 - [ ] No `confirmed-defect` issue remains open on the evaluation date.
 - [ ] 30 consecutive days completed without a defect reset.

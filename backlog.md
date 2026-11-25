@@ -174,8 +174,9 @@ single-writer index lock are implemented, merged on `main` and released in v0.7.
 | --- | --- | --- | --- | --- | --- | --- |
 | 1.0 stability gate and issue policy | [stability-gate.md](specs/stability-gate.md) | - | x | - | - | green |
 
-Gate: 1.0.0 opens after 30 consecutive days without a declared defect, with no open
-`confirmed-defect` issue in `prulloac/weave`. The current window started on 2026-11-10. Only
+Gate: 1.0.0 opens after 30 consecutive days without a declared defect and without a new minor or
+patch release, with no open `confirmed-defect` issue in `prulloac/weave`. The current window started
+on 2026-11-25, the date `v0.13.0` was published; the earliest 1.0.0 date is 2026-12-25. Only
 `prulloac/weave` accepts issues; the other repositories are closed and link here.
 
 ## Tier 10 — Code knowledge
@@ -597,8 +598,9 @@ only after 1.0. Breaking changes ship with release notes.
 | Snapshot diff | New capability in `weave-git` | 0.X |
 | fsnotify watch events | New non-breaking behavior | 0.X eligible; the register says post-1.0, so that row needs an edit if confirmed |
 
-Feature work does not reset the 1.0 gate. Only confirmed defects do: a fix on `main` restarts the
-30-day window, and the earliest 1.0.0 date is 2026-12-10.
+Feature work on `main` does not reset the 1.0 gate by itself, but publishing any new minor or patch
+release does. A confirmed defect fix also restarts the 30-day window, and the earliest 1.0.0 date is
+2026-12-25 while no newer release or defect intervenes.
 
 ### Drift Analysis (2026-11-15)
 
